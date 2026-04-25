@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AI Setup — QuicReply Sales OS</title>
+  <meta name="description" content="Set up Jennifer AI for your business — configure tone, products, and first message." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+  <link rel="stylesheet" href="../shell.css" />
+  <style>
+    /* ── AI Module Sub-Nav ── */
+    .ai-subnav {
+      display: flex; align-items: center; gap: 2px;
+      border-bottom: 1px solid #e5e7eb; margin-bottom: 0;
+    }
+    .ai-subnav-item {
+      padding: 10px 16px; font-size: 13px; font-weight: 600; color: #6b7280;
+      position: relative; cursor: pointer; border-radius: 8px 8px 0 0;
+      transition: color 0.15s, background 0.15s; text-decoration: none; white-space: nowrap;
+    }
+    .ai-subnav-item:hover { color: #111827; background: #f9fafb; }
+    .ai-subnav-item.active { color: var(--brand); font-weight: 700; }
+    .ai-subnav-item.active::after {
+      content: ''; position: absolute; bottom: -1px; left: 0; right: 0;
+      height: 2px; background: var(--brand); border-radius: 2px 2px 0 0;
+    }
+
+    /* ── Tone Option ── */
+    .tone-option {
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px 16px; border-radius: 12px;
+      border: 2px solid #e5e7eb;
+      cursor: pointer; transition: all 0.18s; background: #fff;
+      flex: 1;
+    }
+    .tone-option:hover { border-color: rgba(186,0,49,0.35); background: #fef9f9; }
+    .tone-option.selected { border-color: var(--brand); background: rgba(186,0,49,0.04); }
+    .tone-option.selected .tone-label { color: var(--brand); }
+    .tone-option-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .tone-label { font-size: 13px; font-weight: 700; color: #374151; }
+    .tone-desc  { font-size: 11px; color: #9ca3af; margin-top: 1px; }
+
+    /* ── Step Indicator ── */
+    .step-indicator {
+      display: flex; align-items: center; gap: 0;
+      background: #fff; border: 1px solid #e5e7eb;
+      border-radius: 14px; padding: 16px 20px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+      margin-bottom: 24px;
+    }
+    .step-item {
+      display: flex; align-items: center; gap: 10px; flex: 1;
+    }
+    .step-item:not(:last-child)::after {
+      content: ''; flex: 1; height: 1px; background: #e5e7eb; margin: 0 12px;
+    }
+    .step-num {
+      width: 28px; height: 28px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; flex-shrink: 0;
+    }
+    .step-num.done { background: #ecfdf5; color: #059669; border: 2px solid #a7f3d0; }
+    .step-num.active { background: var(--brand); color: #fff; }
+    .step-num.pending { background: #f3f4f6; color: #9ca3af; border: 2px solid #e5e7eb; }
+
+    /* ── Section card ── */
+    .setup-section {
+      background: #fff; border: 1px solid #e5e7eb;
+      border-radius: 14px; overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    }
+    .setup-section-header {
+      display: flex; align-items: center; gap: 12px;
+      padding: 16px 20px; border-bottom: 1px solid #f3f4f6;
+    }
+    .setup-section-body { padding: 20px; }
+    .form-label {
+      display: block; font-size: 12px; font-weight: 700; color: #374151;
+      margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em;
+    }
+    .form-hint { font-size: 11px; color: #9ca3af; margin-top: 5px; }
+
+    /* ── Activate Hero ── */
+    .activate-card {
+      background: linear-gradient(135deg, rgba(186,0,49,0.05), rgba(186,0,49,0.02));
+      border: 1px solid rgba(186,0,49,0.2);
+      border-radius: 14px; padding: 24px;
+      display: flex; align-items: center; gap: 20px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    }
+
+    @media (max-width:767px) {
+      .setup-tone-row { flex-direction: column !important; }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="sidebar-mount"></div>
+
+  <div class="layout-with-sidebar" id="main-layout">
+    <div id="topbar-mount" data-title="AI / Jennifer · Setup"></div>
+
+    <main class="flex-1 p-5 lg:p-7" style="display:flex;flex-direction:column;gap:20px;">
+      <div class="content-container" style="display:flex;flex-direction:column;gap:20px;">
+
+        <!-- ══ PAGE HEADER ══ -->
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+          <div>
+            <h1 class="text-[22px] font-extrabold text-gray-900 tracking-tight" style="letter-spacing:-0.02em;">AI / Jennifer</h1>
+            <p class="text-[13px] text-gray-500 mt-1 font-medium">Set up Jennifer for your business — takes about 2 minutes</p>
+          </div>
+          <a href="index.html" class="btn-secondary" style="height:36px;padding:0 14px;font-size:13px;border-color:#e5e7eb;box-shadow:none;">
+            <span class="material-symbols-outlined" style="font-size:16px;">arrow_back</span>
+            Back to Overview
+          </a>
+        </div>
+
+        <!-- ══ SUBNAV ══ -->
+        <div class="ai-subnav">
+          <a href="index.html"     class="ai-subnav-item">Overview</a>
+          <a href="setup.html"     class="ai-subnav-item active">Setup</a>
+          <a href="knowledge.html" class="ai-subnav-item">Knowledge Base</a>
+          <a href="test.html"      class="ai-subnav-item">Test AI</a>
+          <a href="settings.html"  class="ai-subnav-item">Settings</a>
+        </div>
+
+        <!-- ══ STEP INDICATOR ══ -->
+        <div class="step-indicator">
+          <div class="step-item">
+            <div class="step-num active">1</div>
+            <div>
+              <div class="text-xs font-bold text-gray-900">Business Context</div>
+              <div class="text-[11px] text-gray-400">What do you sell?</div>
+            </div>
+          </div>
+          <div class="step-item">
+            <div class="step-num pending">2</div>
+            <div>
+              <div class="text-xs font-bold text-gray-400">AI Tone</div>
+              <div class="text-[11px] text-gray-400">Personality style</div>
+            </div>
+          </div>
+          <div class="step-item">
+            <div class="step-num pending">3</div>
+            <div>
+              <div class="text-xs font-bold text-gray-400">First Message</div>
+              <div class="text-[11px] text-gray-400">Jennifer's greeting</div>
+            </div>
+          </div>
+          <div class="step-item">
+            <div class="step-num pending">4</div>
+            <div>
+              <div class="text-xs font-bold text-gray-400">Activate</div>
+              <div class="text-[11px] text-gray-400">Go live</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ SECTION 1 — BUSINESS CONTEXT ══ -->
+        <div class="setup-section">
+          <div class="setup-section-header">
+            <div style="width:36px;height:36px;border-radius:10px;background:#f5f3ff;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <span class="material-symbols-outlined" style="font-size:18px;color:#7c3aed;">storefront</span>
+            </div>
+            <div>
+              <div class="text-sm font-bold text-gray-900">Business Context</div>
+              <div class="text-[11px] text-gray-400 mt-0.5">This helps Jennifer understand what you sell and how to represent your brand</div>
+            </div>
+          </div>
+          <div class="setup-section-body" style="display:flex;flex-direction:column;gap:16px;">
+            <div>
+              <label class="form-label" for="business-name">Business Name</label>
+              <input id="business-name" class="input-field" type="text" placeholder="e.g. Luxe Hair Boutique" value="" />
+              <div class="form-hint">Jennifer will introduce herself as your AI assistant.</div>
+            </div>
+            <div>
+              <label class="form-label" for="business-niche">Business Niche / Industry</label>
+              <select id="business-niche" class="input-field" style="cursor:pointer;">
+                <option value="">Select your niche...</option>
+                <option>Wig & Hair Vendor</option>
+                <option>Clothing & Fashion</option>
+                <option>Electronics & Gadgets</option>
+                <option>Beauty & Skincare</option>
+                <option>Food & Beverage</option>
+                <option>Real Estate</option>
+                <option>Consulting & Services</option>
+                <option>E-commerce (General)</option>
+                <option>Other</option>
+              </select>
+              <div class="form-hint">Selecting a niche auto-loads relevant FAQs Jennifer already knows.</div>
+            </div>
+            <div>
+              <label class="form-label" for="what-you-sell">What do you sell?</label>
+              <textarea id="what-you-sell" class="input-field" rows="4" placeholder="Describe your products or services in 2–3 sentences. E.g. I sell 100% human hair wigs and extensions — Brazilian, Peruvian, and Cambodian hair. I also offer lace frontals and closures with free domestic shipping on orders over $150."></textarea>
+              <div class="form-hint">Jennifer will use this to answer product-related questions confidently.</div>
+            </div>
+            <div>
+              <label class="form-label" for="target-customers">Who are your ideal customers?</label>
+              <input id="target-customers" class="input-field" type="text" placeholder="e.g. Women aged 25–45 looking for premium quality hair" />
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ SECTION 2 — AI TONE ══ -->
+        <div class="setup-section">
+          <div class="setup-section-header">
+            <div style="width:36px;height:36px;border-radius:10px;background:#ecfdf5;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <span class="material-symbols-outlined" style="font-size:18px;color:#059669;">record_voice_over</span>
+            </div>
+            <div>
+              <div class="text-sm font-bold text-gray-900">AI Tone & Personality</div>
+              <div class="text-[11px] text-gray-400 mt-0.5">How should Jennifer sound to your customers?</div>
+            </div>
+          </div>
+          <div class="setup-section-body">
+            <div class="setup-tone-row" style="display:flex;gap:12px;" id="tone-options">
+              <div class="tone-option selected" onclick="selectTone(this)" data-tone="friendly">
+                <div class="tone-option-icon" style="background:#f0fdf4;">
+                  <span class="material-symbols-outlined" style="font-size:20px;color:#16a34a;">sentiment_satisfied</span>
+                </div>
+                <div>
+                  <div class="tone-label">Friendly</div>
+                  <div class="tone-desc">Warm, approachable, conversational</div>
+                </div>
+                <span class="material-symbols-outlined ml-auto" style="font-size:18px;color:var(--brand);display:none;" id="check-friendly">check_circle</span>
+              </div>
+              <div class="tone-option" onclick="selectTone(this)" data-tone="sales">
+                <div class="tone-option-icon" style="background:#fffbeb;">
+                  <span class="material-symbols-outlined" style="font-size:20px;color:#d97706;">trending_up</span>
+                </div>
+                <div>
+                  <div class="tone-label">Sales-Focused</div>
+                  <div class="tone-desc">Direct, persuasive, closes fast</div>
+                </div>
+              </div>
+              <div class="tone-option" onclick="selectTone(this)" data-tone="professional">
+                <div class="tone-option-icon" style="background:#eff6ff;">
+                  <span class="material-symbols-outlined" style="font-size:20px;color:#3b82f6;">business_center</span>
+                </div>
+                <div>
+                  <div class="tone-label">Professional</div>
+                  <div class="tone-desc">Formal, precise, corporate</div>
+                </div>
+              </div>
+            </div>
+            <div class="form-hint" style="margin-top:10px;">You can change this at any time in Settings.</div>
+          </div>
+        </div>
+
+        <!-- ══ SECTION 3 — FIRST MESSAGE ══ -->
+        <div class="setup-section">
+          <div class="setup-section-header">
+            <div style="width:36px;height:36px;border-radius:10px;background:#eff6ff;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <span class="material-symbols-outlined" style="font-size:18px;color:#3b82f6;">chat</span>
+            </div>
+            <div>
+              <div class="text-sm font-bold text-gray-900">Jennifer's First Message</div>
+              <div class="text-[11px] text-gray-400 mt-0.5">This is the first thing Jennifer says when a new conversation starts</div>
+            </div>
+          </div>
+          <div class="setup-section-body" style="display:flex;flex-direction:column;gap:16px;">
+            <div>
+              <label class="form-label" for="greeting-msg">Opening Greeting</label>
+              <textarea id="greeting-msg" class="input-field" rows="3">Hi there 👋 Welcome! I'm Jennifer, your AI assistant. How can I help you today? Feel free to ask me about our products, pricing, or delivery.</textarea>
+              <div class="form-hint">Keep it short, warm, and on-brand. Emojis are encouraged!</div>
+            </div>
+
+            <!-- Preview Bubble -->
+            <div style="background:#f9fafb;border:1px solid #f3f4f6;border-radius:12px;padding:16px;">
+              <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-10px">Preview</div>
+              <div style="display:flex;gap:10px;align-items:flex-start;margin-top:8px;">
+                <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#fef2f2,#fff1f2);border:1.5px solid rgba(186,0,49,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                  <span class="material-symbols-outlined" style="font-size:16px;color:var(--brand);font-variation-settings:'FILL' 1;">smart_toy</span>
+                </div>
+                <div>
+                  <div class="text-[10px] font-bold text-gray-400 mb-1">Jennifer (AI) · just now</div>
+                  <div style="background:#fff;border:1px solid #e5e7eb;border-radius:0 10px 10px 10px;padding:10px 14px;font-size:12px;color:#111827;font-weight:500;max-width:340px;line-height:1.5;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+                    Hi there 👋 Welcome! I'm Jennifer, your AI assistant. How can I help you today? Feel free to ask me about our products, pricing, or delivery.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ SECTION 4 — ACTIVATE CTA ══ -->
+        <div class="activate-card">
+          <div style="width:52px;height:52px;border-radius:14px;background:rgba(186,0,49,0.1);border:1.5px solid rgba(186,0,49,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <span class="material-symbols-outlined" style="font-size:26px;color:var(--brand);font-variation-settings:'FILL' 1;">smart_toy</span>
+          </div>
+          <div style="flex:1;min-width:0;">
+            <div class="text-sm font-bold text-gray-900">Ready to Activate Jennifer?</div>
+            <p class="text-[12px] text-gray-500 mt-1">Jennifer will start handling conversations, qualifying leads, and driving sales as soon as you activate her. You can pause at any time.</p>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px;flex-shrink:0;">
+            <button class="btn-primary" style="height:42px;padding:0 24px;font-size:14px;"
+              onclick="activateJennifer()">
+              <span class="material-symbols-outlined" style="font-size:18px;">bolt</span>
+              Activate Jennifer
+            </button>
+            <button class="btn-secondary" style="height:34px;padding:0 16px;font-size:12px;border-color:#e5e7eb;box-shadow:none;" onclick="location.href='test.html'">
+              Test First
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script src="../sidebar.js"></script>
+  <script src="../shell.js"></script>
+  <script>
+    function selectTone(el) {
+      document.querySelectorAll('.tone-option').forEach(opt => {
+        opt.classList.remove('selected');
+      });
+      el.classList.add('selected');
+    }
+
+    function activateJennifer() {
+      QR.showToast('Jennifer is now Active! 🚀', 'success');
+      setTimeout(() => location.href = 'index.html', 1500);
+    }
+  </script>
+</body>
+</html>

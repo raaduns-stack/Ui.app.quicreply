@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AI Settings — Jennifer Behavior · QuicReply</title>
+  <meta name="description" content="Configure Jennifer AI behavior, reply controls, handoff rules, and qualification logic." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+  <link rel="stylesheet" href="../shell.css" />
+  <style>
+    /* ── Sub-Nav ── */
+    .ai-subnav {
+      display: flex; align-items: center; gap: 2px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .ai-subnav-item {
+      padding: 10px 16px; font-size: 13px; font-weight: 600; color: #6b7280;
+      position: relative; cursor: pointer; border-radius: 8px 8px 0 0;
+      transition: color 0.15s, background 0.15s; text-decoration: none; white-space: nowrap;
+    }
+    .ai-subnav-item:hover { color: #111827; background: #f9fafb; }
+    .ai-subnav-item.active { color: var(--brand); font-weight: 700; }
+    .ai-subnav-item.active::after {
+      content: ''; position: absolute; bottom: -1px; left: 0; right: 0;
+      height: 2px; background: var(--brand); border-radius: 2px 2px 0 0;
+    }
+
+    /* ── Setting Card ── */
+    .setting-card {
+      background: #fff; border: 1px solid #e5e7eb;
+      border-radius: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+      overflow: hidden;
+    }
+    .setting-card-header {
+      display: flex; align-items: center; gap: 12px;
+      padding: 15px 20px; border-bottom: 1px solid #f3f4f6;
+    }
+    .setting-card-body { padding: 0; }
+
+    /* ── Setting Row ── */
+    .setting-row {
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 20px; border-bottom: 1px solid #f9fafb;
+      transition: background 0.12s;
+    }
+    .setting-row:last-child { border-bottom: none; }
+    .setting-row:hover { background: #fafafa; }
+
+    /* ── Toggle Switch ── */
+    .toggle-wrap { position: relative; flex-shrink: 0; }
+    .toggle-input { opacity: 0; width: 0; height: 0; position: absolute; }
+    .toggle-label {
+      display: block; width: 42px; height: 24px;
+      background: #e5e7eb; border-radius: 99px;
+      cursor: pointer; transition: background 0.2s;
+      position: relative;
+    }
+    .toggle-label::after {
+      content: ''; position: absolute;
+      top: 3px; left: 3px;
+      width: 18px; height: 18px;
+      background: #fff; border-radius: 50%;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+      transition: transform 0.2s cubic-bezier(.4,0,.2,1);
+    }
+    .toggle-input:checked + .toggle-label { background: var(--brand); }
+    .toggle-input:checked + .toggle-label::after { transform: translateX(18px); }
+
+    /* ── Slider ── */
+    .setting-slider {
+      -webkit-appearance: none; width: 100%; height: 4px;
+      border-radius: 99px; background: #e5e7eb; outline: none;
+      cursor: pointer;
+    }
+    .setting-slider::-webkit-slider-thumb {
+      -webkit-appearance: none; width: 16px; height: 16px;
+      border-radius: 50%; background: var(--brand);
+      cursor: pointer; box-shadow: 0 1px 4px rgba(186,0,49,0.3);
+      border: 2px solid #fff;
+    }
+
+    /* ── Danger Zone ── */
+    .danger-card {
+      background: #fef2f2; border: 1px solid #fecaca;
+      border-radius: 14px; padding: 18px 20px;
+    }
+
+    /* ── Form label ── */
+    .form-label {
+      display: block; font-size: 11px; font-weight: 700; color: #374151;
+      margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em;
+    }
+
+    /* ── Badge styles ── */
+    .setting-badge {
+      display: inline-flex; align-items: center; padding: 2px 8px;
+      border-radius: 99px; font-size: 10px; font-weight: 700; white-space: nowrap;
+    }
+
+    /* ── Tag input area ── */
+    .trigger-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+    .trigger-tag {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: #f3f4f6; border: 1px solid #e5e7eb;
+      border-radius: 99px; padding: 3px 10px;
+      font-size: 11px; font-weight: 600; color: #374151;
+    }
+    .trigger-tag span { cursor: pointer; color: #9ca3af; font-size: 12px; line-height: 1; }
+    .trigger-tag span:hover { color: #ef4444; }
+
+    /* ── Section header icon box ── */
+    .section-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="sidebar-mount"></div>
+
+  <div class="layout-with-sidebar" id="main-layout">
+    <div id="topbar-mount" data-title="AI / Jennifer · Settings"></div>
+
+    <main class="flex-1 p-5 lg:p-7" style="display:flex;flex-direction:column;gap:20px;">
+      <div class="content-container" style="display:flex;flex-direction:column;gap:20px;">
+
+        <!-- ══ PAGE HEADER ══ -->
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+          <div>
+            <h1 class="text-[22px] font-extrabold text-gray-900 tracking-tight" style="letter-spacing:-0.02em;">AI Settings</h1>
+            <p class="text-[13px] text-gray-500 mt-1 font-medium">Control how Jennifer behaves, replies, and hands off to your team</p>
+          </div>
+          <button class="btn-primary" style="height:36px;padding:0 20px;font-size:13px;" onclick="saveSettings()">
+            <span class="material-symbols-outlined" style="font-size:16px;">save</span>
+            Save Changes
+          </button>
+        </div>
+
+        <!-- ══ SUBNAV ══ -->
+        <div class="ai-subnav">
+          <a href="index.html"     class="ai-subnav-item">Overview</a>
+          <a href="setup.html"     class="ai-subnav-item">Setup</a>
+          <a href="knowledge.html" class="ai-subnav-item">Knowledge Base</a>
+          <a href="test.html"      class="ai-subnav-item">Test AI</a>
+          <a href="settings.html"  class="ai-subnav-item active">Settings</a>
+        </div>
+
+        <!-- ══ TWO-COLUMN LAYOUT ══ -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;" id="settings-grid">
+
+          <!-- ── LEFT COLUMN ── -->
+          <div style="display:flex;flex-direction:column;gap:20px;">
+
+            <!-- SECTION 1: General Behavior -->
+            <div class="setting-card">
+              <div class="setting-card-header">
+                <div class="section-icon" style="background:#f5f3ff;">
+                  <span class="material-symbols-outlined" style="font-size:18px;color:#7c3aed;">smart_toy</span>
+                </div>
+                <div>
+                  <div class="text-sm font-bold text-gray-900">General Behavior</div>
+                  <div class="text-[11px] text-gray-400 mt-0.5">Core AI on/off controls</div>
+                </div>
+              </div>
+              <div class="setting-card-body">
+
+                <!-- AI ON/OFF -->
+                <div class="setting-row">
+                  <div style="flex:1;min-width:0;">
+                    <div style="display:flex;align-items:center;gap:7px;">
+                      <div class="text-sm font-semibold text-gray-900">Jennifer AI</div>
+                      <span class="setting-badge" style="background:#f0fdf4;color:#166534;border:1px solid #bbf7d0;">Active</span>
+                    </div>
+                    <div class="text-[11px] text-gray-400 mt-0.5">Master switch — enable or disable Jennifer entirely</div>
+                  </div>
+                  <div class="toggle-wrap">
+                    <input type="checkbox" id="toggle-jennifer" class="toggle-input" checked onchange="onToggle(this,'Jennifer AI')">
+                    <label for="toggle-jennifer" class="toggle-label"></label>
+                  </div>
+                </div>
+
+                <!-- Auto-Reply -->
+                <div class="setting-row">
+                  <div style="flex:1;min-width:0;">
+                    <div class="text-sm font-semibold text-gray-900">Auto-Reply</div>
+                    <div class="text-[11px] text-gray-400 mt-0.5">Jennifer automatically replies to incoming messages</div>
+                  </div>
+                  <div class="toggle-wrap">
+                    <input type="checkbox" id="toggle-autoreply" class="toggle-input" checked onchange="onToggle(this,'Auto-Reply')">
+                    <label for="toggle-autoreply" class="toggle-label"></label>
+                  </div>
+                </div>
+
+                <!-- Outside Business Hours -->
+                <div class="setting-row">
+                  <div style="flex:1;min-width:0;">
+                    <div class="text-sm font-semibold text-gray-900">Reply Outside Business Hours</div>
+                    <div class="text-[11px] text-gray-400 mt-0.5">Jennifer responds 24/7, even when you're offline</div>
+                  </div>
+                  <div class="toggle-wrap">
+                    <input type="checkbox" id="toggle-24h" class="toggle-input" checked onchange="onToggle(this,'24/7 Replies')">
+                    <label for="toggle-24h" class="toggle-label"></label>
+                  </div>
+                </div>
+
+                <!-- Lead Qualification -->
+                <div class="setting-row">
+                  <div style="flex:1;min-width:0;">
+                    <div class="text-sm font-semibold text-gray-900">Lead Qualification</div>
+                    <div class="text-[11px] text-gray-400 mt-0.5">Jennifer scores and tags leads automatically</div>
+                  </div>
+                  <div class="toggle-wrap">
+                    <input type="checkbox" id="toggle-qualify" class="toggle-input" checked onchange="onToggle(this,'Lead Qualification')">
+                    <label for="toggle-qualify" class="toggle-label"></label>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- SECTION 2: Reply Controls -->
+            <div class="setting-card">
+              <div class="setting-card-header">
+                <div class="section-icon" style="background:#ecfdf5;">
+                  <span class="material-symbols-outlined" style="font-size:18px;color:#059669;">timer</span>
+                </div>
+                <div>
+                  <div class="text-sm font-bold text-gray-900">Reply Controls</div>
+                  <div class="text-[11px] text-gray-400 mt-0.5">Timing and reply behavior</div>
+                </div>
+              </div>
+              <div class="setting-card-body" style="padding:18px 20px;display:flex;flex-direction:column;gap:18px;">
+
+                <!-- Delay Before Reply -->
+                <div>
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                    <label class="form-label" style="margin:0;">Delay Before Reply</label>
+                    <span class="text-sm font-bold" style="color:var(--brand);" id="delay-val">3 seconds</span>
+                  </div>
+                  <input type="range" class="setting-slider" min="0" max="30" value="3" step="1"
+                    oninput="document.getElementById('delay-val').textContent = this.value + ' second' + (this.value!=1?'s':'')" />
+                  <div class="text-[11px] text-gray-400 mt-4px" style="margin-top:4px;">A slight delay makes Jennifer feel more human and reduces the chance of messages overlapping.</div>
+                </div>
+
+                <!-- Max messages per hour -->
+                <div>
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                    <label class="form-label" style="margin:0;">Max Replies Per Hour</label>
+                    <span class="text-sm font-bold" style="color:var(--brand);" id="max-msg-val">50</span>
+                  </div>
+                  <input type="range" class="setting-slider" min="10" max="200" value="50" step="10"
+                    oninput="document.getElementById('max-msg-val').textContent = this.value" />
+                  <div class="text-[11px] text-gray-400 mt-4px" style="margin-top:4px;">Limits AI reply volume to protect your WhatsApp account from bans.</div>
+                </div>
+
+                <!-- Read receipt before reply -->
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+                  <div style="flex:1;">
+                    <div class="text-sm font-semibold text-gray-900">Send Read Receipt First</div>
+                    <div class="text-[11px] text-gray-400 mt-0.5">Mark message as read before Jennifer replies</div>
+                  </div>
+                  <div class="toggle-wrap">
+                    <input type="checkbox" id="toggle-read" class="toggle-input" checked onchange="onToggle(this,'Read Receipts')">
+                    <label for="toggle-read" class="toggle-label"></label>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+
+          <!-- ── RIGHT COLUMN ── -->
+          <div style="display:flex;flex-direction:column;gap:20px;">
+
+            <!-- SECTION 3: Human Handoff -->
+            <div class="setting-card">
+              <div class="setting-card-header">
+                <div class="section-icon" style="background:#fffbeb;">
+                  <span class="material-symbols-outlined" style="font-size:18px;color:#d97706;">support_agent</span>
+                </div>
+                <div>
+                  <div class="text-sm font-bold text-gray-900">Human Handoff</div>
+                  <div class="text-[11px] text-gray-400 mt-0.5">When should Jennifer transfer to a human?</div>
+                </div>
+              </div>
+              <div class="setting-card-body">
+
+                <div class="setting-row">
+                  <div style="flex:1;min-width:0;">
+                    <div class="text-sm font-semibold text-gray-900">Handoff on "speak to human"</div>
+                    <div class="text-[11px] text-gray-400 mt-0.5">Triggers when customer types human / agent / real person</div>
+                  </div>
+                  <div class="toggle-wrap">
+                    <input type="checkbox" id="toggle-hand1" class="toggle-input" checked onchange="onToggle(this,'Human phrase handoff')">
+                    <label for="toggle-hand1" class="toggle-label"></label>
+                  </div>
+                </div>
+
+                <div class="setting-row">
+                  <div style="flex:1;min-width:0;">
+                    <div class="text-sm font-semibold text-gray-900">Handoff on Refund Request</div>
+                    <div class="text-[11px] text-gray-400 mt-0.5">Jennifer flags and transfers refund/complaint topics</div>
+                  </div>
+                  <div class="toggle-wrap">
+                    <input type="checkbox" id="toggle-hand2" class="toggle-input" checked onchange="onToggle(this,'Refund handoff')">
+                    <label for="toggle-hand2" class="toggle-label"></label>
+                  </div>
+                </div>
+
+                <div class="setting-row">
+                  <div style="flex:1;min-width:0;">
+                    <div class="text-sm font-semibold text-gray-900">Handoff After 3 Failed Responses</div>
+                    <div class="text-[11px] text-gray-400 mt-0.5">If Jennifer can't answer 3 times in a row, escalate</div>
+                  </div>
+                  <div class="toggle-wrap">
+                    <input type="checkbox" id="toggle-hand3" class="toggle-input" checked onchange="onToggle(this,'Failed response handoff')">
+                    <label for="toggle-hand3" class="toggle-label"></label>
+                  </div>
+                </div>
+
+                <!-- Handoff notification -->
+                <div class="setting-row">
+                  <div style="flex:1;min-width:0;">
+                    <div class="text-sm font-semibold text-gray-900">Notify Team on Handoff</div>
+                    <div class="text-[11px] text-gray-400 mt-0.5">Send a team alert when Jennifer hands off a conversation</div>
+                  </div>
+                  <div class="toggle-wrap">
+                    <input type="checkbox" id="toggle-notify" class="toggle-input" checked onchange="onToggle(this,'Team notification')">
+                    <label for="toggle-notify" class="toggle-label"></label>
+                  </div>
+                </div>
+
+                <!-- Handoff keywords -->
+                <div style="padding:14px 20px;border-top:1px solid #f9fafb;">
+                  <label class="form-label">Custom Handoff Triggers</label>
+                  <div class="trigger-tags" id="trigger-tags">
+                    <span class="trigger-tag">refund <span onclick="removeTag(this)">×</span></span>
+                    <span class="trigger-tag">complaint <span onclick="removeTag(this)">×</span></span>
+                    <span class="trigger-tag">cancel order <span onclick="removeTag(this)">×</span></span>
+                    <span class="trigger-tag">manager <span onclick="removeTag(this)">×</span></span>
+                    <span class="trigger-tag">legal <span onclick="removeTag(this)">×</span></span>
+                  </div>
+                  <input type="text" class="input-field" style="margin-top:8px;font-size:12px;" placeholder="Add keyword and press Enter" onkeydown="addTag(event)" />
+                  <div class="text-[11px] text-gray-400 mt-4px" style="margin-top:4px;">Jennifer hands off when these phrases appear in a message.</div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- SECTION 4: Qualification Logic -->
+            <div class="setting-card">
+              <div class="setting-card-header">
+                <div class="section-icon" style="background:#eff6ff;">
+                  <span class="material-symbols-outlined" style="font-size:18px;color:#3b82f6;">filter_alt</span>
+                </div>
+                <div>
+                  <div class="text-sm font-bold text-gray-900">Qualification Logic</div>
+                  <div class="text-[11px] text-gray-400 mt-0.5">How Jennifer scores and tags leads</div>
+                </div>
+              </div>
+              <div class="setting-card-body">
+
+                <div class="setting-row">
+                  <div style="flex:1;min-width:0;">
+                    <div class="text-sm font-semibold text-gray-900">Ask for Name & Phone</div>
+                    <div class="text-[11px] text-gray-400 mt-0.5">Collect contact details during conversation</div>
+                  </div>
+                  <div class="toggle-wrap">
+                    <input type="checkbox" id="toggle-q1" class="toggle-input" checked onchange="onToggle(this,'Contact collection')">
+                    <label for="toggle-q1" class="toggle-label"></label>
+                  </div>
+                </div>
+
+                <div class="setting-row">
+                  <div style="flex:1;min-width:0;">
+                    <div class="text-sm font-semibold text-gray-900">Score Leads (0–100)</div>
+                    <div class="text-[11px] text-gray-400 mt-0.5">Auto-score based on intent signals from conversation</div>
+                  </div>
+                  <div class="toggle-wrap">
+                    <input type="checkbox" id="toggle-q2" class="toggle-input" checked onchange="onToggle(this,'Lead scoring')">
+                    <label for="toggle-q2" class="toggle-label"></label>
+                  </div>
+                </div>
+
+                <div class="setting-row">
+                  <div style="flex:1;min-width:0;">
+                    <div class="text-sm font-semibold text-gray-900">Push Hot Leads to Pipeline</div>
+                    <div class="text-[11px] text-gray-400 mt-0.5">Leads scored 70+ are auto-added to your CRM pipeline</div>
+                  </div>
+                  <div class="toggle-wrap">
+                    <input type="checkbox" id="toggle-q3" class="toggle-input" checked onchange="onToggle(this,'Pipeline push')">
+                    <label for="toggle-q3" class="toggle-label"></label>
+                  </div>
+                </div>
+
+                <!-- Min lead score threshold -->
+                <div style="padding:14px 20px;border-top:1px solid #f9fafb;">
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                    <label class="form-label" style="margin:0;">Hot Lead Threshold</label>
+                    <span class="text-sm font-bold" style="color:var(--brand);" id="score-val">70 / 100</span>
+                  </div>
+                  <input type="range" class="setting-slider" min="0" max="100" value="70" step="5"
+                    oninput="document.getElementById('score-val').textContent = this.value + ' / 100'" />
+                  <div class="text-[11px] text-gray-400 mt-4px" style="margin-top:4px;">Leads above this score are sent to your pipeline automatically.</div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- SECTION 5: Campaign AI Usage -->
+            <div class="setting-card">
+              <div class="setting-card-header">
+                <div class="section-icon" style="background:#fdf4ff;">
+                  <span class="material-symbols-outlined" style="font-size:18px;color:#9333ea;">campaign</span>
+                </div>
+                <div>
+                  <div class="text-sm font-bold text-gray-900">Campaign AI Usage</div>
+                  <div class="text-[11px] text-gray-400 mt-0.5">Use Jennifer to follow up on broadcast campaigns</div>
+                </div>
+              </div>
+              <div class="setting-card-body">
+
+                <div class="setting-row">
+                  <div style="flex:1;min-width:0;">
+                    <div class="text-sm font-semibold text-gray-900">AI Campaign Follow-ups</div>
+                    <div class="text-[11px] text-gray-400 mt-0.5">Jennifer replies to campaign recipients who respond</div>
+                  </div>
+                  <div class="toggle-wrap">
+                    <input type="checkbox" id="toggle-camp1" class="toggle-input" checked onchange="onToggle(this,'Campaign follow-ups')">
+                    <label for="toggle-camp1" class="toggle-label"></label>
+                  </div>
+                </div>
+
+                <div class="setting-row">
+                  <div style="flex:1;min-width:0;">
+                    <div class="text-sm font-semibold text-gray-900">Auto Qualify from Campaigns</div>
+                    <div class="text-[11px] text-gray-400 mt-0.5">Score leads who engage with broadcast messages</div>
+                  </div>
+                  <div class="toggle-wrap">
+                    <input type="checkbox" id="toggle-camp2" class="toggle-input" onchange="onToggle(this,'Campaign auto-qualify')">
+                    <label for="toggle-camp2" class="toggle-label"></label>
+                  </div>
+                </div>
+
+                <div class="setting-row">
+                  <div style="flex:1;min-width:0;">
+                    <div class="text-sm font-semibold text-gray-900">Upsell in Campaigns</div>
+                    <div class="text-[11px] text-gray-400 mt-0.5">Jennifer proactively suggests upsells during follow-ups</div>
+                  </div>
+                  <div class="toggle-wrap">
+                    <input type="checkbox" id="toggle-camp3" class="toggle-input" onchange="onToggle(this,'Campaign upsell')">
+                    <label for="toggle-camp3" class="toggle-label"></label>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ══ DANGER ZONE ══ -->
+        <div class="danger-card">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+            <span class="material-symbols-outlined" style="font-size:18px;color:#ef4444;">warning</span>
+            <span class="text-sm font-bold text-red-700">Danger Zone</span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+            <div>
+              <div class="text-sm font-semibold text-red-800">Reset Jennifer</div>
+              <div class="text-[12px] text-red-600 mt-0.5">Clears all knowledge, settings, and conversation history. This cannot be undone.</div>
+            </div>
+            <button class="btn-danger" style="flex-shrink:0;" onclick="confirmReset()">
+              <span class="material-symbols-outlined" style="font-size:16px;">delete_forever</span>
+              Reset Jennifer
+            </button>
+          </div>
+        </div>
+
+        <!-- ══ SAVE FOOTER ══ -->
+        <div style="display:flex;justify-content:flex-end;gap:10px;padding-bottom:8px;">
+          <button class="btn-secondary" style="height:40px;padding:0 20px;font-size:13px;border-color:#e5e7eb;box-shadow:none;" onclick="location.href='index.html'">
+            Cancel
+          </button>
+          <button class="btn-primary" style="height:40px;padding:0 24px;font-size:13px;" onclick="saveSettings()">
+            <span class="material-symbols-outlined" style="font-size:16px;">save</span>
+            Save All Changes
+          </button>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script src="../sidebar.js"></script>
+  <script src="../shell.js"></script>
+  <script>
+    function onToggle(input, label) {
+      const status = input.checked ? 'enabled' : 'disabled';
+      QR.showToast(`${label} ${status}`, input.checked ? 'success' : 'warning');
+    }
+
+    function saveSettings() {
+      QR.showToast('Settings saved successfully! ✅', 'success');
+    }
+
+    function confirmReset() {
+      if (confirm('Are you sure? This will erase all of Jennifer\'s knowledge and settings. This cannot be undone.')) {
+        QR.showToast('Jennifer has been reset.', 'warning');
+        setTimeout(() => location.href = 'setup.html', 1500);
+      }
+    }
+
+    function addTag(e) {
+      if (e.key !== 'Enter') return;
+      const val = e.target.value.trim();
+      if (!val) return;
+      const container = document.getElementById('trigger-tags');
+      const span = document.createElement('span');
+      span.className = 'trigger-tag';
+      span.innerHTML = `${val} <span onclick="removeTag(this)">×</span>`;
+      container.appendChild(span);
+      e.target.value = '';
+      QR.showToast(`Trigger "${val}" added`, 'success');
+    }
+
+    function removeTag(el) {
+      el.closest('.trigger-tag').remove();
+    }
+
+    // Responsive grid
+    function updateGrid() {
+      const grid = document.getElementById('settings-grid');
+      if (!grid) return;
+      grid.style.gridTemplateColumns = window.innerWidth < 900 ? '1fr' : '1fr 1fr';
+    }
+    window.addEventListener('resize', updateGrid);
+    document.addEventListener('DOMContentLoaded', updateGrid);
+  </script>
+</body>
+</html>

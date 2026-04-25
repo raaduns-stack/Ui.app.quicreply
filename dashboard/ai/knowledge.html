@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Knowledge Base — AI / Jennifer · QuicReply</title>
+  <meta name="description" content="Train Jennifer AI with FAQs, product info, pricing, and business knowledge." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+  <link rel="stylesheet" href="../shell.css" />
+  <style>
+    .ai-subnav {
+      display: flex; align-items: center; gap: 2px;
+      border-bottom: 1px solid #e5e7eb; margin-bottom: 0;
+    }
+    .ai-subnav-item {
+      padding: 10px 16px; font-size: 13px; font-weight: 600; color: #6b7280;
+      position: relative; cursor: pointer; border-radius: 8px 8px 0 0;
+      transition: color 0.15s, background 0.15s; text-decoration: none; white-space: nowrap;
+    }
+    .ai-subnav-item:hover { color: #111827; background: #f9fafb; }
+    .ai-subnav-item.active { color: var(--brand); font-weight: 700; }
+    .ai-subnav-item.active::after {
+      content: ''; position: absolute; bottom: -1px; left: 0; right: 0;
+      height: 2px; background: var(--brand); border-radius: 2px 2px 0 0;
+    }
+
+    /* ── Upload Drop Zone ── */
+    .upload-zone {
+      background: #fafafa;
+      border: 2px dashed #d1d5db;
+      border-radius: 14px;
+      padding: 36px 20px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .upload-zone:hover, .upload-zone.dragover {
+      border-color: var(--brand);
+      background: rgba(186,0,49,0.02);
+    }
+
+    /* ── Knowledge type tabs ── */
+    .kb-filter {
+      display: flex; gap: 6px; flex-wrap: wrap;
+    }
+    .kb-filter-btn {
+      padding: 5px 12px; border-radius: 99px;
+      font-size: 12px; font-weight: 600; color: #6b7280;
+      background: #f3f4f6; border: 1px solid transparent;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .kb-filter-btn:hover { color: #111827; background: #e5e7eb; }
+    .kb-filter-btn.active {
+      background: var(--brand-muted); color: var(--brand);
+      border-color: rgba(186,0,49,0.2);
+    }
+
+    /* ── Knowledge Table ── */
+    .kb-table { width:100%; border-collapse:collapse; font-size:13px; }
+    .kb-table th {
+      padding: 10px 14px; text-align: left;
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.05em; color: #9ca3af;
+      border-bottom: 1px solid #f3f4f6; background: #fafafa;
+    }
+    .kb-table td {
+      padding: 12px 14px; border-bottom: 1px solid #f9fafb;
+      color: #111827; vertical-align: middle;
+      transition: background 0.1s;
+    }
+    .kb-table tr:hover td { background: #fafafa; }
+    .kb-table tr:last-child td { border-bottom: none; }
+
+    /* ── Type Badge ── */
+    .type-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 2px 8px; border-radius: 6px;
+      font-size: 10px; font-weight: 700; white-space: nowrap;
+    }
+    .type-faq      { background:#ecfdf5; color:#059669; }
+    .type-product  { background:#eff6ff; color:#2563eb; }
+    .type-doc      { background:#f5f3ff; color:#7c3aed; }
+    .type-price    { background:#fffbeb; color:#d97706; }
+
+    /* ── Status dot ── */
+    .status-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+
+    /* ── Niche Pre-load Banner ── */
+    .niche-banner {
+      background: linear-gradient(135deg, #f5f3ff, #fdf4ff);
+      border: 1px solid #ddd6fe;
+      border-radius: 14px; padding: 18px 20px;
+    }
+
+    /* ── Pills ── */
+    .pill-active { background:#f0fdf4; color:#166534; border:1px solid #bbf7d0; }
+    .pill-pending { background:#fffbeb; color:#92400e; border:1px solid #fde68a; }
+    .pill {
+      display: inline-flex; align-items: center;
+      padding: 2px 8px; border-radius: 99px;
+      font-size: 10px; font-weight: 700; white-space: nowrap;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="sidebar-mount"></div>
+
+  <div class="layout-with-sidebar" id="main-layout">
+    <div id="topbar-mount" data-title="AI / Jennifer · Knowledge Base"></div>
+
+    <main class="flex-1 p-5 lg:p-7" style="display:flex;flex-direction:column;gap:20px;">
+      <div class="content-container" style="display:flex;flex-direction:column;gap:20px;">
+
+        <!-- ══ PAGE HEADER ══ -->
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+          <div>
+            <h1 class="text-[22px] font-extrabold text-gray-900 tracking-tight" style="letter-spacing:-0.02em;">Knowledge Base</h1>
+            <p class="text-[13px] text-gray-500 mt-1 font-medium">Train Jennifer with your business intelligence — FAQs, products, pricing, and more</p>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn-secondary" style="height:36px;padding:0 14px;font-size:13px;border-color:#e5e7eb;box-shadow:none;" onclick="QR.showToast('Sync triggered','info')">
+              <span class="material-symbols-outlined" style="font-size:16px;">sync</span>
+              Sync All
+            </button>
+            <button class="btn-primary" style="height:36px;padding:0 14px;font-size:13px;" onclick="QR.showToast('Upload panel opening...','info')">
+              <span class="material-symbols-outlined" style="font-size:16px;">upload</span>
+              Upload Knowledge
+            </button>
+          </div>
+        </div>
+
+        <!-- ══ SUBNAV ══ -->
+        <div class="ai-subnav">
+          <a href="index.html"     class="ai-subnav-item">Overview</a>
+          <a href="setup.html"     class="ai-subnav-item">Setup</a>
+          <a href="knowledge.html" class="ai-subnav-item active">Knowledge Base</a>
+          <a href="test.html"      class="ai-subnav-item">Test AI</a>
+          <a href="settings.html"  class="ai-subnav-item">Settings</a>
+        </div>
+
+        <!-- ══ NICHE PRE-LOAD BANNER ══ -->
+        <div class="niche-banner">
+          <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap;">
+            <div style="width:44px;height:44px;border-radius:12px;background:#ede9fe;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <span class="material-symbols-outlined" style="font-size:22px;color:#7c3aed;font-variation-settings:'FILL' 1;">auto_awesome</span>
+            </div>
+            <div style="flex:1;min-width:0;">
+              <div class="text-sm font-bold text-gray-900">Jennifer already knows your niche ✨</div>
+              <p class="text-[12px] text-gray-500 mt-1 leading-relaxed">
+                Since you sell <strong class="text-gray-700">Wigs & Hair</strong>, Jennifer is pre-loaded with niche FAQs including: 
+                <em>"Is it 100% human hair?"</em>, <em>"Does it shed?"</em>, <em>"Can it be dyed?"</em>, and <em>"How do I maintain it?"</em>.
+                <br>Just add your <strong class="text-gray-700">pricing and delivery</strong> information to complete her training.
+              </p>
+            </div>
+            <button class="btn-secondary" style="height:34px;padding:0 14px;font-size:12px;border-color:#ddd6fe;color:#7c3aed;" onclick="QR.showToast('42 niche FAQs pre-loaded!','success')">
+              View Pre-loaded FAQs
+            </button>
+          </div>
+        </div>
+
+        <!-- ══ UPLOAD DROP ZONE ══ -->
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <div>
+            <h2 class="text-base font-bold text-gray-900 tracking-tight">Upload Knowledge</h2>
+            <p class="text-[13px] text-gray-500 mt-1">Add documents, FAQs, product details, or links to train Jennifer</p>
+          </div>
+          
+          <div>
+            <label class="text-[12px] font-bold text-gray-700 block mb-1.5 uppercase tracking-wide">Knowledge Title <span class="text-red-500">*</span></label>
+            <input type="text" placeholder="e.g., Shipping Policy 2024" style="width:100%;padding:10px 14px;font-size:13px;border:1px solid #d1d5db;border-radius:10px;outline:none;transition:all 0.15s;font-family:'Inter',sans-serif;background:#fff;" onfocus="this.style.borderColor='var(--brand)';this.style.boxShadow='0 0 0 3px rgba(186,0,49,0.1)';" onblur="this.style.borderColor='#d1d5db';this.style.boxShadow='none';" />
+          </div>
+
+          <div class="upload-zone" id="drop-zone"
+            ondragover="event.preventDefault();this.classList.add('dragover')"
+            ondragleave="this.classList.remove('dragover')"
+            ondrop="event.preventDefault();this.classList.remove('dragover');QR.showToast('File uploaded successfully!','success')"
+            onclick="QR.showToast('Select a file to upload','info')">
+            <div style="width:52px;height:52px;border-radius:14px;background:#fff;border:1px solid #e5e7eb;display:flex;align-items:center;justify-content:center;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+              <span class="material-symbols-outlined" style="font-size:26px;color:#9ca3af;">cloud_upload</span>
+            </div>
+            <div class="text-sm font-bold text-gray-900 mb-1">Drag & drop files here</div>
+            <div class="text-[12px] text-gray-500">Supports PDF, CSV, DOCX, TXT, or paste a URL</div>
+            <div style="display:flex;gap:6px;margin-top:14px;flex-wrap:wrap;justify-content:center;">
+              <span style="background:#fff;border:1px solid #e5e7eb;border-radius:6px;padding:3px 10px;font-size:11px;font-weight:600;color:#6b7280;">PDF</span>
+              <span style="background:#fff;border:1px solid #e5e7eb;border-radius:6px;padding:3px 10px;font-size:11px;font-weight:600;color:#6b7280;">CSV</span>
+              <span style="background:#fff;border:1px solid #e5e7eb;border-radius:6px;padding:3px 10px;font-size:11px;font-weight:600;color:#6b7280;">DOCX</span>
+              <span style="background:#fff;border:1px solid #e5e7eb;border-radius:6px;padding:3px 10px;font-size:11px;font-weight:600;color:#6b7280;">URL</span>
+              <span style="background:#fff;border:1px solid #e5e7eb;border-radius:6px;padding:3px 10px;font-size:11px;font-weight:600;color:#6b7280;">Text</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ KNOWLEDGE TABLE ══ -->
+        <div style="background:#fff;border:1px solid #e5e7eb;border-radius:14px;box-shadow:0 1px 4px rgba(0,0,0,0.05);overflow:hidden;">
+
+          <!-- Table Header -->
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px 12px;border-bottom:1px solid #f3f4f6;flex-wrap:wrap;gap:10px;">
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#111827;">Knowledge Library</div>
+              <div style="font-size:11px;color:#9ca3af;margin-top:2px;">4 sources active · 42 Q&A pairs</div>
+            </div>
+            <div class="kb-filter">
+              <button class="kb-filter-btn active" onclick="filterKB(this,'all')">All</button>
+              <button class="kb-filter-btn" onclick="filterKB(this,'faq')">FAQ</button>
+              <button class="kb-filter-btn" onclick="filterKB(this,'product')">Product</button>
+              <button class="kb-filter-btn" onclick="filterKB(this,'doc')">Document</button>
+              <button class="kb-filter-btn" onclick="filterKB(this,'price')">Price Sheet</button>
+            </div>
+          </div>
+
+          <!-- Table -->
+          <div style="overflow-x:auto;">
+            <table class="kb-table">
+              <thead>
+                <tr>
+                  <th style="padding-left:18px;">Title</th>
+                  <th>Type</th>
+                  <th>Status</th>
+                  <th>Last Updated</th>
+                  <th>Entries</th>
+                  <th style="text-align:right;padding-right:18px;">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+
+                <!-- Row 1: Shipping Policy -->
+                <tr>
+                  <td style="padding-left:18px;">
+                    <div style="display:flex;align-items:center;gap:10px;">
+                      <div style="width:32px;height:32px;border-radius:8px;background:#ecfdf5;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <span class="material-symbols-outlined" style="font-size:16px;color:#059669;">local_shipping</span>
+                      </div>
+                      <div>
+                        <div class="text-sm font-semibold text-gray-900">Shipping Policy</div>
+                        <div class="text-[11px] text-gray-400">Domestic & international shipping rules</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td><span class="type-badge type-faq">FAQ</span></td>
+                  <td>
+                    <div style="display:flex;align-items:center;gap:5px;">
+                      <div class="status-dot" style="background:#10b981;"></div>
+                      <span class="text-xs font-semibold text-gray-700">Active</span>
+                    </div>
+                  </td>
+                  <td class="text-[12px] text-gray-500">2 days ago</td>
+                  <td class="text-[12px] font-bold text-gray-700">8 entries</td>
+                  <td style="text-align:right;padding-right:18px;">
+                    <div style="display:flex;justify-content:flex-end;gap:4px;">
+                      <button class="btn-ghost" style="padding:4px 8px;font-size:11px;font-weight:600;border:1px solid #e5e7eb;border-radius:7px;" onclick="QR.showToast('Viewing Shipping Policy','info')">View</button>
+                      <button class="btn-ghost" style="padding:4px 8px;font-size:11px;font-weight:600;border:1px solid #e5e7eb;border-radius:7px;" onclick="QR.showToast('Edit mode opened','info')">Edit</button>
+                      <button class="btn-ghost" style="padding:4px 8px;font-size:11px;font-weight:600;border:1px solid #fecaca;border-radius:7px;color:#ef4444;" onclick="QR.showToast('Deleted','warning')">Delete</button>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- Row 2: Pricing Structure -->
+                <tr>
+                  <td style="padding-left:18px;">
+                    <div style="display:flex;align-items:center;gap:10px;">
+                      <div style="width:32px;height:32px;border-radius:8px;background:#fffbeb;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <span class="material-symbols-outlined" style="font-size:16px;color:#d97706;">sell</span>
+                      </div>
+                      <div>
+                        <div class="text-sm font-semibold text-gray-900">Pricing Structure</div>
+                        <div class="text-[11px] text-gray-400">Product prices, bundles, discounts</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td><span class="type-badge type-price">Price Sheet</span></td>
+                  <td>
+                    <div style="display:flex;align-items:center;gap:5px;">
+                      <div class="status-dot" style="background:#10b981;"></div>
+                      <span class="text-xs font-semibold text-gray-700">Active</span>
+                    </div>
+                  </td>
+                  <td class="text-[12px] text-gray-500">Today</td>
+                  <td class="text-[12px] font-bold text-gray-700">24 items</td>
+                  <td style="text-align:right;padding-right:18px;">
+                    <div style="display:flex;justify-content:flex-end;gap:4px;">
+                      <button class="btn-ghost" style="padding:4px 8px;font-size:11px;font-weight:600;border:1px solid #e5e7eb;border-radius:7px;" onclick="QR.showToast('Viewing Pricing','info')">View</button>
+                      <button class="btn-ghost" style="padding:4px 8px;font-size:11px;font-weight:600;border:1px solid #e5e7eb;border-radius:7px;" onclick="QR.showToast('Edit mode opened','info')">Edit</button>
+                      <button class="btn-ghost" style="padding:4px 8px;font-size:11px;font-weight:600;border:1px solid #fecaca;border-radius:7px;color:#ef4444;" onclick="QR.showToast('Deleted','warning')">Delete</button>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- Row 3: Product Catalog -->
+                <tr>
+                  <td style="padding-left:18px;">
+                    <div style="display:flex;align-items:center;gap:10px;">
+                      <div style="width:32px;height:32px;border-radius:8px;background:#f5f3ff;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <span class="material-symbols-outlined" style="font-size:16px;color:#7c3aed;">inventory_2</span>
+                      </div>
+                      <div>
+                        <div class="text-sm font-semibold text-gray-900">Product Catalog Q2 2024</div>
+                        <div class="text-[11px] text-gray-400">Full product descriptions & variants</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td><span class="type-badge type-product">Product</span></td>
+                  <td>
+                    <div style="display:flex;align-items:center;gap:5px;">
+                      <div class="status-dot" style="background:#10b981;"></div>
+                      <span class="text-xs font-semibold text-gray-700">Active</span>
+                    </div>
+                  </td>
+                  <td class="text-[12px] text-gray-500">3 days ago</td>
+                  <td class="text-[12px] font-bold text-gray-700">PDF · 14.2 MB</td>
+                  <td style="text-align:right;padding-right:18px;">
+                    <div style="display:flex;justify-content:flex-end;gap:4px;">
+                      <button class="btn-ghost" style="padding:4px 8px;font-size:11px;font-weight:600;border:1px solid #e5e7eb;border-radius:7px;" onclick="QR.showToast('Downloading file','info')">View</button>
+                      <button class="btn-ghost" style="padding:4px 8px;font-size:11px;font-weight:600;border:1px solid #e5e7eb;border-radius:7px;" onclick="QR.showToast('Replace file','info')">Edit</button>
+                      <button class="btn-ghost" style="padding:4px 8px;font-size:11px;font-weight:600;border:1px solid #fecaca;border-radius:7px;color:#ef4444;" onclick="QR.showToast('Deleted','warning')">Delete</button>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- Row 4: FAQ Library -->
+                <tr>
+                  <td style="padding-left:18px;">
+                    <div style="display:flex;align-items:center;gap:10px;">
+                      <div style="width:32px;height:32px;border-radius:8px;background:#fff7ed;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <span class="material-symbols-outlined" style="font-size:16px;color:#ea580c;">quiz</span>
+                      </div>
+                      <div>
+                        <div class="text-sm font-semibold text-gray-900">FAQ Library (Niche: Wig Vendor)</div>
+                        <div class="text-[11px] text-gray-400 flex items-center gap-1">
+                          <span style="background:#f3e8ff;color:#9333ea;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700;">Auto-loaded</span>
+                          Pre-populated for your business niche
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td><span class="type-badge type-faq">FAQ</span></td>
+                  <td>
+                    <div style="display:flex;align-items:center;gap:5px;">
+                      <div class="status-dot" style="background:#10b981;"></div>
+                      <span class="text-xs font-semibold text-gray-700">Active</span>
+                    </div>
+                  </td>
+                  <td class="text-[12px] text-gray-500">Today</td>
+                  <td class="text-[12px] font-bold text-gray-700">42 Q&A pairs</td>
+                  <td style="text-align:right;padding-right:18px;">
+                    <div style="display:flex;justify-content:flex-end;gap:4px;">
+                      <button class="btn-ghost" style="padding:4px 8px;font-size:11px;font-weight:600;border:1px solid #e5e7eb;border-radius:7px;" onclick="QR.showToast('Previewing FAQs','info')">View</button>
+                      <button class="btn-ghost" style="padding:4px 8px;font-size:11px;font-weight:600;border:1px solid #e5e7eb;border-radius:7px;" onclick="QR.showToast('Add/edit FAQ pairs','info')">Edit</button>
+                      <button class="btn-ghost" style="padding:4px 8px;font-size:11px;font-weight:600;border:1px solid #fecaca;border-radius:7px;color:#ef4444;" onclick="QR.showToast('Deleted','warning')">Delete</button>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- Row 5: Company Website -->
+                <tr>
+                  <td style="padding-left:18px;">
+                    <div style="display:flex;align-items:center;gap:10px;">
+                      <div style="width:32px;height:32px;border-radius:8px;background:#eff6ff;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <span class="material-symbols-outlined" style="font-size:16px;color:#3b82f6;">language</span>
+                      </div>
+                      <div>
+                        <div class="text-sm font-semibold text-gray-900">Company Website</div>
+                        <div class="text-[11px] text-gray-400">Auto-crawling · luxehairboutique.com</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td><span class="type-badge type-doc">Document</span></td>
+                  <td>
+                    <div style="display:flex;align-items:center;gap:5px;">
+                      <div class="status-dot" style="background:#f59e0b;"></div>
+                      <span class="text-xs font-semibold text-gray-700">Syncing</span>
+                    </div>
+                  </td>
+                  <td class="text-[12px] text-gray-500">In progress</td>
+                  <td class="text-[12px] font-bold text-gray-700">842 pages</td>
+                  <td style="text-align:right;padding-right:18px;">
+                    <div style="display:flex;justify-content:flex-end;gap:4px;">
+                      <button class="btn-ghost" style="padding:4px 8px;font-size:11px;font-weight:600;border:1px solid #e5e7eb;border-radius:7px;" onclick="QR.showToast('Refreshing sync','info')">
+                        <span class="material-symbols-outlined" style="font-size:13px;">refresh</span> Sync
+                      </button>
+                      <button class="btn-ghost" style="padding:4px 8px;font-size:11px;font-weight:600;border:1px solid #fecaca;border-radius:7px;color:#ef4444;" onclick="QR.showToast('Removed','warning')">Delete</button>
+                    </div>
+                  </td>
+                </tr>
+
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Footer -->
+          <div style="padding:12px 18px;border-top:1px solid #f3f4f6;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+            <span class="text-[11px] text-gray-400 font-medium">5 knowledge sources · Jennifer is trained and ready</span>
+            <button class="btn-primary" style="height:32px;padding:0 14px;font-size:12px;" onclick="QR.showToast('Upload panel opening...','info')">
+              <span class="material-symbols-outlined" style="font-size:15px;">add_circle</span>
+              Add More Knowledge
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script src="../sidebar.js"></script>
+  <script src="../shell.js"></script>
+  <script>
+    function filterKB(btn, type) {
+      document.querySelectorAll('.kb-filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      QR.showToast('Filtering by: ' + (type === 'all' ? 'All' : type), 'info');
+    }
+  </script>
+</body>
+</html>

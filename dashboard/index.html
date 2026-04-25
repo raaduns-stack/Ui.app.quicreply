@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dashboard — QuicReply Sales OS</title>
+  <meta name="description"
+    content="QuicReply Revenue Command Center — real-time sales pulse, active pipeline, and team activity hub." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="shell.css" />
+  <style>
+    /* ══════════════════════════════════════════
+       Dashboard Home — Premium Command Center
+    ══════════════════════════════════════════ */
+
+    /* ── Status / connectivity bar ── */
+    .dash-status-bar {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 0;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .dash-status-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+      padding: 0 20px;
+      position: relative;
+    }
+    .dash-status-item:first-child { padding-left: 0; }
+    .dash-status-item:last-child  { padding-right: 0; }
+    .dash-status-item:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 1px;
+      height: 28px;
+      background: #e5e7eb;
+    }
+
+    /* ── KPI Cards ── */
+    .kpi-card {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition: all 0.25s cubic-bezier(.4,0,.2,1);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+      position: relative;
+      overflow: hidden;
+    }
+    .kpi-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.09);
+      border-color: rgba(186,0,49,0.15);
+    }
+    .kpi-card::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      border-radius: 14px 14px 0 0;
+      opacity: 0;
+      transition: opacity 0.25s;
+    }
+    .kpi-card:hover::after { opacity: 1; }
+    .kpi-card.kpi-green::after  { background: #10b981; }
+    .kpi-card.kpi-indigo::after { background: #6366f1; }
+    .kpi-card.kpi-blue::after   { background: #3b82f6; }
+    .kpi-card.kpi-amber::after  { background: #f59e0b; }
+
+    .kpi-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .kpi-body { flex: 1; min-width: 0; }
+    .kpi-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: #9ca3af;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      margin-bottom: 2px;
+    }
+    .kpi-value {
+      font-size: 28px;
+      font-weight: 800;
+      color: #111827;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+    .kpi-change {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      margin-top: 4px;
+    }
+
+    /* ── Unread Banner ── */
+    .unread-banner {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 18px 22px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    }
+    .unread-icon-wrap {
+      position: relative;
+      flex-shrink: 0;
+    }
+    .unread-badge {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      width: 20px;
+      height: 20px;
+      background: var(--brand);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      border: 2px solid #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ── Section card base ── */
+    .dash-card {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+      overflow: hidden;
+    }
+    .dash-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px 12px;
+      border-bottom: 1px solid #f3f4f6;
+    }
+    .dash-card-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #111827;
+    }
+    .dash-card-link {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--brand);
+      text-decoration: none;
+      transition: opacity 0.15s;
+    }
+    .dash-card-link:hover { opacity: 0.75; }
+    .dash-card-body { padding: 16px 20px; }
+
+    /* ── Feed tab system ── */
+    .feed-tabs {
+      display: flex;
+      gap: 2px;
+      padding: 6px 20px 0;
+    }
+    .feed-tab {
+      font-size: 12px;
+      font-weight: 600;
+      color: #9ca3af;
+      padding: 5px 12px;
+      border-radius: 7px;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      transition: all 0.15s;
+    }
+    .feed-tab.active {
+      color: #111827;
+      background: #f3f4f6;
+    }
+    .feed-tab:hover:not(.active) { color: #374151; background: #f9fafb; }
+
+    /* ── Feed Row ── */
+    .feed-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 20px;
+      border-bottom: 1px solid #f9fafb;
+      transition: background 0.12s;
+    }
+    .feed-row:last-child { border-bottom: none; }
+    .feed-row:hover { background: #fafafa; }
+
+    /* ── Pill / Tag ── */
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 99px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .pill-lead     { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; }
+    .pill-ai       { background: #f5f3ff; color: #7c3aed; border: 1px solid #ddd6fe; }
+    .pill-campaign { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
+    .pill-qr       { background: #f9fafb; color: #6b7280; border: 1px solid #e5e7eb; }
+    .pill-pipeline { background: #fffbeb; color: #d97706; border: 1px solid #fde68a; }
+
+    /* ── Recommendation Card ── */
+    .rec-card {
+      border-radius: 12px;
+      padding: 16px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.2s;
+    }
+    .rec-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+    .rec-card-indigo { background: #f5f3ff; border: 1px solid #e0d9fd; }
+    .rec-card-purple { background: #fdf4ff; border: 1px solid #f3e0ff; }
+
+    /* ── Conversation Row ── */
+    .conv-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 20px;
+      border-bottom: 1px solid #f9fafb;
+      cursor: pointer;
+      transition: background 0.12s;
+    }
+    .conv-row:last-child { border-bottom: none; }
+    .conv-row:hover { background: #fafafa; }
+    .conv-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    /* ── Campaign stats ── */
+    .camp-stat { text-align: center; flex: 1; }
+
+    /* ── Health / system rows ── */
+    .sys-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid #f3f4f6;
+    }
+    .sys-row:last-child { border-bottom: none; }
+
+    /* ── Progress bar ── */
+    .prog-bar-track {
+      flex: 1;
+      height: 4px;
+      background: #f3f4f6;
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .prog-bar-fill {
+      height: 100%;
+      border-radius: 99px;
+      transition: width 0.6s ease;
+    }
+
+    /* ── Plan card ── */
+    .plan-card {
+      background: linear-gradient(135deg, rgba(186,0,49,0.07) 0%, rgba(186,0,49,0.02) 100%);
+      border: 1px solid rgba(186,0,49,0.15);
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    /* ── Pulse animation ── */
+    @keyframes pulse-ring {
+      0%   { box-shadow: 0 0 0 0 rgba(16,185,129,0.4); }
+      70%  { box-shadow: 0 0 0 6px rgba(16,185,129,0); }
+      100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); }
+    }
+    .pulse-dot { animation: pulse-ring 2s infinite; }
+
+    /* ── Welcome area ── */
+    .welcome-area {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .welcome-title {
+      font-size: 22px;
+      font-weight: 800;
+      color: #111827;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+    .welcome-sub {
+      font-size: 13px;
+      color: #6b7280;
+      margin-top: 3px;
+      font-weight: 500;
+    }
+    .welcome-badges {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* ═══════════════════════════════════════════
+       RESPONSIVE — Dashboard Home
+       Overrides inline styles with !important
+    ═══════════════════════════════════════════ */
+
+    /* ── Tablet: 768–1023px ── */
+    @media (max-width: 1023px) {
+      .dash-mid-grid  { grid-template-columns: 1fr !important; }
+      .dash-low-grid  { grid-template-columns: 1fr !important; }
+      .kpi-grid       { grid-template-columns: repeat(2,1fr) !important; }
+
+      /* Recommendation cards stay side by side on tablet */
+      .rec-cards-row  { flex-direction: row; }
+    }
+
+    /* ── Large mobile: 600–767px ── */
+    @media (max-width: 767px) {
+      /* Unread banner: icon+text row, buttons wrap below */
+      .unread-banner {
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+      .unread-banner > div:last-child {
+        width: 100%;
+        justify-content: flex-start;
+      }
+
+      /* Status bar: stack items vertically */
+      .dash-status-bar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 14px 16px;
+      }
+      .dash-status-item {
+        width: 100%;
+        padding: 0;
+      }
+      .dash-status-item::after { display: none !important; }
+
+      /* Status item with "Upgrade" button: full width */
+      .dash-status-item[style*="flex:0 0 auto"] {
+        flex: 1 1 100% !important;
+      }
+    }
+
+    /* ── Small mobile: ≤ 599px ── */
+    @media (max-width: 599px) {
+      /* Page padding */
+      main { padding: 12px !important; }
+
+      /* KPI: 1 col */
+      .kpi-grid { grid-template-columns: 1fr !important; }
+
+      /* KPI card value smaller so it fits */
+      .kpi-value { font-size: 24px !important; }
+
+      /* Welcome area: stack */
+      .welcome-area { flex-direction: column; align-items: flex-start; gap: 8px; }
+      .welcome-badges { flex-wrap: wrap; gap: 6px; }
+      .welcome-title { font-size: 20px !important; }
+
+      /* Unread banner: full-width wrap */
+      .unread-banner {
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 14px 14px;
+      }
+      .unread-banner > div:last-child {
+        width: 100%;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        gap: 8px;
+      }
+
+      /* Rec cards: stack on small phones */
+      .rec-cards-row { flex-direction: column !important; }
+
+      /* Feed pill: hide on very small to save space */
+      .feed-row .pill { display: none; }
+
+      /* Status bar */
+      .dash-status-bar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 12px 14px;
+      }
+      .dash-status-item { padding: 0; width: 100%; }
+      .dash-status-item::after { display: none !important; }
+
+      /* Campaign stats: smaller text */
+      .camp-stat .text-xl { font-size: 16px !important; }
+    }
+
+    /* ── Very small: ≤ 375px ── */
+    @media (max-width: 375px) {
+      .kpi-value { font-size: 20px !important; }
+      .kpi-icon  { width: 40px !important; height: 40px !important; }
+      .welcome-title { font-size: 18px !important; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="sidebar-mount"></div>
+
+  <div class="layout-with-sidebar" id="main-layout">
+    <div id="topbar-mount" data-title="Dashboard · Revenue Command Center"></div>
+
+    <main class="flex-1 p-5 lg:p-7" style="display:flex; flex-direction:column; gap:20px;">
+      <div class="content-container" style="display:flex; flex-direction:column; gap:20px;">
+
+        <!-- ══ 1. WELCOME AREA ══ -->
+        <div class="welcome-area">
+          <div>
+            <h1 class="welcome-title">Dashboard</h1>
+            <p class="welcome-sub">Revenue Command Center · Good morning, John 👋</p>
+          </div>
+          <div class="welcome-badges">
+            <!-- QR Mode badge -->
+            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold"
+              style="background:#f0fdf4; color:#166534; border:1px solid #bbf7d0;">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block pulse-dot"></span>
+              QR Mode
+            </span>
+            <!-- Limited plan badge -->
+            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold"
+              style="background:#fffbeb; color:#92400e; border:1px solid #fde68a;">
+              <span class="material-symbols-outlined text-[12px]">warning</span>
+              Limited Plan
+            </span>
+            <!-- Upgrade CTA -->
+            <a href="api-setup/index.html" class="btn-primary text-xs" style="height:34px; padding:0 14px; border-radius:8px;">
+              Upgrade to API
+              <span class="material-symbols-outlined text-[14px]">rocket_launch</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- ══ 2. CONNECTIVITY STATUS BAR ══ -->
+        <div class="dash-status-bar flex-wrap gap-y-3">
+          <!-- QR Connected -->
+          <div class="dash-status-item">
+            <div class="w-8 h-8 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0 pulse-dot"
+              style="box-shadow:0 0 0 0 rgba(16,185,129,0.4);">
+              <span class="material-symbols-outlined text-[16px]">check_circle</span>
+            </div>
+            <div>
+              <div class="text-xs font-bold text-gray-900">QR Connected</div>
+              <div class="text-[11px] text-gray-500">WhatsApp is connected</div>
+            </div>
+            <button class="ml-auto btn-secondary text-[11px] font-semibold"
+              style="height:28px; padding:0 12px; border-radius:7px; border-color:#e5e7eb; box-shadow:none; color:#374151;">
+              Reconnect
+            </button>
+          </div>
+
+          <!-- API Not Setup -->
+          <div class="dash-status-item">
+            <div class="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center shrink-0">
+              <span class="material-symbols-outlined text-[16px]">api</span>
+            </div>
+            <div>
+              <div class="text-xs font-bold text-gray-900">API: Not Setup</div>
+              <div class="text-[11px] text-gray-500">Unlock higher limits
+                <a href="api-setup/index.html" class="text-blue-600 font-semibold ml-1 hover:underline">Set up now →</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Limited Mode -->
+          <div class="dash-status-item">
+            <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
+              style="background:#fffbeb; color:#d97706; border:1px solid #fde68a;">
+              <span class="material-symbols-outlined text-[16px]">warning</span>
+            </div>
+            <div>
+              <div class="text-xs font-bold text-gray-900">Limited mode (QR only)</div>
+              <div class="text-[11px] text-gray-500">You're reaching QR limits</div>
+            </div>
+          </div>
+
+          <!-- Upgrade CTA -->
+          <div class="dash-status-item" style="flex:0 0 auto; padding-right:0;">
+            <button class="btn-primary text-xs" style="height:36px; padding:0 18px;"
+              data-os-hide-if="plan=pro">
+              Upgrade to API
+              <span class="material-symbols-outlined text-[14px]">rocket_launch</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- ══ 3. KPI ROW ══ -->
+        <div class="kpi-grid" style="display:grid; grid-template-columns:repeat(4,1fr); gap:16px;">
+
+          <!-- Messages -->
+          <div class="kpi-card kpi-green">
+            <div class="kpi-icon bg-emerald-500 text-white" style="box-shadow:0 4px 14px rgba(16,185,129,0.28);">
+              <span class="material-symbols-outlined" style="font-size:22px;">chat</span>
+            </div>
+            <div class="kpi-body">
+              <div class="kpi-label">Messages Received</div>
+              <div class="kpi-value">256</div>
+              <div class="kpi-change">
+                <span class="material-symbols-outlined text-emerald-500" style="font-size:13px;">arrow_upward</span>
+                <span class="text-xs font-bold text-emerald-500">18%</span>
+                <span class="text-[11px] text-gray-400">vs yesterday</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Leads -->
+          <div class="kpi-card kpi-indigo">
+            <div class="kpi-icon bg-indigo-600 text-white" style="box-shadow:0 4px 14px rgba(79,70,229,0.28);">
+              <span class="material-symbols-outlined" style="font-size:22px;">person_add</span>
+            </div>
+            <div class="kpi-body">
+              <div class="kpi-label">Leads Captured</div>
+              <div class="kpi-value">128</div>
+              <div class="kpi-change">
+                <span class="material-symbols-outlined text-emerald-500" style="font-size:13px;">arrow_upward</span>
+                <span class="text-xs font-bold text-emerald-500">22%</span>
+                <span class="text-[11px] text-gray-400">vs yesterday</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- AI Responses -->
+          <div class="kpi-card kpi-blue">
+            <div class="kpi-icon bg-blue-500 text-white" style="box-shadow:0 4px 14px rgba(59,130,246,0.28);">
+              <span class="material-symbols-outlined" style="font-size:22px;">smart_toy</span>
+            </div>
+            <div class="kpi-body">
+              <div class="kpi-label">AI Responses</div>
+              <div class="kpi-value">342</div>
+              <div class="kpi-change">
+                <span class="material-symbols-outlined text-emerald-500" style="font-size:13px;">arrow_upward</span>
+                <span class="text-xs font-bold text-emerald-500">24%</span>
+                <span class="text-[11px] text-gray-400">vs yesterday</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Revenue -->
+          <div class="kpi-card kpi-amber">
+            <div class="kpi-icon bg-amber-500 text-white" style="box-shadow:0 4px 14px rgba(245,158,11,0.28);">
+              <span class="material-symbols-outlined" style="font-size:22px;">attach_money</span>
+            </div>
+            <div class="kpi-body">
+              <div class="kpi-label">Revenue in Pipeline</div>
+              <div class="kpi-value">$8,420</div>
+              <div class="kpi-change">
+                <span class="material-symbols-outlined text-emerald-500" style="font-size:13px;">arrow_upward</span>
+                <span class="text-xs font-bold text-emerald-500">15%</span>
+                <span class="text-[11px] text-gray-400">vs yesterday</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ 4. UNREAD MESSAGES BANNER ══ -->
+        <div class="unread-banner">
+          <div class="unread-icon-wrap">
+            <div class="w-12 h-12 rounded-xl bg-emerald-500 text-white flex items-center justify-center"
+              style="box-shadow:0 4px 14px rgba(16,185,129,0.3);">
+              <span class="material-symbols-outlined" style="font-size:24px; font-variation-settings:'FILL' 1;">chat_bubble</span>
+            </div>
+            <div class="unread-badge">8</div>
+          </div>
+          <div class="flex-1 min-w-0">
+            <h2 class="text-sm font-bold text-gray-900">You have 8 unread messages</h2>
+            <p class="text-xs text-gray-500 mt-0.5">Respond quickly to convert leads and close more deals.</p>
+          </div>
+          <div class="flex items-center gap-2 shrink-0 flex-wrap">
+            <a href="inbox/index.html" class="btn-primary text-xs" style="height:34px; padding:0 14px;">
+              <span class="material-symbols-outlined text-[14px]">chat</span> Open Inbox
+            </a>
+            <a href="contacts/index.html" class="btn-secondary text-xs"
+              style="height:34px; padding:0 14px; border-color:#e5e7eb; box-shadow:none;">
+              <span class="material-symbols-outlined text-[14px]">group</span> View Leads
+            </a>
+            <a href="ai/index.html" class="btn-secondary text-xs"
+              style="height:34px; padding:0 14px; border-color:#e5e7eb; box-shadow:none;">
+              <span class="material-symbols-outlined text-[14px]">auto_awesome</span> Test AI
+            </a>
+          </div>
+        </div>
+
+        <!-- ══ 5. MID ROW — Activity Feed + Smart Recommendations ══ -->
+        <div class="dash-mid-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:16px; align-items:start;">
+
+          <!-- LEFT: Activity Feed -->
+          <div class="dash-card">
+            <div class="dash-card-header">
+              <div>
+                <div class="dash-card-title">Activity Feed</div>
+              </div>
+              <a href="analytics/conversations.html" class="dash-card-link">View all</a>
+            </div>
+
+            <!-- Tabs -->
+            <div class="feed-tabs">
+              <button class="feed-tab active" id="tab-all"       onclick="switchTab('all')">All</button>
+              <button class="feed-tab"         id="tab-messages"  onclick="switchTab('messages')">Messages</button>
+              <button class="feed-tab"         id="tab-campaigns" onclick="switchTab('campaigns')">Campaigns</button>
+              <button class="feed-tab"         id="tab-leads"     onclick="switchTab('leads')">Leads</button>
+            </div>
+
+            <!-- Feed -->
+            <div style="padding-top:4px;">
+              <div class="feed-row">
+                <div class="w-7 h-7 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                  <span class="material-symbols-outlined" style="font-size:14px;">person</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="text-xs font-semibold text-gray-900 truncate">New lead captured from Facebook Ad</div>
+                </div>
+                <span class="text-[11px] text-gray-400 shrink-0">12:32 PM</span>
+                <span class="pill pill-lead">LEAD</span>
+              </div>
+
+              <div class="feed-row">
+                <div class="w-7 h-7 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center shrink-0">
+                  <span class="material-symbols-outlined" style="font-size:14px;">smart_toy</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="text-xs font-semibold text-gray-900 truncate">AI (Jennifer) responded to customer</div>
+                </div>
+                <span class="text-[11px] text-gray-400 shrink-0">12:35 PM</span>
+                <span class="pill pill-ai">AI</span>
+              </div>
+
+              <div class="feed-row">
+                <div class="w-7 h-7 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                  <span class="material-symbols-outlined" style="font-size:14px;">send</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="text-xs font-semibold text-gray-900 truncate">Campaign "Weekend Promo" sent to 500 contacts</div>
+                </div>
+                <span class="text-[11px] text-gray-400 shrink-0">1:02 PM</span>
+                <span class="pill pill-campaign">CAMPAIGN</span>
+              </div>
+
+              <div class="feed-row">
+                <div class="w-7 h-7 rounded-full bg-gray-50 text-gray-500 flex items-center justify-center shrink-0">
+                  <span class="material-symbols-outlined" style="font-size:14px;">qr_code_2</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="text-xs font-semibold text-gray-900 truncate">WhatsApp QR code scanned and connected</div>
+                </div>
+                <span class="text-[11px] text-gray-400 shrink-0">1:15 PM</span>
+                <span class="pill pill-qr">QR</span>
+              </div>
+
+              <div class="feed-row">
+                <div class="w-7 h-7 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+                  <span class="material-symbols-outlined" style="font-size:14px;">attach_money</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="text-xs font-semibold text-gray-900 truncate">New deal moved to pipeline: $350</div>
+                </div>
+                <span class="text-[11px] text-gray-400 shrink-0">2:10 PM</span>
+                <span class="pill pill-pipeline">PIPELINE</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT: Smart Recommendations -->
+          <div class="dash-card">
+            <div class="dash-card-header">
+              <div class="dash-card-title">Smart Recommendations</div>
+            </div>
+            <div class="dash-card-body" style="display:flex; gap:12px; flex-direction:column;">
+              <div class="rec-cards-row" style="display:flex; gap:12px;">
+                <!-- Rec 1 -->
+                <div class="rec-card rec-card-indigo">
+                  <div class="w-9 h-9 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center mb-3 shrink-0">
+                    <span class="material-symbols-outlined" style="font-size:18px;">trending_up</span>
+                  </div>
+                  <div class="text-xs font-bold text-gray-900 mb-1">Upgrade to API</div>
+                  <p class="text-[11px] text-gray-500 leading-relaxed mb-3 flex-1">
+                    You're reaching QR limits. API gives you 10x more capacity and stability.
+                  </p>
+                  <button class="w-full text-white text-[11px] font-bold py-2 rounded-lg transition-colors flex items-center justify-center gap-1"
+                    style="background:#4f46e5;" data-os-hide-if="whatsapp_mode=api"
+                    onmouseover="this.style.background='#4338ca'" onmouseout="this.style.background='#4f46e5'">
+                    Upgrade Now <span class="material-symbols-outlined" style="font-size:13px;">chevron_right</span>
+                  </button>
+                </div>
+
+                <!-- Rec 2 -->
+                <div class="rec-card rec-card-purple">
+                  <div class="w-9 h-9 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center mb-3 shrink-0">
+                    <span class="material-symbols-outlined" style="font-size:18px;">smart_toy</span>
+                  </div>
+                  <div class="text-xs font-bold text-gray-900 mb-1">Activate AI (Jennifer)</div>
+                  <p class="text-[11px] text-gray-500 leading-relaxed mb-3 flex-1">
+                    Let Jennifer handle common questions and qualify leads 24/7 automatically.
+                  </p>
+                  <a href="ai/index.html"
+                    class="w-full text-white text-[11px] font-bold py-2 rounded-lg transition-colors flex items-center justify-center gap-1 text-center"
+                    style="background:#7c3aed; text-decoration:none;"
+                    onmouseover="this.style.background='#6d28d9'" onmouseout="this.style.background='#7c3aed'">
+                    Set Up AI <span class="material-symbols-outlined" style="font-size:13px;">chevron_right</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ 6. BOTTOM ROW — Recent Conversations + Campaign Performance ══ -->
+        <div class="dash-low-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:16px; align-items:start;">
+
+          <!-- LEFT: Recent Conversations -->
+          <div class="dash-card">
+            <div class="dash-card-header">
+              <div class="dash-card-title">Recent Conversations</div>
+              <a href="inbox/index.html" class="dash-card-link">View all</a>
+            </div>
+
+            <div>
+              <!-- Conv 1 -->
+              <div class="conv-row">
+                <div class="conv-avatar" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);">SJ</div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-xs font-bold text-gray-900">Sarah Johnson</span>
+                    <span class="w-4 h-4 rounded-full bg-emerald-500 text-white text-[9px] font-bold flex items-center justify-center">2</span>
+                  </div>
+                  <div class="text-[11px] text-gray-500 truncate mt-0.5">Is the product still available?</div>
+                </div>
+                <div class="flex items-center gap-2 shrink-0">
+                  <span class="text-[11px] text-gray-400">2m ago</span>
+                  <div class="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center">
+                    <span class="material-symbols-outlined" style="font-size:12px; font-variation-settings:'FILL' 1;">chat</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Conv 2 -->
+              <div class="conv-row">
+                <div class="conv-avatar" style="background:linear-gradient(135deg,#3b82f6,#6366f1);">MB</div>
+                <div class="flex-1 min-w-0">
+                  <span class="text-xs font-bold text-gray-900">Mike Brown</span>
+                  <div class="text-[11px] text-gray-500 truncate mt-0.5">Can you share the price list?</div>
+                </div>
+                <div class="flex items-center gap-2 shrink-0">
+                  <span class="text-[11px] text-gray-400">15m ago</span>
+                  <div class="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center">
+                    <span class="material-symbols-outlined" style="font-size:12px; font-variation-settings:'FILL' 1;">chat</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Conv 3 -->
+              <div class="conv-row">
+                <div class="conv-avatar" style="background:linear-gradient(135deg,#f59e0b,#ef4444);">ED</div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-xs font-bold text-gray-900">Emily Davis</span>
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>
+                  </div>
+                  <div class="text-[11px] text-gray-500 truncate mt-0.5">Do you deliver to my area?</div>
+                </div>
+                <div class="flex items-center gap-2 shrink-0">
+                  <span class="text-[11px] text-gray-400">32m ago</span>
+                  <div class="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center">
+                    <span class="material-symbols-outlined" style="font-size:12px; font-variation-settings:'FILL' 1;">chat</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Conv 4 -->
+              <div class="conv-row">
+                <div class="conv-avatar" style="background:linear-gradient(135deg,#10b981,#3b82f6);">DW</div>
+                <div class="flex-1 min-w-0">
+                  <span class="text-xs font-bold text-gray-900">David Wilson</span>
+                  <div class="text-[11px] text-gray-500 truncate mt-0.5">I want to place a bulk order</div>
+                </div>
+                <div class="flex items-center gap-2 shrink-0">
+                  <span class="text-[11px] text-gray-400">1h ago</span>
+                  <div class="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center">
+                    <span class="material-symbols-outlined" style="font-size:12px; font-variation-settings:'FILL' 1;">chat</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Conv 5 -->
+              <div class="conv-row">
+                <div class="conv-avatar" style="background:linear-gradient(135deg,#8b5cf6,#ec4899);">JL</div>
+                <div class="flex-1 min-w-0">
+                  <span class="text-xs font-bold text-gray-900">Jessica Lee</span>
+                  <div class="text-[11px] text-gray-500 truncate mt-0.5">What's the warranty on this?</div>
+                </div>
+                <div class="flex items-center gap-2 shrink-0">
+                  <span class="text-[11px] text-gray-400">2h ago</span>
+                  <div class="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center">
+                    <span class="material-symbols-outlined" style="font-size:12px; font-variation-settings:'FILL' 1;">chat</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT: Last Campaign Performance -->
+          <div class="dash-card">
+            <div class="dash-card-header">
+              <div class="dash-card-title">Last Campaign Performance</div>
+              <a href="campaigns/index.html" class="dash-card-link">View all</a>
+            </div>
+            <div class="dash-card-body">
+              <!-- Campaign label -->
+              <div class="flex items-start justify-between gap-3 mb-4"
+                style="background:#f9fafb; border:1px solid #f3f4f6; border-radius:10px; padding:12px 14px;">
+                <div>
+                  <div class="text-xs font-bold text-gray-900">Weekend Promo</div>
+                  <div class="text-[11px] text-gray-400 mt-0.5">Sent on May 18, 2024 at 10:30 AM</div>
+                </div>
+                <span class="pill" style="background:#ecfdf5; color:#059669; border:1px solid #a7f3d0;">Completed</span>
+              </div>
+
+              <!-- Stats Row -->
+              <div class="flex items-center gap-2 pb-4" style="border-bottom:1px solid #f3f4f6;">
+                <div class="camp-stat">
+                  <div class="text-xl font-black text-gray-900">500</div>
+                  <div class="text-[11px] text-gray-400 font-medium mt-0.5">Sent</div>
+                </div>
+                <div class="w-px bg-gray-100" style="height:36px;"></div>
+                <div class="camp-stat">
+                  <div class="text-xl font-black text-gray-900">480</div>
+                  <div class="text-[11px] text-gray-400 font-medium mt-0.5">Delivered</div>
+                  <div class="text-[10px] font-bold text-gray-500">96%</div>
+                </div>
+                <div class="w-px bg-gray-100" style="height:36px;"></div>
+                <div class="camp-stat">
+                  <div class="text-xl font-black text-gray-900">120</div>
+                  <div class="text-[11px] text-gray-400 font-medium mt-0.5">Clicked</div>
+                  <div class="text-[10px] font-bold text-gray-500">24%</div>
+                </div>
+                <div class="w-px bg-gray-100" style="height:36px;"></div>
+                <div class="camp-stat">
+                  <div class="text-xl font-black text-gray-900">45</div>
+                  <div class="text-[11px] text-gray-400 font-medium mt-0.5">Replies</div>
+                  <div class="text-[10px] font-bold text-gray-500">9%</div>
+                </div>
+              </div>
+
+              <!-- View Full Report -->
+              <a href="campaigns/index.html"
+                class="flex items-center justify-between text-xs font-semibold text-gray-600 hover:text-[#ba0031] transition-colors group"
+                style="margin-top:14px;">
+                <div class="flex items-center gap-1.5">
+                  <span class="material-symbols-outlined text-gray-400 group-hover:text-[#ba0031] transition-colors"
+                    style="font-size:16px;">bar_chart</span>
+                  View Full Campaign Report
+                </div>
+                <span class="material-symbols-outlined text-gray-300 group-hover:text-[#ba0031] transition-colors"
+                  style="font-size:16px;">chevron_right</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Empty State (hidden reference) -->
+  <div id="demo-empty-state" class="hidden">
+    <div class="card max-w-md mx-auto mt-10">
+      <div class="empty-state">
+        <div class="empty-state-icon">
+          <span class="material-symbols-outlined">forum</span>
+        </div>
+        <h3 class="empty-state-title">No messages yet</h3>
+        <p class="empty-state-desc">When you start receiving inquiries via WhatsApp or QR, they will appear here in real-time.</p>
+        <button class="btn-primary text-xs py-2 px-6 mt-2">Connect Channel</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Tab switching for Activity Feed
+    function switchTab(tab) {
+      const tabs = ['all', 'messages', 'campaigns', 'leads'];
+      tabs.forEach(t => {
+        const el = document.getElementById('tab-' + t);
+        if (el) el.classList.toggle('active', t === tab);
+      });
+    }
+  </script>
+
+  <script src="sidebar.js"></script>
+  <script src="shell.js"></script>
+</body>
+
+</html>

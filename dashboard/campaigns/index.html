@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Campaigns — QuicReply Sales OS</title>
+  <meta name="description" content="QuicReply broadcast campaigns — send and manage bulk WhatsApp messages." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+  <link rel="stylesheet" href="../shell.css" />
+  <style>
+    body { background: #f7f8fa; }
+
+    /* ══ Toolbar ══ */
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 9px 12px;
+      flex-wrap: wrap;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .tb-search {
+      flex: 1;
+      min-width: 180px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: #f9fafb;
+      border: 1px solid #f3f4f6;
+      border-radius: 8px;
+      padding: 6px 10px;
+      transition: border-color .15s;
+    }
+    .tb-search:focus-within { border-color: #d1d5db; background: #fff; }
+    .tb-search input {
+      border: none; background: transparent; outline: none;
+      font-size: 13px; font-weight: 500; color: #111827; width: 100%;
+      font-family: 'Inter', sans-serif;
+    }
+    .tb-search input::placeholder { color: #9ca3af; font-weight: 400; }
+    .tb-divider { width: 1px; height: 22px; background: #f3f4f6; flex-shrink: 0; }
+    .tb-select {
+      appearance: none;
+      background: #f9fafb url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 8px center;
+      border: 1px solid #f3f4f6; border-radius: 8px;
+      padding: 6px 26px 6px 10px;
+      font-size: 12px; font-weight: 600; color: #374151;
+      outline: none; font-family: 'Inter', sans-serif;
+      cursor: pointer; white-space: nowrap;
+      transition: border-color .15s;
+    }
+    .tb-select:focus { border-color: #d1d5db; background-color: #fff; }
+    .tb-btn {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 6px 11px; border-radius: 8px;
+      border: 1px solid #e5e7eb; background: #fff;
+      font-size: 12px; font-weight: 600; color: #374151;
+      cursor: pointer; transition: all .12s; white-space: nowrap;
+    }
+    .tb-btn:hover { background: #f9fafb; border-color: #d1d5db; color: #111827; }
+
+    /* ══ Table card ══ */
+    .tbl-card {
+      background: #fff; border: 1px solid #e5e7eb;
+      border-radius: 12px; overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    /* Head */
+    .tbl-head {
+      display: grid;
+      grid-template-columns: 28px 2fr 1fr 1fr .8fr .8fr .8fr 1fr 84px;
+      align-items: center;
+      padding: 0 16px; height: 38px;
+      background: #f9fafb; border-bottom: 1px solid #f3f4f6; gap: 10px;
+    }
+    .tbl-th {
+      font-size: 10px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .07em;
+      color: #9ca3af; white-space: nowrap;
+      display: flex; align-items: center; gap: 2px;
+      cursor: pointer; user-select: none; transition: color .12s;
+    }
+    .tbl-th:hover { color: #6b7280; }
+    .tbl-th .material-symbols-outlined { font-size: 12px !important; width: auto !important; }
+
+    /* Row */
+    .tbl-row {
+      display: grid;
+      grid-template-columns: 28px 2fr 1fr 1fr .8fr .8fr .8fr 1fr 84px;
+      align-items: center;
+      padding: 0 16px; height: 62px; gap: 10px;
+      border-bottom: 1px solid #f9fafb;
+      cursor: pointer; transition: background .1s;
+    }
+    .tbl-row:last-child { border-bottom: none; }
+    .tbl-row:hover { background: #fafafa; }
+    .tbl-row:hover .row-acts { opacity: 1; }
+    .tbl-row.active-row { background: #fff8f9; }
+
+    .tbl-check {
+      width: 15px; height: 15px; border-radius: 4px;
+      border: 1.5px solid #d1d5db; cursor: pointer;
+      accent-color: var(--brand); flex-shrink: 0;
+    }
+
+    /* Campaign name cell */
+    .cmp-cell { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .cmp-icon {
+      width: 34px; height: 34px; border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; flex-shrink: 0;
+    }
+    .cmp-name {
+      font-size: 13px; font-weight: 700; color: #111827;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .cmp-sub { font-size: 11px; color: #9ca3af; font-weight: 400; margin-top: 1px; }
+
+    /* Preview cell */
+    .preview-cell { min-width: 0; }
+    .preview-text {
+      font-size: 12px; color: #6b7280; font-weight: 400;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      max-width: 220px;
+    }
+
+    /* Number cell */
+    .num-cell { font-size: 13px; font-weight: 600; color: #374151; }
+
+    /* Stat cell */
+    .stat-cell { display: flex; flex-direction: column; gap: 1px; }
+    .stat-main { font-size: 13px; font-weight: 700; color: #111827; }
+    .stat-pct  { font-size: 11px; font-weight: 600; color: #10b981; }
+    .stat-pct.warn { color: #f59e0b; }
+    .stat-pct.bad  { color: #ef4444; }
+
+    /* Date cell */
+    .date-cell { font-size: 12px; color: #6b7280; font-weight: 500; white-space: nowrap; }
+
+    /* Status tag */
+    .s-tag {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 9px; border-radius: 6px;
+      font-size: 11px; font-weight: 700; white-space: nowrap;
+    }
+    .s-sent     { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; }
+    .s-sending  { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
+    .s-queued   { background: #fffbeb; color: #d97706; border: 1px solid #fde68a; }
+    .s-draft    { background: #f9fafb; color: #6b7280; border: 1px solid #e5e7eb; }
+    .s-failed   { background: #fef2f2; color: #ef4444; border: 1px solid #fecaca; }
+
+    .sending-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: #2563eb; animation: pulse-send 1.4s infinite;
+    }
+    @keyframes pulse-send {
+      0%,100%{ opacity:1; } 50%{ opacity:.3; }
+    }
+
+    /* Row actions */
+    .row-acts {
+      display: flex; align-items: center; justify-content: flex-end;
+      gap: 2px; opacity: 0; transition: opacity .15s;
+    }
+    .row-btn {
+      width: 28px; height: 28px; border-radius: 7px;
+      border: 1px solid #e5e7eb; background: #fff;
+      display: flex; align-items: center; justify-content: center;
+      color: #6b7280; cursor: pointer; transition: all .12s;
+    }
+    .row-btn:hover { background: #f3f4f6; color: #111827; border-color: #d1d5db; }
+    .row-btn.danger:hover { background: #fef2f2; color: #ef4444; border-color: #fecaca; }
+
+    /* ══ Pagination ══ */
+    .pagination {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 11px 16px; border-top: 1px solid #f3f4f6; flex-wrap: wrap; gap: 8px;
+    }
+    .pg-info { font-size: 12px; color: #9ca3af; font-weight: 500; }
+    .pg-btns { display: flex; align-items: center; gap: 3px; }
+    .pg-btn {
+      width: 28px; height: 28px; border-radius: 6px;
+      border: 1px solid #e5e7eb; background: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 600; color: #374151;
+      cursor: pointer; transition: all .12s;
+    }
+    .pg-btn:hover { background: #f9fafb; }
+    .pg-btn.act { background: var(--brand); color: #fff; border-color: var(--brand); }
+    .pg-btn-ico { border: none; background: none; color: #9ca3af; }
+    .pg-rows { display: flex; align-items: center; gap: 7px; font-size: 12px; color: #9ca3af; font-weight: 500; }
+    .pg-rows select {
+      border: 1px solid #e5e7eb; border-radius: 6px;
+      padding: 3px 7px; font-size: 12px; font-weight: 600; color: #374151;
+      background: #fff; outline: none; font-family: 'Inter', sans-serif;
+    }
+
+    /* ══ Side Panel ══ */
+    .side-panel {
+      position: fixed; top: 64px; right: 0;
+      width: 340px; height: calc(100vh - 64px);
+      background: #fff; border-left: 1px solid #e5e7eb;
+      box-shadow: -4px 0 24px rgba(0,0,0,0.06);
+      display: flex; flex-direction: column;
+      transform: translateX(100%);
+      transition: transform .28s cubic-bezier(.4,0,.2,1);
+      z-index: 50; overflow: hidden;
+    }
+    .side-panel.open { transform: translateX(0); }
+
+    .panel-head {
+      padding: 16px 18px 14px;
+      border-bottom: 1px solid #f3f4f6;
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 10px;
+      flex-shrink: 0;
+    }
+    .panel-title { font-size: 14px; font-weight: 800; color: #111827; line-height: 1.3; }
+    .panel-close {
+      width: 28px; height: 28px; border-radius: 7px;
+      border: 1px solid #e5e7eb; background: #fff;
+      display: flex; align-items: center; justify-content: center;
+      color: #6b7280; cursor: pointer; transition: all .12s; flex-shrink: 0;
+    }
+    .panel-close:hover { background: #f3f4f6; color: #111827; }
+
+    .panel-body { flex: 1; overflow-y: auto; padding: 16px 18px; display: flex; flex-direction: column; gap: 16px; }
+    .panel-body::-webkit-scrollbar { width: 4px; }
+    .panel-body::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 99px; }
+
+    /* WhatsApp preview bubble */
+    .wa-preview {
+      background: #f0fdf4; border: 1px solid #bbf7d0;
+      border-radius: 12px; padding: 12px 14px;
+    }
+    .wa-preview-label { font-size: 10px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 8px; }
+    .wa-bubble {
+      background: #fff; border-radius: 10px;
+      padding: 10px 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+      font-size: 12px; color: #1f2937; line-height: 1.55;
+    }
+    .wa-meta { display: flex; align-items: center; justify-content: flex-end; gap: 4px; margin-top: 6px; }
+    .wa-time { font-size: 10px; color: #9ca3af; font-weight: 500; }
+
+    /* Stats grid inside panel */
+    .panel-stats {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+    }
+    .pstat {
+      background: #f9fafb; border: 1px solid #f3f4f6;
+      border-radius: 9px; padding: 10px 12px;
+      display: flex; flex-direction: column; gap: 3px;
+    }
+    .pstat-icon {
+      width: 26px; height: 26px; border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 4px;
+    }
+    .pstat-val { font-size: 16px; font-weight: 800; color: #111827; letter-spacing: -.02em; }
+    .pstat-lbl { font-size: 10px; font-weight: 600; color: #9ca3af; text-transform: uppercase; letter-spacing: .06em; }
+
+    /* Audience sample */
+    .aud-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 7px 0; border-bottom: 1px solid #f9fafb;
+    }
+    .aud-row:last-child { border-bottom: none; }
+    .aud-avi {
+      width: 28px; height: 28px; border-radius: 50%;
+      font-size: 10px; font-weight: 700; color: #fff;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .aud-name { font-size: 12px; font-weight: 600; color: #374151; }
+    .aud-phone { font-size: 11px; color: #9ca3af; }
+
+    /* Panel section title */
+    .ps-title { font-size: 10px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 8px; }
+
+    /* Footer meta */
+    .panel-foot {
+      padding: 12px 18px; border-top: 1px solid #f3f4f6;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .foot-meta { font-size: 11px; color: #9ca3af; font-weight: 500; }
+    .foot-meta strong { color: #374151; font-weight: 700; }
+
+    /* Responsive: hide panel on small screens */
+    @media (max-width: 900px) { .side-panel { width: 100vw; } }
+  </style>
+</head>
+<body>
+  <div id="sidebar-mount"></div>
+  <div class="layout-with-sidebar" id="main-layout">
+    <div id="topbar-mount" data-title="Campaigns"></div>
+
+    <main class="flex-1 p-5 lg:p-7" style="display:flex;flex-direction:column;gap:14px;">
+      <div class="content-container" style="display:flex;flex-direction:column;gap:14px;">
+
+        <!-- ── Page header ── -->
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+          <div>
+            <h1 style="font-size:20px;font-weight:800;color:#111827;letter-spacing:-.02em;line-height:1.2;">Campaigns</h1>
+            <p style="font-size:13px;color:#6b7280;margin-top:3px;font-weight:500;">Send and manage broadcast messages</p>
+          </div>
+          <button class="btn-primary text-sm" style="height:36px;"
+                  onclick="window.location.href='new.html'">
+            <span class="material-symbols-outlined" style="font-size:18px;">add</span> Create Campaign
+          </button>
+        </div>
+
+        <!-- ── Toolbar ── -->
+        <div class="toolbar">
+          <div class="tb-search" style="max-width:240px;">
+            <span class="material-symbols-outlined" style="font-size:15px;color:#9ca3af;flex-shrink:0;">search</span>
+            <input type="text" placeholder="Search campaigns…" oninput="applyFilters(this.value)" />
+          </div>
+          <div class="tb-divider"></div>
+          <select class="tb-select" id="filter-status" onchange="applyFilters()">
+            <option value="all">Status</option>
+            <option value="sent">Sent</option>
+            <option value="sending">Sending</option>
+            <option value="queued">Queued</option>
+            <option value="draft">Draft</option>
+            <option value="failed">Failed</option>
+          </select>
+          <!-- Date range trigger -->
+          <button class="tb-btn" onclick="QR.showToast('Date filter coming soon','info')">
+            <span class="material-symbols-outlined" style="font-size:15px;">calendar_today</span>
+            May 1, 2026 – May 31, 2026
+          </button>
+          <button class="tb-btn" onclick="document.getElementById('filter-status').value='all'; applyFilters()">
+            <span class="material-symbols-outlined" style="font-size:15px;">refresh</span> Reset
+          </button>
+        </div>
+
+        <!-- ── Table ── -->
+        <div class="tbl-card">
+
+          <!-- Head -->
+          <div class="tbl-head">
+            <input type="checkbox" class="tbl-check" />
+            <div class="tbl-th">Campaign Name <span class="material-symbols-outlined">unfold_more</span></div>
+            <div class="tbl-th">Message Preview</div>
+            <div class="tbl-th">Audience</div>
+            <div class="tbl-th">Status</div>
+            <div class="tbl-th">Sent</div>
+            <div class="tbl-th">Delivered</div>
+            <div class="tbl-th">Created Date <span class="material-symbols-outlined">unfold_more</span></div>
+            <div class="tbl-th" style="justify-content:flex-end;">Actions</div>
+          </div>
+
+          <!-- Rows -->
+          <div id="campaign-list"></div>
+
+          <!-- Pagination -->
+          <div class="pagination">
+            <span class="pg-info" id="pg-info">Showing 1 to 7 of 24 campaigns</span>
+            <div class="pg-btns">
+              <button class="pg-btn pg-btn-ico">
+                <span class="material-symbols-outlined" style="font-size:15px;">chevron_left</span>
+              </button>
+              <button class="pg-btn act">1</button>
+              <button class="pg-btn">2</button>
+              <button class="pg-btn">3</button>
+              <span style="font-size:12px;color:#9ca3af;padding:0 3px;">…</span>
+              <button class="pg-btn">4</button>
+              <button class="pg-btn pg-btn-ico">
+                <span class="material-symbols-outlined" style="font-size:15px;">chevron_right</span>
+              </button>
+            </div>
+            <div class="pg-rows">
+              Rows per page
+              <select><option>10</option><option>25</option><option>50</option></select>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /content-container -->
+    </main>
+  </div>
+
+  <!-- ══ Side Panel ══ -->
+  <div class="side-panel" id="side-panel">
+    <div class="panel-head">
+      <div>
+        <div class="panel-title" id="panel-title">May Land Promo</div>
+        <div style="margin-top:5px;" id="panel-status-wrap">
+          <span class="s-tag s-sent" style="font-size:10px;padding:2px 8px;">● Sent</span>
+        </div>
+      </div>
+      <button class="panel-close" onclick="closePanel()">
+        <span class="material-symbols-outlined" style="font-size:16px;">close</span>
+      </button>
+    </div>
+
+    <div class="panel-body" id="panel-body">
+      <!-- injected dynamically -->
+    </div>
+
+    <div class="panel-foot">
+      <div class="foot-meta">Created by <strong id="panel-agent">Agent A</strong></div>
+      <div class="foot-meta">Created on <strong id="panel-date">May 28, 2026 · 10:30 AM</strong></div>
+    </div>
+  </div>
+
+  <script src="../sidebar.js"></script>
+  <script src="../shell.js"></script>
+  <script>
+  /* ── Data ── */
+  const CAMPAIGNS = [
+    {
+      icon: '🎁', iconBg: '#fff7ed',
+      name: 'May Land Promo',    sub: 'Land promotion',
+      preview: '🏡 Limited offer! Get 10% off all land purchases in Apo this May…',
+      previewFull: '🏡 Limited offer!\nGet 10% off all land purchases in Apo this May. Secure your future today.\n\n📍 Locations: Apo, Gudu, Kuje\n📞 Call/WhatsApp: +234 901 234 5678\n\nHurry! Offer valid while stocks last.',
+      audience: 2450, statusKey: 'sent',  status: 'Sent',     sent: 2450, delivered: 2312, delivPct: '94.4%', pctClass: '',
+      date: 'May 28, 2024', time: '10:30 AM', agent: 'Agent A',
+      audience_sample: [
+        { avi:'JD', color:'#6366f1', name:'John Doe',      phone:'+234 812 345 6789' },
+        { avi:'SJ', color:'#10b981', name:'Sarah Johnson', phone:'+234 903 456 7890' },
+        { avi:'MB', color:'#f59e0b', name:'Mike Brown',    phone:'+234 701 234 5678' },
+        { avi:'ED', color:'#3b82f6', name:'Emily Davis',   phone:'+234 812 987 6543' },
+        { avi:'DW', color:'#8b5cf6', name:'David Wilson',  phone:'+234 809 876 5432' },
+      ]
+    },
+    {
+      icon: '🏠', iconBg: '#eff6ff',
+      name: 'Apo Estate Update', sub: 'New estate launch',
+      preview: '🏗 New estate alert! Premium plots now available in Apo…',
+      previewFull: '🏗 New estate alert!\nPremium plots now available in Apo — starting at ₦4.5M. Book your inspection today!',
+      audience: 1872, statusKey: 'sending', status: 'Sending', sent: 1250, delivered: 1102, delivPct: '88.2%', pctClass: 'warn',
+      date: 'May 31, 2024', time: '09:15 AM', agent: 'Agent B',
+      audience_sample: [
+        { avi:'JD', color:'#6366f1', name:'John Doe',   phone:'+234 812 345 6789' },
+        { avi:'SJ', color:'#10b981', name:'Sarah J.',   phone:'+234 903 456 7890' },
+      ]
+    },
+    {
+      icon: '🏷', iconBg: '#f5f3ff',
+      name: 'Weekend Offer',     sub: 'Discount announcement',
+      preview: '🔥 Weekend special! Book a site visit this weekend and get…',
+      previewFull: '🔥 Weekend special!\nBook a site visit this weekend and get ₦50,000 off your reservation fee.',
+      audience: 1320, statusKey: 'queued',  status: 'Queued',   sent: 0, delivered: 0, delivPct: '0%', pctClass: '',
+      date: 'May 31, 2024', time: '02:00 PM', agent: 'Agent A',
+      audience_sample: []
+    },
+    {
+      icon: '📋', iconBg: '#f0fdf4',
+      name: 'Customer Survey',   sub: 'Feedback collection',
+      preview: 'Hi {{name}}, we\'d love to hear your feedback. Please take…',
+      previewFull: 'Hi {{name}}, we\'d love to hear your feedback. Please take 2 mins to fill this quick survey: [link]',
+      audience: 980, statusKey: 'draft', status: 'Draft', sent: 0, delivered: 0, delivPct: '—', pctClass: '',
+      date: 'May 29, 2024', time: '11:45 AM', agent: 'Agent C',
+      audience_sample: []
+    },
+    {
+      icon: '⭐', iconBg: '#fffbeb',
+      name: 'Referral Program',  sub: 'Refer & earn',
+      preview: 'Refer your friends and earn exciting rewards! 🎉 Check out…',
+      previewFull: 'Refer your friends and earn exciting rewards! 🎉 Check out our new referral program and earn ₦20,000 for each successful referral.',
+      audience: 1560, statusKey: 'sent', status: 'Sent', sent: 1560, delivered: 1420, delivPct: '91.0%', pctClass: '',
+      date: 'May 27, 2024', time: '04:20 PM', agent: 'Agent B',
+      audience_sample: [
+        { avi:'CM', color:'#f59e0b', name:'Chris Martin',   phone:'+234 803 456 7891' },
+        { avi:'PG', color:'#10b981', name:'Patricia Gomez', phone:'+234 807 654 3210' },
+      ]
+    },
+    {
+      icon: '⚠️', iconBg: '#fef2f2',
+      name: 'Price Update',      sub: 'Price increase notice',
+      preview: 'Important update: New prices will take effect from June 1st…',
+      previewFull: 'Important update: New prices will take effect from June 1st. Lock in your current rate by booking before then.',
+      audience: 850, statusKey: 'failed', status: 'Failed', sent: 120, delivered: 45, delivPct: '37.5%', pctClass: 'bad',
+      date: 'May 26, 2024', time: '01:10 PM', agent: 'Agent A',
+      audience_sample: []
+    },
+    {
+      icon: '🏡', iconBg: '#ecfdf5',
+      name: 'Open House Invite',  sub: 'Event invitation',
+      preview: 'You\'re invited! Join us for an exclusive open house event…',
+      previewFull: 'You\'re invited! Join us for an exclusive open house event this Saturday at Apo Estate, 10 AM – 4 PM. Free refreshments & lucky draws await!',
+      audience: 760, statusKey: 'sent', status: 'Sent', sent: 760, delivered: 680, delivPct: '89.5%', pctClass: '',
+      date: 'May 25, 2024', time: '09:00 AM', agent: 'Agent C',
+      audience_sample: [
+        { avi:'LJ', color:'#ba0031', name:'Linda Johnson', phone:'+234 901 222 3344' },
+        { avi:'DC', color:'#6366f1', name:'Daniel Carter', phone:'+234 803 321 7654' },
+      ]
+    },
+  ];
+
+  const STATUS_TAG = {
+    sent:    'sent',
+    sending: 'sending',
+    queued:  'queued',
+    draft:   'draft',
+    failed:  'failed',
+  };
+
+  function statusHtml(c) {
+    if (c.statusKey === 'sending') {
+      return `<span class="s-tag s-sending"><span class="sending-dot"></span>${c.status}</span>`;
+    }
+    return `<span class="s-tag s-${STATUS_TAG[c.statusKey] || 'draft'}">${c.status}</span>`;
+  }
+
+  let activeIdx = null;
+
+  function renderCampaigns(list) {
+    const el = document.getElementById('campaign-list');
+    if (list.length === 0) {
+      el.innerHTML = `
+        <div style="padding:48px 20px;display:flex;flex-direction:column;align-items:center;gap:10px;">
+          <div style="width:48px;height:48px;border-radius:14px;background:#f9fafb;border:1px solid #e5e7eb;display:flex;align-items:center;justify-content:center;color:#d1d5db;">
+            <span class="material-symbols-outlined" style="font-size:22px;">campaign</span>
+          </div>
+          <span style="font-size:13px;color:#6b7280;font-weight:500;">No campaigns found</span>
+          <span style="font-size:12px;color:#9ca3af;">Try adjusting your filters</span>
+        </div>`;
+      return;
+    }
+    el.innerHTML = list.map((c, i) => `
+      <div class="tbl-row${activeIdx === i ? ' active-row' : ''}" onclick="openPanel(${i})">
+        <input type="checkbox" class="tbl-check" onclick="event.stopPropagation()" />
+        <!-- Name -->
+        <div class="cmp-cell">
+          <div class="cmp-icon" style="background:${c.iconBg};">${c.icon}</div>
+          <div style="min-width:0;">
+            <div class="cmp-name">${c.name}</div>
+            <div class="cmp-sub">${c.sub}</div>
+          </div>
+        </div>
+        <!-- Preview -->
+        <div class="preview-cell">
+          <div class="preview-text" title="${c.preview}">${c.preview}</div>
+        </div>
+        <!-- Audience -->
+        <div class="num-cell">${c.audience.toLocaleString()}<span style="font-size:11px;color:#9ca3af;font-weight:400;"> contacts</span></div>
+        <!-- Status -->
+        <div>${statusHtml(c)}</div>
+        <!-- Sent -->
+        <div class="num-cell">${c.sent > 0 ? c.sent.toLocaleString() : '—'}</div>
+        <!-- Delivered -->
+        <div class="stat-cell">
+          <span class="stat-main">${c.delivered > 0 ? c.delivered.toLocaleString() : '—'}</span>
+          ${c.delivered > 0 ? `<span class="stat-pct ${c.pctClass}">(${c.delivPct})</span>` : ''}
+        </div>
+        <!-- Date -->
+        <div class="date-cell">${c.date}<br><span style="font-size:10px;color:#d1d5db;">${c.time}</span></div>
+        <!-- Actions -->
+        <div class="row-acts" onclick="event.stopPropagation()">
+          <button class="row-btn" title="View" onclick="openPanel(${i})">
+            <span class="material-symbols-outlined" style="font-size:14px;">visibility</span>
+          </button>
+          <button class="row-btn" title="Edit" onclick="QR.showToast('Editing ${c.name}','info')">
+            <span class="material-symbols-outlined" style="font-size:14px;">edit</span>
+          </button>
+          <button class="row-btn danger" title="Delete" onclick="QR.showToast('Delete disabled in demo','error')">
+            <span class="material-symbols-outlined" style="font-size:14px;">delete</span>
+          </button>
+        </div>
+      </div>`
+    ).join('');
+  }
+
+  function openPanel(i) {
+    const c = CAMPAIGNS[i];
+    activeIdx = i;
+    renderCampaigns(CAMPAIGNS); // re-render to highlight active row
+
+    document.getElementById('panel-title').textContent = c.name;
+    document.getElementById('panel-status-wrap').innerHTML = `<span class="s-tag s-${STATUS_TAG[c.statusKey]||'draft'}" style="font-size:10px;padding:2px 8px;">● ${c.status}</span>`;
+    document.getElementById('panel-agent').textContent = c.agent;
+    document.getElementById('panel-date').textContent = `${c.date} · ${c.time}`;
+
+    const audRows = c.audience_sample.map(a => `
+      <div class="aud-row">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="aud-avi" style="background:${a.color};">${a.avi}</div>
+          <div>
+            <div class="aud-name">${a.name}</div>
+            <div class="aud-phone">${a.phone}</div>
+          </div>
+        </div>
+        <svg viewBox="0 0 24 24" fill="#25d366" style="width:14px;height:14px;flex-shrink:0;" aria-hidden="true">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/>
+        </svg>
+      </div>`).join('');
+
+    document.getElementById('panel-body').innerHTML = `
+      <!-- WhatsApp preview -->
+      <div class="wa-preview">
+        <div class="wa-preview-label">Message Preview</div>
+        <div class="wa-bubble">
+          ${c.previewFull.replace(/\n/g,'<br>')}
+          <div class="wa-meta">
+            <span class="wa-time">${c.time}</span>
+            <span class="material-symbols-outlined" style="font-size:13px;color:#10b981;font-variation-settings:'FILL' 1;">done_all</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats grid -->
+      <div class="panel-stats">
+        <div class="pstat">
+          <div class="pstat-icon" style="background:#eff6ff;">
+            <span class="material-symbols-outlined" style="font-size:14px;color:#2563eb;">send</span>
+          </div>
+          <div class="pstat-val">${c.sent.toLocaleString()}</div>
+          <div class="pstat-lbl">Sent</div>
+        </div>
+        <div class="pstat">
+          <div class="pstat-icon" style="background:#ecfdf5;">
+            <span class="material-symbols-outlined" style="font-size:14px;color:#059669;">check_circle</span>
+          </div>
+          <div class="pstat-val">${c.delivered.toLocaleString()}</div>
+          <div class="pstat-lbl">Delivered</div>
+        </div>
+        <div class="pstat">
+          <div class="pstat-icon" style="background:#f0fdf4;">
+            <span class="material-symbols-outlined" style="font-size:14px;color:#10b981;">bar_chart</span>
+          </div>
+          <div class="pstat-val" style="color:${c.pctClass==='bad'?'#ef4444':c.pctClass==='warn'?'#d97706':'#111827'};">${c.delivPct}</div>
+          <div class="pstat-lbl">Delivery Rate</div>
+        </div>
+        <div class="pstat">
+          <div class="pstat-icon" style="background:#f5f3ff;">
+            <span class="material-symbols-outlined" style="font-size:14px;color:#7c3aed;">group</span>
+          </div>
+          <div class="pstat-val">${c.audience.toLocaleString()}</div>
+          <div class="pstat-lbl">Total Audience</div>
+        </div>
+      </div>
+
+      <!-- Audience sample -->
+      ${c.audience_sample.length > 0 ? `
+      <div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+          <div class="ps-title" style="margin-bottom:0;">Audience Sample (${c.audience_sample.length})</div>
+          <button style="font-size:11px;font-weight:600;color:var(--brand);background:none;border:none;cursor:pointer;">View all</button>
+        </div>
+        ${audRows}
+      </div>` : `
+      <div style="text-align:center;padding:16px 0;">
+        <span style="font-size:12px;color:#9ca3af;">No audience sample available</span>
+      </div>`}
+    `;
+
+    document.getElementById('side-panel').classList.add('open');
+  }
+
+  function closePanel() {
+    document.getElementById('side-panel').classList.remove('open');
+    activeIdx = null;
+    renderCampaigns(CAMPAIGNS);
+  }
+
+  function applyFilters() {
+    const q  = document.querySelector('.tb-search input').value.toLowerCase();
+    const st = document.getElementById('filter-status').value;
+    const filtered = CAMPAIGNS.filter(c =>
+      (st === 'all' || c.statusKey === st) &&
+      (c.name.toLowerCase().includes(q) || c.sub.toLowerCase().includes(q))
+    );
+    renderCampaigns(filtered);
+    document.getElementById('pg-info').textContent =
+      `Showing 1 to ${filtered.length} of ${filtered.length} campaign${filtered.length !== 1 ? 's' : ''}`;
+  }
+
+  document.addEventListener('DOMContentLoaded', () => renderCampaigns(CAMPAIGNS));
+  </script>
+</body>
+</html>

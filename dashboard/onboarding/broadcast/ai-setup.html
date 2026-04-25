@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>AI Broadcast Engine - Onboarding | QuicReply</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#ba0031",
+                        "primary-variant": "#e80040",
+                        "surface": "#f8f9fa",
+                        "on-surface": "#191c1d",
+                        "secondary": "#5f5e5e",
+                        "outline": "#e1e3e4",
+                        "wa-green": "#25D366",
+                        "wa-dark": "#128C7E",
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1.25rem",
+                        "xl": "2rem",
+                        "2xl": "2.5rem",
+                        "full": "9999px"
+                    },
+                    fontFamily: { sans: ["Inter", "sans-serif"] },
+                    boxShadow: {
+                        "premium": "0 20px 50px -12px rgba(0,0,0,0.08)",
+                        "premium-hover": "0 30px 60px -12px rgba(186,0,49,0.12)",
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="../../shell.css" />
+    <style>
+        body {
+            min-height: 100vh;
+            padding: 0;
+            margin: 0;
+            background: radial-gradient(circle at top, rgba(186, 0, 49, .08), transparent 30%), var(--surface);
+            overflow-x: hidden;
+        }
+
+        .main-content {
+            min-height: calc(100vh - var(--topbar-height));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 24px 80px;
+        }
+
+        .onboarding-container {
+            max-width: 1040px;
+            width: 100%;
+            animation: fadeIn .35s ease-out;
+        }
+
+        .section-card {
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            background: #fff;
+            padding: 20px;
+        }
+
+        .toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .toggle-row:last-child {
+            border-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .switch {
+            width: 46px;
+            height: 26px;
+            border-radius: 999px;
+            background: #e5e7eb;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .switch::after {
+            content: "";
+            width: 20px;
+            height: 20px;
+            border-radius: 999px;
+            background: #fff;
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            box-shadow: 0 2px 8px rgba(15, 23, 42, .18);
+            transition: .2s ease;
+        }
+
+        .switch.on {
+            background: var(--brand);
+        }
+
+        .switch.on::after {
+            left: 23px;
+        }
+
+        #training-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(255, 255, 255, .96);
+            z-index: 50;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 18px;
+            backdrop-filter: blur(8px);
+        }
+
+        .spinner {
+            width: 66px;
+            height: 66px;
+            border-radius: 999px;
+            border: 4px solid rgba(186, 0, 49, 0.1);
+            border-top-color: var(--brand);
+            animation: spin 1s linear infinite;
+        }
+
+        .flow-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 700;
+            background: #fee2e2;
+            color: #991b1b;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="topbar-mount" data-title="Onboarding · AI Broadcast Setup"></div>
+
+    <div class="main-content">
+        <div class="onboarding-container space-y-6">
+            <div class="flex justify-center mb-6">
+                <img src="../../../assets/images/logo.png" alt="QuicReply" class="h-10 w-auto" />
+            </div>
+            <div class="flex justify-center items-center px-4">
+                <div class="step-dot done"><span class="material-symbols-outlined text-sm">check</span></div>
+                <div class="step-line done"></div>
+                <div class="step-dot done"><span class="material-symbols-outlined text-sm">storefront</span></div>
+                <div class="step-line done"></div>
+                <div class="step-dot done"><span class="material-symbols-outlined text-sm">link</span></div>
+                <div class="step-line done"></div>
+                <div class="step-dot active"><span class="material-symbols-outlined text-sm">smart_toy</span></div>
+                <div class="step-line"></div>
+                <div class="step-dot"><span class="material-symbols-outlined text-sm">flag</span></div>
+            </div>
+
+            <div class="text-center space-y-3">
+                <span class="flow-pill">Broadcast Model</span>
+                <h1 class="text-3xl font-black text-gray-900">AI Broadcast Engine Setup</h1>
+                <p class="text-gray-600 max-w-2xl mx-auto">Configure your bulk outreach rules and train your AI Engine
+                    with deep product context for better conversion.</p>
+            </div>
+
+            <form id="ai-form" class="grid grid-cols-1 xl:grid-cols-[1.05fr_.95fr] gap-6">
+                <div class="space-y-6">
+                    <div class="section-card space-y-5">
+                        <h2 class="text-base font-bold text-gray-900">A. Outreach Rules</h2>
+                        <div class="toggle-row">
+                            <div>
+                                <h3 class="text-sm font-semibold text-gray-900">Save new replies as leads</h3>
+                                <p class="text-xs text-gray-500 mt-1">Capture anyone who replies to your broadcasts.</p>
+                            </div>
+                            <div class="switch on" data-switch="saveReplies"></div>
+                        </div>
+                        <div class="toggle-row">
+                            <div>
+                                <h3 class="text-sm font-semibold text-gray-900">Auto-tagging</h3>
+                                <p class="text-xs text-gray-500 mt-1">Tag prospects by interest levels automatically.
+                                </p>
+                            </div>
+                            <div class="switch on" data-switch="autoTag"></div>
+                        </div>
+                    </div>
+                    <div class="section-card space-y-5">
+                        <h2 class="text-base font-bold text-gray-900">B. Deep AI Training (Product Context)</h2>
+                        <div class="space-y-4">
+                            <div class="space-y-2"><label class="text-sm font-semibold text-gray-700">Main outreach
+                                    objective?</label><textarea id="objective" class="input-field" rows="3"
+                                    placeholder="e.g. Booking meetings, promoting holiday sale..." required></textarea>
+                            </div>
+                            <div class="space-y-2"><label class="text-sm font-semibold text-gray-700">Deep Product
+                                    Context</label><textarea id="details" class="input-field" rows="3"
+                                    placeholder="Provide details for the AI to answer questions..." required></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <aside class="space-y-6">
+                    <div class="section-card space-y-4">
+                        <h2 class="text-base font-bold text-gray-900">Broadcast Engine</h2>
+                        <div class="p-4 rounded-2xl bg-red-50 border border-red-200">
+                            <p class="text-sm font-bold text-gray-900">Training Logic Active</p>
+                            <p class="text-xs text-gray-600 mt-2 leading-5">The engine will vectorize your product data
+                                to ensure high-intent responses to broadcast engagement.</p>
+                        </div>
+                    </div>
+                </aside>
+
+                <div class="xl:col-span-2 flex flex-col md:flex-row items-center justify-between gap-4 pt-2">
+                    <button type="button" onclick="location.href='whatsapp.html'" class="btn-ghost"><span
+                            class="material-symbols-outlined text-sm">arrow_back</span> Back</button>
+                    <button type="submit" class="btn-primary py-3 px-6 text-base">Initialize Broadcast Engine <span
+                            class="material-symbols-outlined text-sm">power</span></button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="training-overlay">
+        <div class="spinner"></div>
+        <h2 class="text-2xl font-black text-gray-900">Training Broadcast Engine...</h2>
+    </div>
+
+    <script src="../../sidebar.js"></script>
+    <script src="../../shell.js"></script>
+    <script>
+        const form = document.getElementById("ai-form");
+        const overlay = document.getElementById("training-overlay");
+        document.querySelectorAll("[data-switch]").forEach((el) => el.addEventListener("click", () => el.classList.toggle("on")));
+
+        form.addEventListener("submit", (e) => {
+            e.preventDefault();
+            if (!form.checkValidity()) return;
+            overlay.style.display = "flex";
+            setTimeout(() => location.href = "complete.html", 2400);
+        });
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            const l1 = document.getElementById('hb-line-1');
+            const l2 = document.getElementById('hb-line-2');
+            const l3 = document.getElementById('hb-line-3');
+            if (!menu || !l1 || !l2 || !l3) return;
+            const isOpen = !menu.classList.contains('hidden');
+            if (isOpen) {
+                menu.classList.add('hidden');
+                l1.style.transform = ''; l2.style.opacity = '1'; l3.style.transform = '';
+            } else {
+                menu.classList.remove('hidden');
+                l1.style.transform = 'translateY(8px) rotate(45deg)';
+                l2.style.opacity = '0';
+                l3.style.transform = 'translateY(-8px) rotate(-45deg)';
+            }
+        }
+    </script>
+
+
+
+    <div id="footer-mount"></div>
+</body>
+
+</html>

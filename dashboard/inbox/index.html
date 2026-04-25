@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Inbox — QuicReply Sales OS</title>
+  <meta name="description" content="QuicReply unified inbox — manage all WhatsApp conversations in one place." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+  <link rel="stylesheet" href="../shell.css" />
+  <style>
+    /* ── Layout ── */
+    body { background: #f7f8fa; }
+    .inbox-shell {
+      display: flex;
+      height: calc(100vh - 64px);
+      overflow: hidden;
+    }
+
+    /* ════════════════════════════════
+       PANE 1 — Conversation list
+    ════════════════════════════════ */
+    .conv-pane {
+      width: 320px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      background: #fff;
+      border-right: 1px solid #e5e7eb;
+    }
+
+    .conv-pane-header {
+      padding: 16px 20px 14px;
+      border-bottom: 1px solid #f3f4f6;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .conv-pane-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: #111827;
+      letter-spacing: -0.01em;
+    }
+    .conv-new-badge {
+      font-size: 10px;
+      font-weight: 700;
+      color: #fff;
+      background: var(--brand);
+      padding: 2px 8px;
+      border-radius: 99px;
+      letter-spacing: 0.03em;
+    }
+
+    /* Search bar */
+    .conv-search {
+      padding: 10px 14px;
+      flex-shrink: 0;
+    }
+    .conv-search-inner {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #f9fafb;
+      border: 1px solid #f3f4f6;
+      border-radius: 10px;
+      padding: 8px 12px;
+      transition: border-color 0.15s;
+    }
+    .conv-search-inner:focus-within {
+      border-color: #d1d5db;
+      background: #fff;
+    }
+    .conv-search-inner input {
+      border: none;
+      background: transparent;
+      outline: none;
+      font-size: 12px;
+      font-weight: 500;
+      color: #374151;
+      width: 100%;
+    }
+    .conv-search-inner input::placeholder { color: #9ca3af; }
+
+    /* Filter tabs */
+    .conv-tabs {
+      display: flex;
+      gap: 4px;
+      padding: 0 14px 10px;
+      flex-shrink: 0;
+    }
+    .conv-tab {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 7px;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      color: #9ca3af;
+      transition: all 0.15s;
+    }
+    .conv-tab.active { background: #f3f4f6; color: #111827; }
+    .conv-tab:hover:not(.active) { color: #374151; background: #f9fafb; }
+
+    /* Conversation items */
+    .conv-list { flex: 1; overflow-y: auto; padding: 4px 10px 12px; }
+
+    .conv-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.12s;
+      margin-bottom: 2px;
+      position: relative;
+      border: 1px solid transparent;
+    }
+    .conv-item:hover { background: #f9fafb; }
+    .conv-item.active {
+      background: #fef2f5;
+      border-color: rgba(186,0,49,0.12);
+    }
+    .conv-item.active .conv-item-name { color: var(--brand); }
+
+    /* Unread left indicator */
+    .conv-item.unread::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 3px;
+      height: 28px;
+      background: var(--brand);
+      border-radius: 0 3px 3px 0;
+    }
+
+    .conv-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .conv-item-body { flex: 1; min-width: 0; }
+    .conv-item-row1 {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 6px;
+      margin-bottom: 2px;
+    }
+    .conv-item-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: #111827;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .conv-item-time {
+      font-size: 10px;
+      font-weight: 600;
+      color: #9ca3af;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .conv-item-preview {
+      font-size: 12px;
+      color: #6b7280;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .conv-item.unread .conv-item-preview { color: #374151; font-weight: 500; }
+    .conv-unread-dot {
+      width: 7px;
+      height: 7px;
+      background: var(--brand);
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 5px;
+    }
+
+    /* ════════════════════════════════
+       PANE 2 — Chat view
+    ════════════════════════════════ */
+    .chat-pane {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: #f7f8fa;
+      min-width: 0;
+    }
+
+    /* Chat header */
+    .chat-header {
+      background: #fff;
+      border-bottom: 1px solid #e5e7eb;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+    .chat-header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+    .chat-header-name {
+      font-size: 14px;
+      font-weight: 800;
+      color: #111827;
+    }
+    .chat-header-sub {
+      font-size: 11px;
+      color: #6b7280;
+      font-weight: 500;
+      margin-top: 1px;
+    }
+    .chat-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+    .chat-action-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      border: 1px solid #e5e7eb;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #6b7280;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .chat-action-btn:hover { background: #f9fafb; color: #111827; border-color: #d1d5db; }
+
+    /* AI bar */
+    .ai-bar {
+      background: #111827;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .ai-bar-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .ai-pulse {
+      width: 7px;
+      height: 7px;
+      background: #10b981;
+      border-radius: 50%;
+      animation: pulse-ai 2s infinite;
+    }
+    @keyframes pulse-ai {
+      0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(16,185,129,0.4); }
+      50%       { opacity: 0.8; box-shadow: 0 0 0 5px rgba(16,185,129,0); }
+    }
+
+    /* Chat messages area */
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* Date divider */
+    .date-divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 4px 0;
+    }
+    .date-divider-line { flex: 1; height: 1px; background: #e5e7eb; }
+    .date-divider-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: #9ca3af;
+      white-space: nowrap;
+      letter-spacing: 0.05em;
+    }
+
+    /* Bubbles */
+    .msg-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+    }
+    .msg-row.inbound { justify-content: flex-start; }
+    .msg-row.outbound { justify-content: flex-end; }
+
+    .msg-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .msg-block { display: flex; flex-direction: column; gap: 2px; max-width: 68%; }
+    .msg-row.outbound .msg-block { align-items: flex-end; }
+
+    .bubble {
+      padding: 10px 14px;
+      border-radius: 16px;
+      font-size: 13px;
+      line-height: 1.5;
+      font-weight: 400;
+    }
+    .bubble.inbound {
+      background: #fff;
+      color: #111827;
+      border: 1px solid #e5e7eb;
+      border-bottom-left-radius: 4px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .bubble.outbound {
+      background: var(--brand);
+      color: #fff;
+      border-bottom-right-radius: 4px;
+    }
+    .bubble.ai-bubble {
+      background: #f5f3ff;
+      color: #4c1d95;
+      border: 1px solid #e0d9fd;
+      border-bottom-left-radius: 4px;
+    }
+
+    .msg-meta {
+      font-size: 10px;
+      font-weight: 500;
+      color: #9ca3af;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 0 2px;
+    }
+    .msg-row.outbound .msg-meta { justify-content: flex-end; }
+    .ai-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      background: #ede9fe;
+      color: #6d28d9;
+      font-size: 9px;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 99px;
+      letter-spacing: 0.04em;
+    }
+
+    /* Typing indicator */
+    .typing-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 2px;
+    }
+    .typing-dots {
+      display: flex;
+      gap: 3px;
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      padding: 10px 14px;
+      border-radius: 16px;
+      border-bottom-left-radius: 4px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .typing-dots span {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #d1d5db;
+      animation: typing 1.4s infinite;
+    }
+    .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes typing {
+      0%, 60%, 100% { transform: translateY(0); background: #d1d5db; }
+      30%           { transform: translateY(-4px); background: #9ca3af; }
+    }
+
+    /* Composer */
+    .chat-composer {
+      background: #fff;
+      border-top: 1px solid #e5e7eb;
+      padding: 12px 16px;
+      flex-shrink: 0;
+    }
+    .composer-inner {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 10px 12px;
+      transition: border-color 0.15s;
+    }
+    .composer-inner:focus-within { border-color: #d1d5db; background: #fff; }
+    .composer-textarea {
+      flex: 1;
+      border: none;
+      background: transparent;
+      outline: none;
+      font-size: 13px;
+      font-weight: 500;
+      color: #111827;
+      resize: none;
+      font-family: 'Inter', sans-serif;
+      line-height: 1.5;
+      max-height: 120px;
+      overflow-y: auto;
+    }
+    .composer-textarea::placeholder { color: #9ca3af; font-weight: 400; }
+    .composer-actions {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+    .composer-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #9ca3af;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .composer-btn:hover { background: #f3f4f6; color: #374151; }
+    .composer-send {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: var(--brand);
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .composer-send:hover { background: var(--brand-hover); transform: translateY(-1px); }
+
+    /* ════════════════════════════════
+       PANE 3 — Contact panel  
+    ════════════════════════════════ */
+    .contact-pane {
+      width: 280px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      background: #fff;
+      border-left: 1px solid #e5e7eb;
+      overflow-y: auto;
+    }
+
+    /* Contact header */
+    .contact-header {
+      padding: 20px 20px 16px;
+      text-align: center;
+      border-bottom: 1px solid #f3f4f6;
+      flex-shrink: 0;
+    }
+    .contact-avatar-lg {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      background: #fef2f5;
+      color: var(--brand);
+      font-size: 18px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 12px;
+      border: 1.5px solid rgba(186,0,49,0.12);
+    }
+    .contact-name {
+      font-size: 14px;
+      font-weight: 800;
+      color: #111827;
+      margin-bottom: 3px;
+    }
+    .contact-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      color: #6d28d9;
+      background: #f5f3ff;
+      border: 1px solid #e0d9fd;
+      padding: 2px 8px;
+      border-radius: 99px;
+      letter-spacing: 0.03em;
+    }
+
+    /* Action buttons row */
+    .contact-actions {
+      display: flex;
+      gap: 8px;
+      padding: 12px 20px;
+      border-bottom: 1px solid #f3f4f6;
+      flex-shrink: 0;
+    }
+    .contact-action {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 8px 6px;
+      border-radius: 10px;
+      border: 1px solid #e5e7eb;
+      background: #f9fafb;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-size: 10px;
+      font-weight: 600;
+      color: #6b7280;
+    }
+    .contact-action:hover { background: #fff; border-color: #d1d5db; color: #111827; }
+
+    /* Info sections */
+    .contact-section {
+      padding: 16px 20px;
+      border-bottom: 1px solid #f3f4f6;
+    }
+    .contact-section:last-child { border-bottom: none; }
+    .contact-section-title {
+      font-size: 10px;
+      font-weight: 700;
+      color: #9ca3af;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      margin-bottom: 10px;
+    }
+    .contact-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .contact-row:last-child { margin-bottom: 0; }
+    .contact-row-label { font-size: 12px; color: #6b7280; font-weight: 500; white-space: nowrap; }
+    .contact-row-val   { font-size: 12px; color: #111827; font-weight: 700; text-align: right; }
+    .contact-row-val.brand { color: var(--brand); }
+
+    /* Stage badge */
+    .stage-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 99px;
+    }
+
+    /* Note card */
+    .note-card {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-radius: 10px;
+      padding: 10px 12px;
+    }
+    .note-card p {
+      font-size: 12px;
+      color: #78350f;
+      line-height: 1.55;
+      font-style: italic;
+    }
+
+    /* Scrollbar refinement */
+    .conv-list::-webkit-scrollbar,
+    .chat-messages::-webkit-scrollbar,
+    .contact-pane::-webkit-scrollbar { width: 4px; }
+
+    /* Responsive: hide right pane on smaller screens */
+    @media (max-width: 1200px) { .contact-pane { display: none; } }
+    @media (max-width: 900px)  { .conv-pane { width: 260px; } }
+    @media (max-width: 700px)  { .conv-pane { display: none; } }
+  </style>
+</head>
+<body>
+  <div id="sidebar-mount"></div>
+  <div class="layout-with-sidebar" id="main-layout">
+    <div id="topbar-mount" data-title="Inbox · Unified Conversations"></div>
+
+    <main class="flex-1 flex" style="height:calc(100vh - 64px); overflow:hidden;">
+
+      <!-- ════ PANE 1: Conversation List ════ -->
+      <aside class="conv-pane">
+        <!-- Header -->
+        <div class="conv-pane-header">
+          <span class="conv-pane-title">Active Threads</span>
+          <span class="conv-new-badge">12 New</span>
+        </div>
+
+        <!-- Search -->
+        <div class="conv-search">
+          <div class="conv-search-inner">
+            <span class="material-symbols-outlined" style="font-size:16px; color:#9ca3af; flex-shrink:0;">search</span>
+            <input type="text" placeholder="Search conversations…" />
+          </div>
+        </div>
+
+        <!-- Filter tabs -->
+        <div class="conv-tabs">
+          <button class="conv-tab active" id="ctab-all"     onclick="setConvTab('all')">All</button>
+          <button class="conv-tab"        id="ctab-unread"  onclick="setConvTab('unread')">Unread</button>
+          <button class="conv-tab"        id="ctab-ai"      onclick="setConvTab('ai')">AI</button>
+          <button class="conv-tab"        id="ctab-open"    onclick="setConvTab('open')">Open</button>
+        </div>
+
+        <!-- List -->
+        <div class="conv-list">
+
+          <!-- Active + Unread -->
+          <div class="conv-item active unread" onclick="selectConv(this)">
+            <div class="conv-avatar" style="background:linear-gradient(135deg,#ba0031,#e80040);">JS</div>
+            <div class="conv-item-body">
+              <div class="conv-item-row1">
+                <span class="conv-item-name">Jordon Smith</span>
+                <span class="conv-item-time">2m</span>
+              </div>
+              <div class="conv-item-preview">Interested in the volume Tier 3 API…</div>
+            </div>
+            <div class="conv-unread-dot"></div>
+          </div>
+
+          <div class="conv-item unread" onclick="selectConv(this)">
+            <div class="conv-avatar" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);">ER</div>
+            <div class="conv-item-body">
+              <div class="conv-item-row1">
+                <span class="conv-item-name">Elena Rodriguez</span>
+                <span class="conv-item-time">1h</span>
+              </div>
+              <div class="conv-item-preview">Sent the documentation link.</div>
+            </div>
+            <div class="conv-unread-dot"></div>
+          </div>
+
+          <div class="conv-item" onclick="selectConv(this)">
+            <div class="conv-avatar" style="background:linear-gradient(135deg,#3b82f6,#6366f1);">MB</div>
+            <div class="conv-item-body">
+              <div class="conv-item-row1">
+                <span class="conv-item-name">Mike Brown</span>
+                <span class="conv-item-time">2h</span>
+              </div>
+              <div class="conv-item-preview">Can you share the price list?</div>
+            </div>
+          </div>
+
+          <div class="conv-item" onclick="selectConv(this)">
+            <div class="conv-avatar" style="background:linear-gradient(135deg,#f59e0b,#ef4444);">ED</div>
+            <div class="conv-item-body">
+              <div class="conv-item-row1">
+                <span class="conv-item-name">Emily Davis</span>
+                <span class="conv-item-time">3h</span>
+              </div>
+              <div class="conv-item-preview">Do you deliver to my area?</div>
+            </div>
+          </div>
+
+          <div class="conv-item" onclick="selectConv(this)">
+            <div class="conv-avatar" style="background:linear-gradient(135deg,#10b981,#3b82f6);">DW</div>
+            <div class="conv-item-body">
+              <div class="conv-item-row1">
+                <span class="conv-item-name">David Wilson</span>
+                <span class="conv-item-time">5h</span>
+              </div>
+              <div class="conv-item-preview">I want to place a bulk order</div>
+            </div>
+          </div>
+
+          <div class="conv-item" onclick="selectConv(this)">
+            <div class="conv-avatar" style="background:linear-gradient(135deg,#8b5cf6,#ec4899);">JL</div>
+            <div class="conv-item-body">
+              <div class="conv-item-row1">
+                <span class="conv-item-name">Jessica Lee</span>
+                <span class="conv-item-time">Yesterday</span>
+              </div>
+              <div class="conv-item-preview">What's the warranty on this?</div>
+            </div>
+          </div>
+
+          <div class="conv-item" onclick="selectConv(this)">
+            <div class="conv-avatar" style="background:linear-gradient(135deg,#0ea5e9,#6366f1);">RK</div>
+            <div class="conv-item-body">
+              <div class="conv-item-row1">
+                <span class="conv-item-name">Rahul Khanna</span>
+                <span class="conv-item-time">Yesterday</span>
+              </div>
+              <div class="conv-item-preview">Thanks for the quick response!</div>
+            </div>
+          </div>
+
+        </div>
+      </aside>
+
+      <!-- ════ PANE 2: Chat View ════ -->
+      <section class="chat-pane">
+
+        <!-- Chat header -->
+        <div class="chat-header">
+          <div class="chat-header-left">
+            <div class="conv-avatar" style="background:linear-gradient(135deg,#ba0031,#e80040); width:38px; height:38px; flex-shrink:0;">JS</div>
+            <div>
+              <div class="chat-header-name">Jordon Smith</div>
+              <div class="chat-header-sub">
+                <span style="width:6px;height:6px;background:#10b981;border-radius:50%;display:inline-block;margin-right:4px;vertical-align:middle;"></span>
+                Online · Enterprise Lead · Last seen 2 min ago
+              </div>
+            </div>
+          </div>
+          <div class="chat-header-actions">
+            <button class="chat-action-btn" title="Search in chat">
+              <span class="material-symbols-outlined" style="font-size:17px;">search</span>
+            </button>
+            <button class="chat-action-btn" title="Call">
+              <span class="material-symbols-outlined" style="font-size:17px;">call</span>
+            </button>
+            <button class="chat-action-btn" title="More options">
+              <span class="material-symbols-outlined" style="font-size:17px;">more_vert</span>
+            </button>
+            <button class="btn-primary text-xs" style="height:32px; padding:0 14px; border-radius:8px;">
+              Resolve
+            </button>
+          </div>
+        </div>
+
+        <!-- AI bar -->
+        <div class="ai-bar">
+          <div class="ai-bar-left">
+            <div class="ai-pulse"></div>
+            <div>
+              <div style="font-size:10px; font-weight:800; color:#f87171; text-transform:uppercase; letter-spacing:0.1em; line-height:1;">Jennifer AI Active</div>
+              <div style="font-size:10px; color:#9ca3af; font-weight:500; margin-top:2px;">Handling conversation · 94% confidence</div>
+            </div>
+          </div>
+          <button class="btn-primary text-xs" style="height:30px; padding:0 14px; border-radius:7px; font-size:10px; font-weight:800; letter-spacing:0.05em;">
+            Take Over
+          </button>
+        </div>
+
+        <!-- Messages -->
+        <div class="chat-messages" id="chat-messages">
+
+          <!-- Date divider -->
+          <div class="date-divider">
+            <div class="date-divider-line"></div>
+            <span class="date-divider-label">Today — April 21</span>
+            <div class="date-divider-line"></div>
+          </div>
+
+          <!-- Inbound -->
+          <div class="msg-row inbound">
+            <div class="msg-avatar" style="background:linear-gradient(135deg,#ba0031,#e80040);">JS</div>
+            <div class="msg-block">
+              <div class="bubble inbound">Hi, I'm interested in your API Tier 3 volume plan. Can you share more details?</div>
+              <div class="msg-meta">10:12 AM</div>
+            </div>
+          </div>
+
+          <!-- AI outbound -->
+          <div class="msg-row outbound">
+            <div class="msg-block">
+              <div class="bubble outbound">Hi Jordon! Thanks for reaching out. Our Tier 3 API plan supports up to 500k messages/month with priority support and a dedicated SLA. Would you like a personalized quote?</div>
+              <div class="msg-meta">
+                <span class="ai-pill"><span class="material-symbols-outlined" style="font-size:10px;">bolt</span>Jennifer AI</span>
+                10:12 AM
+                <span class="material-symbols-outlined" style="font-size:12px; color:#10b981;">done_all</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Inbound -->
+          <div class="msg-row inbound">
+            <div class="msg-avatar" style="background:linear-gradient(135deg,#ba0031,#e80040);">JS</div>
+            <div class="msg-block">
+              <div class="bubble inbound">Yes, that would be great! We process about 200k–300k messages per month for our warehouse tracking system.</div>
+              <div class="msg-meta">10:14 AM</div>
+            </div>
+          </div>
+
+          <!-- AI outbound -->
+          <div class="msg-row outbound">
+            <div class="msg-block">
+              <div class="bubble outbound">That's well within Tier 3 range. I've flagged your account as an enterprise lead — our solutions team will send a detailed proposal within 24 hours. 🚀</div>
+              <div class="msg-meta">
+                <span class="ai-pill"><span class="material-symbols-outlined" style="font-size:10px;">bolt</span>Jennifer AI</span>
+                10:15 AM
+                <span class="material-symbols-outlined" style="font-size:12px; color:#10b981;">done_all</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Inbound -->
+          <div class="msg-row inbound">
+            <div class="msg-avatar" style="background:linear-gradient(135deg,#ba0031,#e80040);">JS</div>
+            <div class="msg-block">
+              <div class="bubble inbound">Perfect. Also, do you support on-premise deployment or only cloud?</div>
+              <div class="msg-meta">10:18 AM</div>
+            </div>
+          </div>
+
+          <!-- Typing indicator -->
+          <div class="msg-row inbound typing-indicator">
+            <div class="msg-avatar" style="background:linear-gradient(135deg,#7c3aed,#6d28d9); width:28px; height:28px; font-size:10px; font-weight:700;">AI</div>
+            <div class="typing-dots">
+              <span></span><span></span><span></span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Composer -->
+        <div class="chat-composer">
+          <div class="composer-inner">
+            <textarea class="composer-textarea" rows="1" placeholder="Type a message…"
+              oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"></textarea>
+            <div class="composer-actions">
+              <button class="composer-btn" title="Attach file">
+                <span class="material-symbols-outlined" style="font-size:18px;">attach_file</span>
+              </button>
+              <button class="composer-btn" title="Emoji">
+                <span class="material-symbols-outlined" style="font-size:18px;">emoji_emotions</span>
+              </button>
+              <button class="composer-send" title="Send message">
+                <span class="material-symbols-outlined" style="font-size:17px; font-variation-settings:'FILL' 1;">send</span>
+              </button>
+            </div>
+          </div>
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-top:8px; padding:0 2px;">
+            <div style="display:flex; align-items:center; gap:6px;">
+              <span class="material-symbols-outlined" style="font-size:13px; color:#9ca3af;">bolt</span>
+              <span style="font-size:11px; color:#9ca3af; font-weight:500;">Jennifer AI composing · <a href="#" style="color:var(--brand); font-weight:600;">Disable</a></span>
+            </div>
+            <span style="font-size:10px; color:#d1d5db; font-weight:500;">WhatsApp · Encrypted</span>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ════ PANE 3: Contact Panel ════ -->
+      <aside class="contact-pane">
+
+        <!-- Contact identity -->
+        <div class="contact-header">
+          <div class="contact-avatar-lg">JS</div>
+          <div class="contact-name">Jordon Smith</div>
+          <div style="margin-top:6px;">
+            <span class="contact-tag">
+              <span class="material-symbols-outlined" style="font-size:11px;">workspace_premium</span>
+              Enterprise Lead
+            </span>
+          </div>
+        </div>
+
+        <!-- Quick actions -->
+        <div class="contact-actions">
+          <div class="contact-action">
+            <span class="material-symbols-outlined" style="font-size:16px;">person</span>
+            Profile
+          </div>
+          <div class="contact-action">
+            <span class="material-symbols-outlined" style="font-size:16px;">account_tree</span>
+            Pipeline
+          </div>
+          <div class="contact-action">
+            <span class="material-symbols-outlined" style="font-size:16px;">note_add</span>
+            Note
+          </div>
+        </div>
+
+        <!-- Sales Intel -->
+        <div class="contact-section">
+          <div class="contact-section-title">Sales Intel</div>
+          <div class="contact-row">
+            <span class="contact-row-label">Stage</span>
+            <span class="stage-badge" style="background:#eff6ff; color:#1d4ed8;">Review</span>
+          </div>
+          <div class="contact-row">
+            <span class="contact-row-label">Last Action</span>
+            <span class="contact-row-val">Today, 2:40 PM</span>
+          </div>
+          <div class="contact-row">
+            <span class="contact-row-label">Total Value</span>
+            <span class="contact-row-val brand">$4,800</span>
+          </div>
+          <div class="contact-row">
+            <span class="contact-row-label">Messages</span>
+            <span class="contact-row-val">34</span>
+          </div>
+        </div>
+
+        <!-- Contact Details -->
+        <div class="contact-section">
+          <div class="contact-section-title">Contact</div>
+          <div class="contact-row">
+            <span class="contact-row-label">Phone</span>
+            <span class="contact-row-val">+91 98765 43210</span>
+          </div>
+          <div class="contact-row">
+            <span class="contact-row-label">Email</span>
+            <span class="contact-row-val" style="font-size:11px;">jordon@techware.io</span>
+          </div>
+          <div class="contact-row">
+            <span class="contact-row-label">Company</span>
+            <span class="contact-row-val">TechWare Inc.</span>
+          </div>
+        </div>
+
+        <!-- Recent Note -->
+        <div class="contact-section">
+          <div class="contact-section-title">Latest Note</div>
+          <div class="note-card">
+            <p>"Extremely interested in API automation features for their tech warehouse. Follow up with pricing deck by EOD."</p>
+          </div>
+          <button class="w-full mt-3 text-xs font-600 text-[#ba0031] hover:underline text-left"
+            style="background:none; border:none; cursor:pointer; font-weight:600; font-family:inherit;">
+            + Add note
+          </button>
+        </div>
+
+        <!-- Jennifer AI Analysis -->
+        <div class="contact-section">
+          <div class="contact-section-title">AI Analysis</div>
+          <div style="background:#f5f3ff; border:1px solid #e0d9fd; border-radius:10px; padding:10px 12px;">
+            <div style="display:flex; align-items:center; gap:6px; margin-bottom:6px;">
+              <span class="material-symbols-outlined" style="font-size:14px; color:#7c3aed;">bolt</span>
+              <span style="font-size:11px; font-weight:700; color:#4c1d95;">Jennifer's Assessment</span>
+            </div>
+            <p style="font-size:11px; color:#6d28d9; line-height:1.55;">High-intent lead. 87% likelihood to convert within 7 days. Recommend direct call follow-up.</p>
+          </div>
+        </div>
+
+      </aside>
+
+    </main>
+  </div>
+
+  <script>
+    // Conversation tab switcher
+    function setConvTab(tab) {
+      ['all','unread','ai','open'].forEach(t => {
+        document.getElementById('ctab-' + t).classList.toggle('active', t === tab);
+      });
+    }
+    // Conversation item selection
+    function selectConv(el) {
+      document.querySelectorAll('.conv-item').forEach(i => i.classList.remove('active'));
+      el.classList.add('active');
+      el.classList.remove('unread');
+      const dot = el.querySelector('.conv-unread-dot');
+      if (dot) dot.remove();
+    }
+  </script>
+
+  <script src="../sidebar.js"></script>
+  <script src="../shell.js"></script>
+</body>
+</html>

@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Demo | QuicReply - Automated WhatsApp Conversion</title>
+    <link rel="icon" type="image/png" href="assets/images/fav.png" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed": "#40000b",
+                        "inverse-surface": "#2e3132",
+                        "inverse-on-surface": "#f0f1f2",
+                        "tertiary-fixed": "#86f6da",
+                        "outline": "#926e6e",
+                        "on-tertiary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "on-tertiary-fixed-variant": "#005143",
+                        "surface": "#f8f9fa",
+                        "on-surface": "#191c1d",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed-dim": "#69dabe",
+                        "secondary-fixed": "#e5e2e1",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "on-background": "#191c1d",
+                        "surface-container-high": "#e7e8e9",
+                        "on-secondary-container": "#656464",
+                        "on-primary-container": "#fffbff",
+                        "on-tertiary-fixed": "#00201a",
+                        "surface-tint": "#bf0032",
+                        "on-tertiary-container": "#f4fffa",
+                        "on-primary-fixed-variant": "#920024",
+                        "surface-variant": "#e1e3e4",
+                        "secondary": "#5f5e5e",
+                        "surface-container-low": "#f3f4f5",
+                        "primary-fixed": "#ffdada",
+                        "on-error-container": "#93000a",
+                        "background": "#f8f9fa",
+                        "on-primary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "tertiary-container": "#00846e",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "secondary-container": "#e5e2e1",
+                        "primary-fixed-dim": "#ffb3b4",
+                        "tertiary": "#006857",
+                        "surface-dim": "#d9dadb",
+                        "outline-variant": "#e7bcbc",
+                        "primary": "#ba0031",
+                        "surface-container": "#edeeef",
+                        "surface-bright": "#f8f9fa",
+                        "inverse-primary": "#ffb3b4",
+                        "on-secondary-fixed-variant": "#474646",
+                        "surface-container-highest": "#e1e3e4",
+                        "error-container": "#ffdad6",
+                        "on-surface-variant": "#5e3f3f",
+                        "primary-container": "#e80040"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .glass-nav {
+            background: rgba(248, 249, 250, 0.8);
+            backdrop-filter: blur(20px);
+        }
+
+        .editorial-shadow {
+            box-shadow: 0px 12px 32px rgba(25, 28, 29, 0.06);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa;
+            color: #191c1d;
+        }
+    </style>
+</head>
+
+<body class="selection:bg-primary-fixed selection:text-on-primary-fixed">
+    <header class="fixed top-0 left-0 w-full z-[100] flex flex-col">
+        <!-- TOP HEADER BAR -->
+        <div class="bg-primary text-white w-full text-[11px] uppercase tracking-widest font-black py-2">
+            <div class="max-w-7xl mx-auto px-4 sm:px-8 flex justify-between items-center">
+                <div class="flex items-center gap-3 sm:gap-6 flex-wrap">
+                    <a href="mailto:support@quicreply.io"
+                        class="flex items-center gap-1.5 hover:text-white/80 transition-colors whitespace-nowrap text-[10px] sm:text-[11px]">
+                        <span class="material-symbols-outlined text-[13px] text-white/70">mail</span>
+                        <span class="hidden sm:inline">support@quicreply.io</span>
+                    </a>
+                    <a href="tel:+2347025497163"
+                        class="flex items-center gap-1.5 hover:text-white/80 transition-colors whitespace-nowrap text-[10px] sm:text-[11px]">
+                        <span class="material-symbols-outlined text-[13px] text-white/70">call</span>
+                        +234 (702) 549-7163
+                    </a>
+                </div>
+                <div class="hidden md:flex items-center gap-2 text-white/80">
+                    <span class="material-symbols-outlined text-[13px]"
+                        style="font-variation-settings: 'FILL' 1">bolt</span>
+                    <span class="text-[10px]">Enterprise-grade WhatsApp Automation</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- NAVBAR -->
+        <nav
+            class="w-full bg-white/95 backdrop-blur-2xl border-b border-gray-100/50 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+            <div class="flex justify-between items-center max-w-7xl mx-auto px-4 sm:px-8 h-16 sm:h-20">
+                <a href="index.html"
+                    class="flex items-center transition-transform hover:scale-105 duration-300 shrink-0">
+                    <img src="assets/images/logo.png" alt="QuicReply Logo" class="h-8 sm:h-10 cursor-pointer">
+                </a>
+
+                <!-- Desktop Nav Links -->
+                <div
+                    class="hidden lg:flex items-center bg-surface-container-low/40 border border-outline-variant/10 rounded-full p-1 backdrop-blur-md shadow-sm">
+                    <a class="px-5 py-2 rounded-full text-secondary font-bold text-sm hover:text-primary hover:bg-white hover:shadow-sm transition-all duration-300"
+                        href="how-it-works.html">How it Works</a>
+                    <a class="px-5 py-2 rounded-full text-secondary font-bold text-sm hover:text-primary hover:bg-white hover:shadow-sm transition-all duration-300"
+                        href="index.html#features">Features</a>
+                    <a class="px-5 py-2 rounded-full text-secondary font-bold text-sm hover:text-primary hover:bg-white hover:shadow-sm transition-all duration-300"
+                        href="pricing.html">Pricing</a>
+                    <a class="px-5 py-2 rounded-full text-secondary font-bold text-sm hover:text-primary hover:bg-white hover:shadow-sm transition-all duration-300"
+                        href="demo.html">Demo</a>
+                </div>
+
+                <!-- Desktop CTA -->
+                <div class="hidden lg:flex items-center gap-4">
+                    <a class="flex items-center gap-2 text-sm font-bold text-secondary hover:text-primary transition-colors group"
+                        href="login.html">
+                        <span
+                            class="material-symbols-outlined text-[20px] transition-transform group-hover:-translate-y-0.5">login</span>
+                        Login
+                    </a>
+                    <a href="pricing.html"
+                        class="bg-gradient-to-r from-[#ba0031] to-[#e80040] text-white px-6 py-2.5 rounded-full font-bold transition-all hover:shadow-[0_8px_25px_-8px_rgba(186,0,49,0.5)] active:scale-95 text-[13px] tracking-wide flex items-center gap-2 group">
+                        Get Started
+                        <span
+                            class="material-symbols-outlined text-[18px] transition-transform group-hover:translate-x-1">arrow_forward</span>
+                    </a>
+                </div>
+
+                <!-- Mobile: Get Started + Hamburger -->
+                <div class="flex items-center gap-3 lg:hidden">
+                    <a href="pricing.html"
+                        class="bg-gradient-to-r from-[#ba0031] to-[#e80040] text-white px-4 py-2 rounded-full font-bold text-[12px] flex items-center gap-1">
+                        Get Started
+                    </a>
+                    <button id="mobile-menu-btn" onclick="toggleMobileMenu()"
+                        class="w-10 h-10 flex flex-col gap-1.5 items-center justify-center rounded-xl hover:bg-gray-100 transition-colors"
+                        aria-label="Toggle menu">
+                        <span id="hb-line-1"
+                            class="block w-5 h-0.5 bg-on-surface rounded transition-all duration-300"></span>
+                        <span id="hb-line-2"
+                            class="block w-5 h-0.5 bg-on-surface rounded transition-all duration-300"></span>
+                        <span id="hb-line-3"
+                            class="block w-5 h-0.5 bg-on-surface rounded transition-all duration-300"></span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mobile Dropdown Menu -->
+            <div id="mobile-menu" class="hidden lg:hidden border-t border-gray-100 bg-white">
+                <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col gap-1">
+                    <a href="how-it-works.html"
+                        class="flex items-center gap-3 px-4 py-3 rounded-xl text-secondary font-bold text-sm hover:text-primary hover:bg-primary/5 transition-all">
+                        <span class="material-symbols-outlined text-[18px]">route</span> How it Works
+                    </a>
+                    <a href="index.html#features"
+                        class="flex items-center gap-3 px-4 py-3 rounded-xl text-secondary font-bold text-sm hover:text-primary hover:bg-primary/5 transition-all">
+                        <span class="material-symbols-outlined text-[18px]">star</span> Features
+                    </a>
+                    <a href="pricing.html"
+                        class="flex items-center gap-3 px-4 py-3 rounded-xl text-secondary font-bold text-sm hover:text-primary hover:bg-primary/5 transition-all">
+                        <span class="material-symbols-outlined text-[18px]">payments</span> Pricing
+                    </a>
+                    <a href="demo.html"
+                        class="flex items-center gap-3 px-4 py-3 rounded-xl text-secondary font-bold text-sm hover:text-primary hover:bg-primary/5 transition-all">
+                        <span class="material-symbols-outlined text-[18px]">play_circle</span> Demo
+                    </a>
+                    <div class="border-t border-gray-100 mt-2 pt-3 flex flex-col gap-2">
+                        <a href="login.html"
+                            class="flex items-center gap-2 px-4 py-3 rounded-xl text-secondary font-bold text-sm hover:text-primary hover:bg-primary/5 transition-all">
+                            <span class="material-symbols-outlined text-[18px]">login</span> Login
+                        </a>
+                        <a href="pricing.html"
+                            class="bg-gradient-to-r from-[#ba0031] to-[#e80040] text-white px-6 py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2">
+                            Get Started Free <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <script>
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            const l1 = document.getElementById('hb-line-1');
+            const l2 = document.getElementById('hb-line-2');
+            const l3 = document.getElementById('hb-line-3');
+
+            if (!menu || !l1 || !l2 || !l3) return;
+
+            const isOpen = !menu.classList.contains('hidden');
+            if (isOpen) {
+                menu.classList.add('hidden');
+                l1.style.transform = ''; l2.style.opacity = '1'; l3.style.transform = '';
+            } else {
+                menu.classList.remove('hidden');
+                l1.style.transform = 'translateY(8px) rotate(45deg)';
+                l2.style.opacity = '0';
+                l3.style.transform = 'translateY(-8px) rotate(-45deg)';
+            }
+        }
+    </script>
+    <main class="pt-32 sm:pt-44 pb-24 overflow-x-hidden">
+        <!-- Hero Section -->
+        <section class="max-w-7xl mx-auto px-4 sm:px-8 mb-16 sm:mb-24 text-center md:text-left">
+            <div class="flex flex-col md:flex-row gap-10 lg:gap-12 items-center">
+                <div class="flex-1 space-y-4 sm:space-y-6">
+                    <span
+                        class="inline-block py-1 px-4 rounded-full bg-primary-fixed text-on-primary-fixed text-xs sm:text-sm font-bold tracking-wide">LIVE
+                        PRODUCT DEMO</span>
+                    <h1
+                        class="text-4xl sm:text-6xl md:text-8xl font-black text-on-surface tracking-tighter leading-[0.9]">
+                        See QuicReply <br /><span class="text-primary">in Action</span>
+                    </h1>
+                    <p class="text-lg sm:text-xl md:text-2xl text-secondary max-w-2xl leading-relaxed">
+                        Watch how a WhatsApp lead turns into a paying customer in seconds. No lag, no human error, just
+                        pure conversion.
+                    </p>
+                    <div class="flex flex-wrap gap-3 sm:gap-4 pt-4 justify-center md:justify-start">
+                        <a href="pricing.html"
+                            class="w-full sm:w-auto bg-primary text-on-primary px-8 py-4 rounded-full font-bold text-base sm:text-lg shadow-xl hover:shadow-primary/20 transition-all text-center">Start
+                            Your 7-Day Trial</a>
+                        <a href="login.html"
+                            class="w-full sm:w-auto bg-surface-container-high text-on-surface px-8 py-4 rounded-full font-bold text-base sm:text-lg hover:bg-surface-container-highest transition-all text-center">Book
+                            Private Demo</a>
+                    </div>
+                </div>
+                <div class="flex-1 w-full relative">
+                    <div class="absolute -top-12 -right-12 w-64 h-64 bg-primary-fixed/20 rounded-full blur-3xl"></div>
+                    <div
+                        class="bg-surface-container-lowest rounded-xl p-8 editorial-shadow border border-outline-variant/10 relative overflow-hidden">
+                        <div class="flex items-center gap-3 mb-8">
+                            <div class="w-3 h-3 rounded-full bg-red-400"></div>
+                            <div class="w-3 h-3 rounded-full bg-amber-400"></div>
+                            <div class="w-3 h-3 rounded-full bg-green-400"></div>
+                        </div>
+                        <div class="space-y-6">
+                            <div class="flex gap-4 items-start">
+                                <div class="w-10 h-10 rounded-full bg-surface-container-highest flex-shrink-0"></div>
+                                <div class="space-y-1">
+                                    <div class="h-4 w-32 bg-surface-container-high rounded-full"></div>
+                                    <div class="h-20 w-64 bg-surface-container-low rounded-lg"></div>
+                                </div>
+                            </div>
+                            <div class="flex gap-4 items-start flex-row-reverse">
+                                <div
+                                    class="w-10 h-10 rounded-full bg-primary flex-shrink-0 flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-white text-xs">bolt</span>
+                                </div>
+                                <div class="space-y-1 flex flex-col items-end">
+                                    <div class="h-4 w-24 bg-primary/20 rounded-full"></div>
+                                    <div
+                                        class="h-16 w-56 bg-primary-container text-white p-3 rounded-lg text-xs leading-tight">
+                                        "Hi! I've checked our stock for the Luxury Watch. We have 2 units left. Would
+                                        you like to reserve one?"
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Interactive Simulation UI -->
+        <section class="bg-surface-container-low py-24 mb-24">
+            <div class="max-w-7xl mx-auto px-8">
+                <div class="mb-16 text-center">
+                    <h2 class="text-4xl md:text-5xl font-black tracking-tighter mb-4">The 60-Second Conversion Journey
+                    </h2>
+                    <p class="text-secondary text-lg">Experience the lightning speed of automated qualification.</p>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+                    <!-- Steps sidebar -->
+                    <div class="lg:col-span-4 space-y-6">
+                        <div
+                            class="bg-surface-container-lowest p-8 rounded-xl border-l-4 border-primary editorial-shadow transition-all">
+                            <h3 class="font-black text-xl mb-2">01. Lead Message</h3>
+                            <p class="text-secondary leading-relaxed">Customer initiates contact from a Facebook ad or
+                                website widget.</p>
+                        </div>
+                        <div
+                            class="bg-surface-container-lowest/50 p-8 rounded-xl border-l-4 border-transparent opacity-60">
+                            <h3 class="font-black text-xl mb-2">02. AI Qualification</h3>
+                            <p class="text-secondary leading-relaxed">QuicReply identifies intent, checks CRM, and
+                                provides instant info.</p>
+                        </div>
+                        <div
+                            class="bg-surface-container-lowest/50 p-8 rounded-xl border-l-4 border-transparent opacity-60">
+                            <h3 class="font-black text-xl mb-2">03. Automated Follow-up</h3>
+                            <p class="text-secondary leading-relaxed">AI nudge sent if the lead hasn't replied within 2
+                                minutes.</p>
+                        </div>
+                        <div
+                            class="bg-surface-container-lowest/50 p-8 rounded-xl border-l-4 border-transparent opacity-60">
+                            <h3 class="font-black text-xl mb-2">04. Conversion Success</h3>
+                            <p class="text-secondary leading-relaxed">Payment link sent and customer transaction
+                                verified.</p>
+                        </div>
+                    </div>
+                    <!-- Chat Mockup -->
+                    <div class="lg:col-span-8">
+                        <div
+                            class="bg-surface-container-lowest rounded-3xl overflow-hidden editorial-shadow max-w-2xl mx-auto border border-outline-variant/10">
+                            <!-- WhatsApp Header -->
+                            <div class="bg-on-surface p-5 flex items-center justify-between">
+                                <div class="flex items-center gap-4">
+                                    <div
+                                        class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center">
+                                        <span class="material-symbols-outlined text-secondary">person</span>
+                                    </div>
+                                    <div>
+                                        <div class="text-white font-bold leading-none">James Miller</div>
+                                        <div class="text-white/60 text-xs mt-1.5 flex items-center gap-1">
+                                            <span class="w-2 h-2 rounded-full bg-green-500"></span> Online
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex gap-5 text-white/80">
+                                    <span
+                                        class="material-symbols-outlined cursor-pointer hover:text-white">videocam</span>
+                                    <span class="material-symbols-outlined cursor-pointer hover:text-white">call</span>
+                                    <span
+                                        class="material-symbols-outlined cursor-pointer hover:text-white">more_vert</span>
+                                </div>
+                            </div>
+                            <!-- Chat Area -->
+                            <div
+                                class="h-[550px] p-8 bg-surface-container-low/50 overflow-y-auto space-y-6 flex flex-col">
+                                <!-- Message 1 -->
+                                <div
+                                    class="self-start bg-surface-container-lowest p-4 rounded-2xl rounded-tl-none editorial-shadow max-w-[85%] border border-outline-variant/5">
+                                    <p class="text-[15px] leading-relaxed">Hi, I'm interested in the Premium Package.
+                                        Does it include the API integration?</p>
+                                    <span
+                                        class="block text-[10px] text-secondary text-right mt-2 uppercase font-bold tracking-wider">10:02
+                                        AM</span>
+                                </div>
+                                <!-- Message 2 (AI) -->
+                                <div
+                                    class="self-end bg-primary-container p-4 rounded-2xl rounded-tr-none shadow-lg shadow-primary/10 max-w-[85%] relative border border-primary/10">
+                                    <div class="flex items-center gap-1.5 mb-2">
+                                        <span class="material-symbols-outlined text-[14px] text-white"
+                                            data-weight="fill">bolt</span>
+                                        <span class="text-[10px] font-black text-white uppercase tracking-[0.2em]">AI
+                                            Agent</span>
+                                    </div>
+                                    <p class="text-[15px] text-white leading-relaxed">Hello James! Yes, the Premium
+                                        Package includes full REST API access. Would you like me to send over the
+                                        documentation or a payment link to get started?</p>
+                                    <div class="flex items-center justify-end gap-1 mt-2">
+                                        <span class="text-[10px] text-white/70 uppercase font-bold tracking-wider">10:02
+                                            AM</span>
+                                        <span
+                                            class="material-symbols-outlined text-[16px] text-white/90">done_all</span>
+                                    </div>
+                                </div>
+                                <!-- Message 3 (Customer) -->
+                                <div
+                                    class="self-start bg-surface-container-lowest p-4 rounded-2xl rounded-tl-none editorial-shadow max-w-[85%] border border-outline-variant/5">
+                                    <p class="text-[15px] leading-relaxed">Payment link would be great! Can I pay via
+                                        Stripe?</p>
+                                    <span
+                                        class="block text-[10px] text-secondary text-right mt-2 uppercase font-bold tracking-wider">10:04
+                                        AM</span>
+                                </div>
+                                <!-- Message 4 (AI) -->
+                                <div
+                                    class="self-end bg-primary-container p-4 rounded-2xl rounded-tr-none shadow-lg shadow-primary/10 max-w-[85%] relative border border-primary/10">
+                                    <div class="flex items-center gap-1.5 mb-2">
+                                        <span class="material-symbols-outlined text-[14px] text-white"
+                                            data-weight="fill">bolt</span>
+                                        <span class="text-[10px] font-black text-white uppercase tracking-[0.2em]">AI
+                                            Agent</span>
+                                    </div>
+                                    <p class="text-[15px] text-white leading-relaxed">Absolutely! Here is your secure
+                                        Stripe payment link. Once paid, I'll send your API keys immediately: <span
+                                            class="font-bold underline cursor-pointer decoration-2 underline-offset-2">checkout.stripe.com/p/qreply_123</span>
+                                    </p>
+                                    <div class="flex items-center justify-end gap-1 mt-2">
+                                        <span class="text-[10px] text-white/70 uppercase font-bold tracking-wider">10:04
+                                            AM</span>
+                                        <span
+                                            class="material-symbols-outlined text-[16px] text-white/90">done_all</span>
+                                    </div>
+                                </div>
+                                <!-- Message 5 (Status) -->
+                                <div
+                                    class="self-center bg-primary-fixed text-on-primary-fixed px-4 py-2 rounded-full text-[11px] uppercase font-black tracking-widest editorial-shadow flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-sm">verified</span>
+                                    Payment Confirmed • 10:05 AM
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Pipeline Diagram -->
+        <section class="max-w-7xl mx-auto px-4 sm:px-8 mb-16 sm:mb-32">
+            <h2 class="text-3xl sm:text-5xl font-black text-center mb-10 sm:mb-16 tracking-tighter">Your New Sales
+                Engine</h2>
+            <div class="grid grid-cols-1 md:grid-cols-7 gap-4 sm:gap-6 items-center">
+                <!-- Step 1 -->
+                <div
+                    class="md:col-span-1 flex flex-col items-center text-center p-8 bg-surface-container-lowest rounded-3xl editorial-shadow group hover:-translate-y-2 transition-all border border-outline-variant/10">
+                    <div
+                        class="w-16 h-16 rounded-2xl bg-surface-container flex items-center justify-center mb-6 group-hover:bg-primary group-hover:text-white transition-all">
+                        <span class="material-symbols-outlined text-3xl">person_add</span>
+                    </div>
+                    <h3 class="font-black text-lg mb-2">Lead Entry</h3>
+                    <p class="text-secondary text-xs font-medium">Any source.</p>
+                </div>
+                <!-- Arrow 1 -->
+                <div class="hidden md:flex justify-center md:col-span-1">
+                    <span class="material-symbols-outlined text-primary/40 text-4xl animate-pulse">arrow_forward</span>
+                </div>
+                <!-- Step 2 -->
+                <div
+                    class="md:col-span-1 flex flex-col items-center text-center p-8 bg-surface-container-lowest rounded-3xl editorial-shadow group hover:-translate-y-2 transition-all border border-outline-variant/10">
+                    <div
+                        class="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center mb-6 shadow-xl shadow-primary/20">
+                        <span class="material-symbols-outlined text-3xl text-white">psychology</span>
+                    </div>
+                    <h3 class="font-black text-lg mb-2">AI Triage</h3>
+                    <p class="text-secondary text-xs font-medium">Instant data.</p>
+                </div>
+                <!-- Arrow 2 -->
+                <div class="hidden md:flex justify-center md:col-span-1">
+                    <span class="material-symbols-outlined text-primary/40 text-4xl animate-pulse">arrow_forward</span>
+                </div>
+                <!-- Step 3 -->
+                <div
+                    class="md:col-span-1 flex flex-col items-center text-center p-8 bg-surface-container-lowest rounded-3xl editorial-shadow group hover:-translate-y-2 transition-all border border-outline-variant/10">
+                    <div
+                        class="w-16 h-16 rounded-2xl bg-surface-container flex items-center justify-center mb-6 group-hover:bg-primary group-hover:text-white transition-all">
+                        <span class="material-symbols-outlined text-3xl">payments</span>
+                    </div>
+                    <h3 class="font-black text-lg mb-2">Checkout</h3>
+                    <p class="text-secondary text-xs font-medium">Automated.</p>
+                </div>
+                <!-- Arrow 3 -->
+                <div class="hidden md:flex justify-center md:col-span-1">
+                    <span class="material-symbols-outlined text-primary/40 text-4xl animate-pulse">arrow_forward</span>
+                </div>
+                <!-- Step 4 -->
+                <div
+                    class="md:col-span-1 flex flex-col items-center text-center p-8 bg-on-surface text-white rounded-3xl editorial-shadow group hover:-translate-y-2 transition-all">
+                    <div
+                        class="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center mb-6 shadow-xl shadow-primary/40">
+                        <span class="material-symbols-outlined text-3xl text-white" data-weight="fill">verified</span>
+                    </div>
+                    <h3 class="font-black text-lg mb-2">Closed</h3>
+                    <p class="text-white/60 text-xs font-medium">CRM Sync.</p>
+                </div>
+            </div>
+        </section>
+        <!-- Before vs After Section -->
+        <section class="max-w-7xl mx-auto px-4 sm:px-8 mb-16 sm:mb-24">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-12">
+                <!-- Manual -->
+                <div
+                    class="bg-surface-container/50 rounded-[2rem] p-12 relative overflow-hidden border border-outline-variant/10">
+                    <div
+                        class="absolute top-6 right-6 bg-secondary/10 px-4 py-1.5 rounded-full text-[10px] font-black tracking-widest text-secondary uppercase">
+                        Traditional</div>
+                    <h3 class="text-4xl font-black mb-10 text-on-surface/30">Manual Grind</h3>
+                    <ul class="space-y-8">
+                        <li class="flex gap-5">
+                            <span class="material-symbols-outlined text-error p-1 bg-error/10 rounded-lg">close</span>
+                            <span class="text-secondary leading-relaxed font-medium">4-hour average response time. Leads
+                                go cold fast.</span>
+                        </li>
+                        <li class="flex gap-5">
+                            <span class="material-symbols-outlined text-error p-1 bg-error/10 rounded-lg">close</span>
+                            <span class="text-secondary leading-relaxed font-medium">Human agents forget to follow up
+                                with 40% of leads.</span>
+                        </li>
+                        <li class="flex gap-5">
+                            <span class="material-symbols-outlined text-error p-1 bg-error/10 rounded-lg">close</span>
+                            <span class="text-secondary leading-relaxed font-medium">Messy Excel sheets or unorganized
+                                chat history.</span>
+                        </li>
+                        <li class="flex gap-5">
+                            <span class="material-symbols-outlined text-error p-1 bg-error/10 rounded-lg">close</span>
+                            <span class="text-secondary leading-relaxed font-medium">Scaling requires hiring and
+                                training more staff.</span>
+                        </li>
+                    </ul>
+                </div>
+                <!-- Automated -->
+                <div
+                    class="bg-surface-container-lowest rounded-[2rem] p-12 editorial-shadow relative overflow-hidden border-2 border-primary/5">
+                    <div
+                        class="absolute top-6 right-6 bg-primary text-white px-4 py-1.5 rounded-full text-[10px] font-black tracking-widest uppercase">
+                        QuicReply</div>
+                    <h3 class="text-4xl font-black mb-10">Automated Future</h3>
+                    <ul class="space-y-8">
+                        <li class="flex gap-5">
+                            <span class="material-symbols-outlined text-primary p-1 bg-primary/10 rounded-lg"
+                                data-weight="fill">check_circle</span>
+                            <span class="text-on-surface font-semibold leading-relaxed">3-second response time.
+                                24/7/365.</span>
+                        </li>
+                        <li class="flex gap-5">
+                            <span class="material-symbols-outlined text-primary p-1 bg-primary/10 rounded-lg"
+                                data-weight="fill">check_circle</span>
+                            <span class="text-on-surface font-semibold leading-relaxed">Automated, persistent follow-up
+                                ensures no loss.</span>
+                        </li>
+                        <li class="flex gap-5">
+                            <span class="material-symbols-outlined text-primary p-1 bg-primary/10 rounded-lg"
+                                data-weight="fill">check_circle</span>
+                            <span class="text-on-surface font-semibold leading-relaxed">Native CRM integration keeps
+                                data actionable.</span>
+                        </li>
+                        <li class="flex gap-5">
+                            <span class="material-symbols-outlined text-primary p-1 bg-primary/10 rounded-lg"
+                                data-weight="fill">check_circle</span>
+                            <span class="text-on-surface font-semibold leading-relaxed">Scale to 10k+ conversations
+                                without headcount.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        <!-- Final CTA -->
+        <section class="max-w-5xl mx-auto px-4 sm:px-8">
+            <div
+                class="bg-on-surface rounded-[2rem] sm:rounded-[3rem] p-8 sm:p-16 text-center text-white relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
+                    <img alt="abstract pattern" class="w-full h-full object-cover"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuBj10f4zb_Eu0HeDVlHC_576DlaiL1v4AR8zBow8hqVgn2bsqDjckHlrPFUz97e89tWYBXkYq9xAOhRxp3ONDzC-uW2223gqi2uA81kfV1psE0YAlfzHIJPxEhyq7SNf470GVE9oYQ5bmd8ci_1-RbI2anV7G0wwYBSzTiyX20RF2KpvqNH7PjGPPChg6YIm_DZB7wIq_nF0011Xo8Q2xpdUEQfKXyeouCjcBldEdRVLg2MnY3oW69fxqNjmUGhY-C6isjqEis7fnU" />
+                </div>
+                <h2
+                    class="text-3xl sm:text-5xl md:text-6xl font-black tracking-tighter mb-6 sm:mb-8 relative z-10 leading-tight">
+                    Stop Losing Leads Today.
+                </h2>
+                <p
+                    class="text-lg sm:text-xl text-white/70 mb-8 sm:mb-12 max-w-2xl mx-auto relative z-10 font-medium leading-relaxed">
+                    Join 500+ enterprises
+                    automating their WhatsApp sales and increasing conversion by 3x.</p>
+                <div class="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center relative z-10">
+                    <a href="login.html"
+                        class="bg-primary hover:bg-primary-container text-white px-8 sm:px-12 py-4 sm:py-5 rounded-full font-black text-lg sm:text-xl transition-all shadow-xl shadow-primary/20 inline-block">Claim
+                        Your Free Account</a>
+                    <a href="pricing.html"
+                        class="bg-white/10 hover:bg-white/20 text-white px-8 sm:px-12 py-4 sm:py-5 rounded-full font-black text-lg sm:text-xl backdrop-blur-md transition-all border border-white/10 inline-block">View
+                        Pricing</a>
+                </div>
+            </div>
+        </section>
+    </main>
+    <!-- Footer -->
+    <footer class="bg-surface w-full border-t border-outline-variant/20">
+        <div
+            class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 sm:gap-12 max-w-7xl mx-auto px-4 sm:px-8 py-16 sm:py-20">
+            <div class="col-span-2">
+                <a href="index.html" class="mb-6 block">
+                    <img src="assets/images/logo.png" alt="QuicReply Logo" class="h-14">
+                </a>
+                <p class="text-sm text-secondary leading-relaxed max-w-xs mb-4 font-medium">The enterprise-grade
+                    WhatsApp automation engine for high-growth sales teams.</p>
+                <p class="text-sm text-secondary font-medium mb-8">
+                    support@quicreply.io<br />
+                    +234 (702) 549-7163
+                </p>
+                <div class="flex gap-4">
+                    <div
+                        class="w-10 h-10 rounded-xl bg-surface-container-high flex items-center justify-center cursor-pointer hover:bg-primary hover:text-white transition-all">
+                        <span class="material-symbols-outlined text-lg">public</span>
+                    </div>
+                    <div
+                        class="w-10 h-10 rounded-xl bg-surface-container-high flex items-center justify-center cursor-pointer hover:bg-primary hover:text-white transition-all">
+                        <span class="material-symbols-outlined text-lg">alternate_email</span>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <h4 class="font-black text-xs uppercase tracking-widest text-on-surface mb-8">Product</h4>
+                <ul class="space-y-5 text-sm text-secondary font-medium">
+                    <li class="hover:text-primary cursor-pointer transition-colors">Features</li>
+                    <li class="hover:text-primary cursor-pointer transition-colors">Integrations</li>
+                    <li class="hover:text-primary cursor-pointer transition-colors">Pricing</li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-black text-xs uppercase tracking-widest text-on-surface mb-8">Support</h4>
+                <ul class="space-y-5 text-sm text-secondary font-medium">
+                    <li class="hover:text-primary cursor-pointer transition-colors">Help Center</li>
+                    <li class="hover:text-primary cursor-pointer transition-colors">API Docs</li>
+                    <li class="hover:text-primary cursor-pointer transition-colors">Status</li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-black text-xs uppercase tracking-widest text-on-surface mb-8">Legal</h4>
+                <ul class="space-y-5 text-sm text-secondary font-medium">
+                    <li class="hover:text-primary cursor-pointer transition-colors">Privacy</li>
+                    <li class="hover:text-primary cursor-pointer transition-colors">Terms</li>
+                </ul>
+            </div>
+            <div class="col-span-full pt-12 border-t border-outline-variant/10 mt-12">
+                <div class="text-[11px] leading-relaxed text-secondary/60 font-medium space-y-4 mb-6">
+                    <p>QuicReply is a product of RaaDuns Software Solutions Limited (RC: 7074360), with offices in Abuja
+                        and Cape Town, and headquarters in London, United Kingdom.</p>
+                    <p>All trademarks, logos, and brand elements are the property of RaaDuns Software Solutions Limited.
+                    </p>
+                    <p>QuicReply is an independent platform and is not affiliated with or endorsed by WhatsApp or Meta.
+                        Use of the platform is subject to our Terms of Service and Privacy Policy.</p>
+                </div>
+                <div
+                    class="flex flex-col md:flex-row justify-between items-center gap-6 pt-6 border-t border-gray-100 text-[11px] font-black uppercase tracking-widest text-secondary/60">
+                    <div>© 2026 QuicReply. All rights reserved.</div>
+                    <div class="flex gap-10">
+                        <span class="hover:text-primary cursor-pointer">Twitter</span>
+                        <span class="hover:text-primary cursor-pointer">LinkedIn</span>
+                        <span class="hover:text-primary cursor-pointer">Instagram</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </footer>
+
+    <!-- ─── FLOATING WhatsApp WIDGET ─────────────────────────────── -->
+    <div class="fixed bottom-4 right-4 sm:bottom-8 sm:right-8 z-[1000] flex flex-col items-end group pointer-events-none"
+        id="whatsapp-wrapper">
+        <!-- Chat Widget -->
+        <div id="whatsapp-chat"
+            class="mb-4 bg-white w-[calc(100vw-32px)] max-w-[350px] rounded-2xl shadow-2xl overflow-hidden opacity-0 scale-95 origin-bottom-right transition-all duration-300 pointer-events-none flex flex-col translate-y-4 [&.active]:opacity-100 [&.active]:scale-100 [&.active]:translate-y-0 [&.active]:pointer-events-auto">
+
+            <!-- Header -->
+            <div class="bg-[#075e54] p-4 text-white flex justify-between items-start relative z-10 w-full">
+                <div>
+                    <h4 class="font-bold text-base">Jennifer (QuicReply AI)</h4>
+                    <p class="text-xs text-white/80 mt-0.5">Typically replies instantly</p>
+                </div>
+                <button onclick="toggleWhatsApp(event)" class="text-white/60 hover:text-white transition-colors">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+            </div>
+
+            <!-- Chat Area -->
+            <div class="p-5 bg-[#e5ddd5] min-h-[160px] relative flex flex-col justify-center w-full"
+                style="background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-size: cover; background-blend-mode: overlay; background-color: rgba(229, 221, 213, 0.9);">
+                <!-- Chat Bubble -->
+                <div
+                    class="bg-[#dcf8c6] text-[#303030] p-3.5 rounded-xl rounded-tl-none shadow-[0_1px_1px_rgba(0,0,0,0.1)] text-[13.5px] leading-relaxed relative inline-block max-w-[90%]">
+                    Hi there! 👋 I'm Jennifer, QuicReply's AI assistant.<br><br>Want to see how I can handle your
+                    customers, qualify leads, and close sales automatically?
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="bg-white p-4 text-center w-full">
+                <a href="demo.html"
+                    class="w-full bg-[#25d366] text-white font-bold py-3.5 rounded-xl shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all outline-none flex justify-center items-center gap-2">
+                    <svg class="w-[22px] h-[22px] fill-current" viewBox="0 0 24 24">
+                        <path
+                            d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.72.937 3.659 1.432 5.628 1.433h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z">
+                        </path>
+                    </svg>
+                    WhatsApp Us
+                </a>
+                <p class="text-[11px] text-gray-500 mt-4 font-normal">Online | QuicReply Privacy policy</p>
+            </div>
+        </div>
+
+        <!-- Floating Action Button -->
+        <button onclick="toggleWhatsApp(event)"
+            class="w-14 h-14 sm:w-16 sm:h-16 bg-[#25d366] text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-105 active:scale-95 transition-all duration-300 relative z-[1001] pointer-events-auto">
+            <svg class="w-8 h-8 sm:w-9 sm:h-9 fill-current" viewBox="0 0 24 24">
+                <path
+                    d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.72.937 3.659 1.432 5.628 1.433h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z">
+                </path>
+            </svg>
+        </button>
+    </div>
+
+    <script>
+        function toggleWhatsApp(event) {
+            event.stopPropagation();
+            const chat = document.getElementById('whatsapp-chat');
+            chat.classList.toggle('active');
+        }
+        // Close when clicking outside
+        document.addEventListener('click', (e) => {
+            const chat = document.getElementById('whatsapp-chat');
+            const wrapper = document.getElementById('whatsapp-wrapper');
+            if (chat.classList.contains('active') && !wrapper.contains(e.target)) {
+                chat.classList.remove('active');
+            }
+        });
+    </script>
+
+</body>
+
+</html>

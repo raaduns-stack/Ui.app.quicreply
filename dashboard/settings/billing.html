@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Billing — QuicReply Sales OS</title>
+  <meta name="description" content="QuicReply Billing — manage your subscription, billing, and payment details." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+  <link rel="stylesheet" href="../shell.css" />
+  <style>
+    /* ══════════════════════════════════════════
+       Billing Page — Premium SaaS Level
+    ══════════════════════════════════════════ */
+
+    /* ── Two-column layout ── */
+    .billing-layout {
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      gap: 20px;
+      align-items: start;
+    }
+    @media (max-width: 1100px) {
+      .billing-layout { grid-template-columns: 1fr; }
+    }
+
+    /* ── Tab Nav ── */
+    .bill-tabs {
+      display: flex;
+      border-bottom: 1px solid #e5e7eb;
+      margin-bottom: 20px;
+    }
+    .bill-tab {
+      padding: 10px 18px;
+      font-size: 13px; font-weight: 600;
+      color: #6b7280;
+      cursor: pointer; border: none;
+      background: transparent;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .bill-tab:hover { color: #111827; }
+    .bill-tab.active { color: #ba0031; border-bottom-color: #ba0031; font-weight: 700; }
+
+    /* ── Billing/Yearly toggle ── */
+    .cycle-toggle {
+      display: inline-flex;
+      align-items: center;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      padding: 3px;
+      gap: 2px;
+    }
+    .cycle-btn {
+      padding: 6px 14px;
+      border-radius: 7px;
+      font-size: 12px; font-weight: 700;
+      cursor: pointer; border: none;
+      background: transparent;
+      color: #6b7280;
+      transition: all 0.2s;
+    }
+    .cycle-btn.active {
+      background: #fff;
+      color: #111827;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    /* ── Plan Cards ── */
+    .plan-card {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+      transition: all 0.25s cubic-bezier(.4,0,.2,1);
+      position: relative;
+    }
+    .plan-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.09); }
+    .plan-card.featured {
+      border: 2px solid #10b981;
+      box-shadow: 0 4px 20px rgba(16,185,129,0.15);
+    }
+    .plan-card.featured:hover { box-shadow: 0 8px 30px rgba(16,185,129,0.2); }
+
+    /* ── Plan icon ── */
+    .plan-icon {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      margin-bottom: 12px;
+    }
+
+    /* ── Feature list ── */
+    .plan-feature {
+      display: flex; align-items: flex-start; gap: 8px;
+      font-size: 12px; font-weight: 500; color: #374151;
+      padding: 4px 0;
+    }
+
+    /* ── Usage bars ── */
+    .usage-row {
+      display: flex; align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #f9fafb;
+    }
+    .usage-row:last-child { border-bottom: none; }
+    .usage-track {
+      width: 80px; height: 5px;
+      background: #f3f4f6;
+      border-radius: 99px; overflow: hidden;
+      flex-shrink: 0;
+    }
+    .usage-fill {
+      height: 100%; border-radius: 99px;
+      transition: width 0.6s ease;
+    }
+
+    /* ── Right Panel Cards ── */
+    .panel-card {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+      overflow: hidden;
+      margin-bottom: 14px;
+    }
+    .panel-card:last-child { margin-bottom: 0; }
+    .panel-card-header {
+      padding: 13px 16px 10px;
+      border-bottom: 1px solid #f3f4f6;
+    }
+    .panel-card-title { font-size: 13px; font-weight: 700; color: #111827; }
+    .panel-card-body { padding: 14px 16px; }
+
+    /* ── How it works steps ── */
+    .how-step {
+      display: flex; flex-direction: column; align-items: center;
+      text-align: center; flex: 1;
+    }
+    .how-icon {
+      width: 48px; height: 48px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 10px;
+      flex-shrink: 0;
+    }
+    .how-arrow {
+      color: #d1d5db;
+      align-self: flex-start;
+      margin-top: 14px;
+      flex-shrink: 0;
+    }
+
+    /* ── Processing overlay ── */
+    .processing-overlay {
+      position: fixed; inset: 0;
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      display: none;
+      align-items: center; justify-content: center;
+    }
+
+    /* ── Success state ── */
+    .success-state { display: none; }
+
+    /* ── Save badge ── */
+    .save-badge {
+      display: inline-flex; align-items: center;
+      padding: 2px 8px;
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 99px;
+      font-size: 10px; font-weight: 800;
+      color: #166534;
+    }
+
+    /* ── History Table ── */
+    .hist-table th {
+      padding: 9px 14px;
+      font-size: 10px; font-weight: 700; color: #9ca3af;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      background: #f9fafb; border-bottom: 1px solid #f3f4f6;
+      text-align: left;
+    }
+    .hist-table td {
+      padding: 12px 14px;
+      font-size: 12px; color: #374151;
+      border-bottom: 1px solid #f9fafb;
+    }
+    .hist-table tr:last-child td { border-bottom: none; }
+    .hist-table tr:hover td { background: #fafafa; }
+
+    /* ── Spin animation ── */
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    @keyframes pulse-anim { 0%,100%{opacity:1;} 50%{opacity:0.5;} }
+  </style>
+</head>
+<body>
+<div id="sidebar-mount"></div>
+<div class="layout-with-sidebar" id="main-layout">
+  <div id="topbar-mount" data-title="Billing · Plans &amp; Subscription"></div>
+
+  <main class="flex-1 p-5 lg:p-7" style="display:flex;flex-direction:column;gap:0;">
+    <div class="content-container" style="display:flex;flex-direction:column;gap:0;">
+
+      <!-- ══ PAGE HEADER ══ -->
+      <div style="margin-bottom:16px;">
+        <h1 style="font-size:22px;font-weight:800;color:#111827;letter-spacing:-0.02em;line-height:1.2;">Billing</h1>
+        <p style="font-size:13px;color:#6b7280;margin-top:3px;font-weight:500;">Manage your subscription, billing, and payment details</p>
+      </div>
+
+      <!-- ══ TABS ══ -->
+      <div class="bill-tabs">
+        <button class="bill-tab active" id="tab-plans"    onclick="switchBillTab('plans')">Plans &amp; Subscription</button>
+        <button class="bill-tab"         id="tab-history" onclick="switchBillTab('history')">Payment History</button>
+        <button class="bill-tab"         id="tab-invoices" onclick="switchBillTab('invoices')">Invoices</button>
+        <button class="bill-tab"         id="tab-usage"   onclick="switchBillTab('usage')">Usage &amp; Limits</button>
+      </div>
+
+      <!-- ════════ PLANS TAB ════════ -->
+      <div id="content-plans">
+        <div class="billing-layout">
+
+          <!-- ═══ LEFT ═══ -->
+          <div>
+
+            <!-- Plan heading + billing toggle -->
+            <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
+              <div>
+                <div style="font-size:15px;font-weight:700;color:#111827;">Choose the perfect plan for your business</div>
+                <div style="font-size:12px;color:#6b7280;margin-top:2px;">Upgrade anytime. Cancel anytime.</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div class="cycle-toggle">
+                  <button class="cycle-btn active" id="cycle-monthly" onclick="setCycle('monthly')">Monthly</button>
+                  <button class="cycle-btn" id="cycle-yearly" onclick="setCycle('yearly')">Yearly</button>
+                </div>
+                <span class="save-badge">Save 20%</span>
+              </div>
+            </div>
+
+            <!-- Plan Cards Grid -->
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px;" id="plans-grid">
+
+              <!-- Starter (Current) -->
+              <div class="plan-card">
+                <div class="plan-icon" style="background:#f0fdf4;">
+                  <span class="material-symbols-outlined" style="font-size:20px;color:#10b981;font-variation-settings:'FILL' 1;">rocket_launch</span>
+                </div>
+                <div style="font-size:14px;font-weight:700;color:#111827;margin-bottom:2px;">Starter</div>
+                <div style="font-size:12px;color:#9ca3af;margin-bottom:14px;">For getting started</div>
+                <div style="margin-bottom:4px;">
+                  <span style="font-size:28px;font-weight:800;color:#111827;letter-spacing:-0.02em;" id="price-starter">₦0</span>
+                  <span style="font-size:12px;color:#9ca3af;font-weight:500;">/month</span>
+                </div>
+                <div style="font-size:11px;color:#9ca3af;margin-bottom:14px;" id="billing-starter">Always free</div>
+                <div style="height:1px;background:#f3f4f6;margin-bottom:14px;"></div>
+                <div style="display:flex;flex-direction:column;gap:2px;flex:1;margin-bottom:20px;">
+                  <div class="plan-feature"><span class="material-symbols-outlined" style="font-size:14px;color:#10b981;font-variation-settings:'FILL' 1;flex-shrink:0;">check_circle</span>Up to 100 contacts</div>
+                  <div class="plan-feature"><span class="material-symbols-outlined" style="font-size:14px;color:#10b981;font-variation-settings:'FILL' 1;flex-shrink:0;">check_circle</span>QR WhatsApp access</div>
+                  <div class="plan-feature"><span class="material-symbols-outlined" style="font-size:14px;color:#10b981;font-variation-settings:'FILL' 1;flex-shrink:0;">check_circle</span>Basic AI (Jennifer)</div>
+                  <div class="plan-feature"><span class="material-symbols-outlined" style="font-size:14px;color:#10b981;font-variation-settings:'FILL' 1;flex-shrink:0;">check_circle</span>No campaigns</div>
+                  <div class="plan-feature"><span class="material-symbols-outlined" style="font-size:14px;color:#10b981;font-variation-settings:'FILL' 1;flex-shrink:0;">check_circle</span>Email support</div>
+                </div>
+                <button disabled style="width:100%;padding:10px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:9px;font-size:13px;font-weight:700;color:#6b7280;cursor:not-allowed;">Current Plan</button>
+              </div>
+
+              <!-- Growth (Featured) -->
+              <div class="plan-card featured" style="position:relative;">
+                <div style="position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:#10b981;color:#fff;font-size:10px;font-weight:800;padding:3px 14px;border-radius:99px;text-transform:uppercase;letter-spacing:0.05em;white-space:nowrap;">Most Popular</div>
+                <div class="plan-icon" style="background:#eff6ff;">
+                  <span class="material-symbols-outlined" style="font-size:20px;color:#3b82f6;font-variation-settings:'FILL' 1;">trending_up</span>
+                </div>
+                <div style="font-size:14px;font-weight:700;color:#111827;margin-bottom:2px;">Growth</div>
+                <div style="font-size:12px;color:#9ca3af;margin-bottom:14px;">For growing businesses</div>
+                <div style="margin-bottom:4px;">
+                  <span style="font-size:28px;font-weight:800;color:#111827;letter-spacing:-0.02em;" id="price-growth">₦20,000</span>
+                  <span style="font-size:12px;color:#9ca3af;font-weight:500;">/month</span>
+                </div>
+                <div style="font-size:11px;color:#9ca3af;margin-bottom:14px;" id="billing-growth">Billed monthly</div>
+                <div style="height:1px;background:#f3f4f6;margin-bottom:14px;"></div>
+                <div style="display:flex;flex-direction:column;gap:2px;flex:1;margin-bottom:20px;">
+                  <div class="plan-feature"><span class="material-symbols-outlined" style="font-size:14px;color:#10b981;font-variation-settings:'FILL' 1;flex-shrink:0;">check_circle</span>Up to 5,000 contacts</div>
+                  <div class="plan-feature"><span class="material-symbols-outlined" style="font-size:14px;color:#10b981;font-variation-settings:'FILL' 1;flex-shrink:0;">check_circle</span>Broadcast campaigns</div>
+                  <div class="plan-feature"><span class="material-symbols-outlined" style="font-size:14px;color:#10b981;font-variation-settings:'FILL' 1;flex-shrink:0;">check_circle</span>AI Automation (Jennifer)</div>
+                  <div class="plan-feature"><span class="material-symbols-outlined" style="font-size:14px;color:#10b981;font-variation-settings:'FILL' 1;flex-shrink:0;">check_circle</span>WhatsApp API access</div>
+                  <div class="plan-feature"><span class="material-symbols-outlined" style="font-size:14px;color:#10b981;font-variation-settings:'FILL' 1;flex-shrink:0;">check_circle</span>Priority email support</div>
+                </div>
+                <button onclick="triggerUpgrade('Growth')" style="width:100%;padding:10px;background:#10b981;border:none;border-radius:9px;font-size:13px;font-weight:700;color:#fff;cursor:pointer;box-shadow:0 3px 10px rgba(16,185,129,0.28);transition:all 0.2s;" onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">Upgrade to Growth</button>
+              </div>
+
+              <!-- Pro -->
+              <div class="plan-card">
+                <div class="plan-icon" style="background:#f5f3ff;">
+                  <span class="material-symbols-outlined" style="font-size:20px;color:#8b5cf6;font-variation-settings:'FILL' 1;">workspace_premium</span>
+                </div>
+                <div style="font-size:14px;font-weight:700;color:#111827;margin-bottom:2px;">Pro</div>
+                <div style="font-size:12px;color:#9ca3af;margin-bottom:14px;">For advanced teams</div>
+                <div style="margin-bottom:4px;">
+                  <span style="font-size:28px;font-weight:800;color:#111827;letter-spacing:-0.02em;" id="price-pro">₦50,000</span>
+                  <span style="font-size:12px;color:#9ca3af;font-weight:500;">/month</span>
+                </div>
+                <div style="font-size:11px;color:#9ca3af;margin-bottom:14px;" id="billing-pro">Billed monthly</div>
+                <div style="height:1px;background:#f3f4f6;margin-bottom:14px;"></div>
+                <div style="display:flex;flex-direction:column;gap:2px;flex:1;margin-bottom:20px;">
+                  <div class="plan-feature"><span class="material-symbols-outlined" style="font-size:14px;color:#10b981;font-variation-settings:'FILL' 1;flex-shrink:0;">check_circle</span>Unlimited contacts</div>
+                  <div class="plan-feature"><span class="material-symbols-outlined" style="font-size:14px;color:#10b981;font-variation-settings:'FILL' 1;flex-shrink:0;">check_circle</span>Advanced campaigns</div>
+                  <div class="plan-feature"><span class="material-symbols-outlined" style="font-size:14px;color:#10b981;font-variation-settings:'FILL' 1;flex-shrink:0;">check_circle</span>Team access &amp; roles</div>
+                  <div class="plan-feature"><span class="material-symbols-outlined" style="font-size:14px;color:#10b981;font-variation-settings:'FILL' 1;flex-shrink:0;">check_circle</span>Advanced analytics</div>
+                  <div class="plan-feature"><span class="material-symbols-outlined" style="font-size:14px;color:#10b981;font-variation-settings:'FILL' 1;flex-shrink:0;">check_circle</span>Priority support</div>
+                </div>
+                <button onclick="triggerUpgrade('Pro')" style="width:100%;padding:10px;background:#fff;border:1px solid #8b5cf6;border-radius:9px;font-size:13px;font-weight:700;color:#8b5cf6;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='#f5f3ff'" onmouseout="this.style.background='#fff'">Upgrade to Pro</button>
+              </div>
+
+            </div>
+
+            <!-- All plans include banner -->
+            <div style="display:flex;align-items:center;gap:12px;padding:14px 18px;background:#f9fafb;border:1px solid #f3f4f6;border-radius:11px;margin-bottom:16px;">
+              <span class="material-symbols-outlined" style="font-size:18px;color:#10b981;flex-shrink:0;font-variation-settings:'FILL' 1;">verified_user</span>
+              <span style="font-size:12px;font-weight:600;color:#374151;"><strong>All plans include:</strong> 99.9% uptime &nbsp;·&nbsp; Secure data &nbsp;·&nbsp; Regular updates &nbsp;·&nbsp; 7-day money-back guarantee</span>
+            </div>
+
+            <!-- How upgrades work -->
+            <div style="background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,0.05);margin-bottom:16px;">
+              <div style="font-size:14px;font-weight:700;color:#111827;margin-bottom:16px;">How upgrades work</div>
+              <div style="display:flex;align-items:flex-start;gap:8px;">
+                <!-- Step 1 -->
+                <div class="how-step">
+                  <div class="how-icon" style="background:#f0fdf4;">
+                    <span class="material-symbols-outlined" style="font-size:22px;color:#10b981;font-variation-settings:'FILL' 1;">rocket_launch</span>
+                  </div>
+                  <div style="font-size:12px;font-weight:700;color:#111827;margin-bottom:3px;">1. Choose Plan</div>
+                  <div style="font-size:11px;color:#9ca3af;line-height:1.4;">Select the plan that fits your business.</div>
+                </div>
+                <div class="how-arrow"><span class="material-symbols-outlined" style="font-size:18px;">arrow_forward</span></div>
+                <!-- Step 2 -->
+                <div class="how-step">
+                  <div class="how-icon" style="background:#fffbeb;">
+                    <span class="material-symbols-outlined" style="font-size:22px;color:#f59e0b;font-variation-settings:'FILL' 1;">credit_card</span>
+                  </div>
+                  <div style="font-size:12px;font-weight:700;color:#111827;margin-bottom:3px;">2. Secure Payment</div>
+                  <div style="font-size:11px;color:#9ca3af;line-height:1.4;">Pay securely via Paystack.</div>
+                </div>
+                <div class="how-arrow"><span class="material-symbols-outlined" style="font-size:18px;">arrow_forward</span></div>
+                <!-- Step 3 -->
+                <div class="how-step">
+                  <div class="how-icon" style="background:#eff6ff;">
+                    <span class="material-symbols-outlined" style="font-size:22px;color:#3b82f6;font-variation-settings:'FILL' 1;">verified_user</span>
+                  </div>
+                  <div style="font-size:12px;font-weight:700;color:#111827;margin-bottom:3px;">3. Instant Upgrade</div>
+                  <div style="font-size:11px;color:#9ca3af;line-height:1.4;">Your plan is upgraded instantly.</div>
+                </div>
+                <div class="how-arrow"><span class="material-symbols-outlined" style="font-size:18px;">arrow_forward</span></div>
+                <!-- Step 4 -->
+                <div class="how-step">
+                  <div class="how-icon" style="background:#f5f3ff;">
+                    <span class="material-symbols-outlined" style="font-size:22px;color:#8b5cf6;font-variation-settings:'FILL' 1;">check_circle</span>
+                  </div>
+                  <div style="font-size:12px;font-weight:700;color:#111827;margin-bottom:3px;">4. Enjoy Benefits</div>
+                  <div style="font-size:11px;color:#9ca3af;line-height:1.4;">Access new features immediately.</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Paystack Security Footer -->
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:#fff;border:1px solid #e5e7eb;border-radius:11px;box-shadow:0 1px 4px rgba(0,0,0,0.04);flex-wrap:wrap;gap:12px;">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <span class="material-symbols-outlined" style="font-size:20px;color:#10b981;font-variation-settings:'FILL' 1;">lock</span>
+                <div>
+                  <div style="font-size:12px;font-weight:700;color:#111827;">Secure payments powered by Paystack</div>
+                  <div style="font-size:11px;color:#9ca3af;">Your payment information is encrypted and secure.</div>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;">
+                <div style="display:flex;align-items:center;gap:5px;padding:6px 12px;background:#00c3f7;border-radius:7px;">
+                  <span style="font-size:11px;font-weight:800;color:#fff;letter-spacing:0.03em;">paystack</span>
+                  <span style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.8);">SECURED</span>
+                </div>
+                <div style="padding:6px 10px;background:#003087;border-radius:7px;text-align:center;">
+                  <div style="font-size:9px;font-weight:800;color:#fff;line-height:1;">PCI DSS</div>
+                  <div style="font-size:8px;color:rgba(255,255,255,0.7);line-height:1;">FULLERS COMPLIANT</div>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /left -->
+
+          <!-- ═══ RIGHT Panel ═══ -->
+          <div>
+
+            <!-- Current Plan -->
+            <div class="panel-card">
+              <div class="panel-card-header">
+                <div class="panel-card-title">Your Current Plan</div>
+              </div>
+              <div class="panel-card-body">
+                <div style="display:flex;align-items:center;gap:10px;padding:12px;background:#f9fafb;border:1px solid #f3f4f6;border-radius:10px;margin-bottom:12px;">
+                  <div style="width:36px;height:36px;border-radius:9px;background:#f0fdf4;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <span class="material-symbols-outlined" style="font-size:18px;color:#10b981;font-variation-settings:'FILL' 1;">rocket_launch</span>
+                  </div>
+                  <div style="flex:1;min-width:0;">
+                    <div style="display:flex;align-items:center;gap:6px;">
+                      <span style="font-size:13px;font-weight:700;color:#111827;">Starter Plan</span>
+                      <span style="background:#f0fdf4;color:#166534;border:1px solid #bbf7d0;padding:2px 7px;border-radius:99px;font-size:10px;font-weight:800;">Active</span>
+                    </div>
+                    <div style="font-size:11px;color:#9ca3af;margin-top:1px;">Free forever</div>
+                  </div>
+                </div>
+                <button onclick="switchBillTab('usage')" style="width:100%;padding:9px;background:#fff;border:1px solid #e5e7eb;border-radius:9px;font-size:12px;font-weight:700;color:#374151;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='#ba0031';this.style.color='#ba0031'" onmouseout="this.style.borderColor='#e5e7eb';this.style.color='#374151'">View Plan Details</button>
+              </div>
+            </div>
+
+            <!-- Usage Summary -->
+            <div class="panel-card">
+              <div class="panel-card-header">
+                <div class="panel-card-title">Usage Summary</div>
+              </div>
+              <div class="panel-card-body" style="padding-top:8px;padding-bottom:8px;">
+
+                <div class="usage-row">
+                  <div style="flex:1;min-width:0;">
+                    <div style="font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;">Contacts</div>
+                    <div style="display:flex;align-items:center;gap:8px;">
+                      <div class="usage-track" style="width:100%;max-width:none;flex:1;">
+                        <div class="usage-fill" style="width:42%;background:#10b981;"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div style="font-size:12px;font-weight:700;color:#111827;white-space:nowrap;margin-left:10px;flex-shrink:0;">42 / 100</div>
+                </div>
+
+                <div class="usage-row">
+                  <div style="flex:1;min-width:0;">
+                    <div style="font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;">Campaigns</div>
+                    <div style="display:flex;align-items:center;gap:8px;">
+                      <div class="usage-track" style="width:100%;max-width:none;flex:1;">
+                        <div class="usage-fill" style="width:0%;background:#9ca3af;"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div style="font-size:12px;font-weight:700;color:#9ca3af;white-space:nowrap;margin-left:10px;flex-shrink:0;">0 / 0</div>
+                </div>
+
+                <div class="usage-row">
+                  <div style="flex:1;min-width:0;">
+                    <div style="font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;">Team Members</div>
+                    <div style="display:flex;align-items:center;gap:8px;">
+                      <div class="usage-track" style="width:100%;max-width:none;flex:1;">
+                        <div class="usage-fill" style="width:100%;background:#10b981;"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div style="font-size:12px;font-weight:700;color:#111827;white-space:nowrap;margin-left:10px;flex-shrink:0;">1 / 1</div>
+                </div>
+
+                <div class="usage-row">
+                  <div style="flex:1;min-width:0;">
+                    <div style="font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;">AI Conversations</div>
+                    <div style="display:flex;align-items:center;gap:8px;">
+                      <div class="usage-track" style="width:100%;max-width:none;flex:1;">
+                        <div class="usage-fill" style="width:46%;background:#10b981;"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div style="font-size:12px;font-weight:700;color:#111827;white-space:nowrap;margin-left:10px;flex-shrink:0;">230 / 500</div>
+                </div>
+
+                <button onclick="switchBillTab('usage')" style="width:100%;margin-top:12px;padding:9px;background:#fff;border:1px solid #e5e7eb;border-radius:9px;font-size:12px;font-weight:700;color:#374151;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='#10b981';this.style.color='#10b981'" onmouseout="this.style.borderColor='#e5e7eb';this.style.color='#374151'">View Usage &amp; Limits</button>
+              </div>
+            </div>
+
+            <!-- Need more power -->
+            <div class="panel-card" style="background:linear-gradient(135deg,#f9fafb,#fff);">
+              <div class="panel-card-body" style="padding:16px;">
+                <div style="font-size:14px;font-weight:700;color:#111827;margin-bottom:4px;">Need more power?</div>
+                <div style="font-size:12px;color:#6b7280;line-height:1.5;margin-bottom:12px;">Upgrade to Growth or Pro to unlock advanced features and higher limits.</div>
+                <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:14px;">
+                  <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#374151;">
+                    <span class="material-symbols-outlined" style="font-size:13px;color:#10b981;font-variation-settings:'FILL' 1;">check_circle</span>Send bulk campaigns
+                  </div>
+                  <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#374151;">
+                    <span class="material-symbols-outlined" style="font-size:13px;color:#10b981;font-variation-settings:'FILL' 1;">check_circle</span>Unlock AI automation
+                  </div>
+                  <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#374151;">
+                    <span class="material-symbols-outlined" style="font-size:13px;color:#10b981;font-variation-settings:'FILL' 1;">check_circle</span>Invite team members
+                  </div>
+                  <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#374151;">
+                    <span class="material-symbols-outlined" style="font-size:13px;color:#10b981;font-variation-settings:'FILL' 1;">check_circle</span>Access advanced analytics
+                  </div>
+                </div>
+                <button onclick="triggerUpgrade('Growth')" style="width:100%;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;background:linear-gradient(135deg,#7c3aed,#6366f1);border:none;border-radius:9px;font-size:13px;font-weight:700;color:#fff;cursor:pointer;box-shadow:0 3px 10px rgba(99,102,241,0.3);transition:all 0.2s;" onmouseover="this.style.background='linear-gradient(135deg,#6d28d9,#4f46e5)'" onmouseout="this.style.background='linear-gradient(135deg,#7c3aed,#6366f1)'">
+                  Upgrade Now
+                  <span class="material-symbols-outlined" style="font-size:14px;">arrow_forward</span>
+                </button>
+              </div>
+            </div>
+
+          </div><!-- /right panel -->
+        </div><!-- /billing-layout -->
+      </div><!-- /content-plans -->
+
+      <!-- ════════ PAYMENT HISTORY TAB ════════ -->
+      <div id="content-history" style="display:none;">
+        <div style="background:#fff;border:1px solid #e5e7eb;border-radius:14px;box-shadow:0 1px 4px rgba(0,0,0,0.05);overflow:hidden;">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px 12px;border-bottom:1px solid #f3f4f6;">
+            <div style="font-size:14px;font-weight:700;color:#111827;">Payment History</div>
+            <button onclick="QR.showToast('Exporting history…','info')" style="display:inline-flex;align-items:center;gap:5px;padding:7px 12px;background:#fff;border:1px solid #e5e7eb;border-radius:8px;font-size:12px;font-weight:600;color:#374151;cursor:pointer;">
+              <span class="material-symbols-outlined" style="font-size:14px;">download</span>Export
+            </button>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="hist-table w-full" style="border-collapse:collapse;">
+              <thead><tr>
+                <th>Date</th><th>Description</th><th>Amount</th><th>Method</th><th>Status</th><th>Invoice</th>
+              </tr></thead>
+              <tbody>
+                <tr>
+                  <td style="color:#9ca3af;">May 1, 2024</td>
+                  <td><span style="font-weight:600;color:#111827;">Starter Plan</span><div style="font-size:11px;color:#9ca3af;">Monthly subscription</div></td>
+                  <td style="font-weight:700;color:#111827;">₦0</td>
+                  <td><span style="font-size:11px;color:#6b7280;">Free plan</span></td>
+                  <td><span style="background:#f0fdf4;color:#166534;border:1px solid #bbf7d0;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:700;">Active</span></td>
+                  <td><button onclick="QR.showToast('No invoice for free plan','info')" style="font-size:11px;font-weight:700;color:#ba0031;background:none;border:none;cursor:pointer;">—</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div style="padding:40px;text-align:center;">
+            <div style="width:48px;height:48px;background:#f9fafb;border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
+              <span class="material-symbols-outlined" style="font-size:22px;color:#9ca3af;">receipt_long</span>
+            </div>
+            <div style="font-size:13px;font-weight:700;color:#374151;margin-bottom:4px;">No paid transactions yet</div>
+            <div style="font-size:12px;color:#9ca3af;">Your payment history will appear here once you upgrade.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════ INVOICES TAB ════════ -->
+      <div id="content-invoices" style="display:none;">
+        <div style="background:#fff;border:1px solid #e5e7eb;border-radius:14px;box-shadow:0 1px 4px rgba(0,0,0,0.05);padding:40px;text-align:center;">
+          <div style="width:56px;height:56px;background:#f9fafb;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
+            <span class="material-symbols-outlined" style="font-size:26px;color:#9ca3af;">description</span>
+          </div>
+          <div style="font-size:15px;font-weight:700;color:#111827;margin-bottom:6px;">No invoices yet</div>
+          <div style="font-size:12px;color:#9ca3af;max-width:280px;margin:0 auto 20px;line-height:1.5;">Invoices will be generated automatically when you upgrade to a paid plan.</div>
+          <button onclick="switchBillTab('plans')" style="display:inline-flex;align-items:center;gap:6px;padding:9px 18px;background:#10b981;border:none;border-radius:9px;font-size:13px;font-weight:700;color:#fff;cursor:pointer;box-shadow:0 2px 8px rgba(16,185,129,0.25);">
+            <span class="material-symbols-outlined" style="font-size:14px;">rocket_launch</span>View Plans
+          </button>
+        </div>
+      </div>
+
+      <!-- ════════ USAGE & LIMITS TAB ════════ -->
+      <div id="content-usage" style="display:none;">
+        <div style="display:grid;grid-template-columns:1fr 280px;gap:20px;align-items:start;">
+          <div style="display:flex;flex-direction:column;gap:14px;">
+            <!-- Usage card -->
+            <div style="background:#fff;border:1px solid #e5e7eb;border-radius:14px;box-shadow:0 1px 4px rgba(0,0,0,0.05);overflow:hidden;">
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px 12px;border-bottom:1px solid #f3f4f6;">
+                <div style="font-size:14px;font-weight:700;color:#111827;">Resource Usage — Starter Plan</div>
+                <span style="background:#f0fdf4;color:#166534;border:1px solid #bbf7d0;padding:3px 10px;border-radius:99px;font-size:10px;font-weight:800;">Free Plan</span>
+              </div>
+              <div style="padding:18px;">
+                <!-- Detailed usage rows -->
+                <div style="display:flex;flex-direction:column;gap:16px;">
+                  <div>
+                    <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+                      <div style="display:flex;align-items:center;gap:6px;"><span class="material-symbols-outlined" style="font-size:15px;color:#10b981;font-variation-settings:'FILL' 1;">group</span><span style="font-size:13px;font-weight:600;color:#111827;">Contacts</span></div>
+                      <span style="font-size:13px;font-weight:700;color:#111827;">42 / 100</span>
+                    </div>
+                    <div style="width:100%;height:6px;background:#f3f4f6;border-radius:99px;overflow:hidden;"><div style="height:100%;width:42%;background:#10b981;border-radius:99px;transition:width 0.6s;"></div></div>
+                    <div style="font-size:11px;color:#9ca3af;margin-top:4px;">42% utilized · 58 remaining</div>
+                  </div>
+                  <div>
+                    <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+                      <div style="display:flex;align-items:center;gap:6px;"><span class="material-symbols-outlined" style="font-size:15px;color:#9ca3af;">campaign</span><span style="font-size:13px;font-weight:600;color:#111827;">Campaigns</span></div>
+                      <span style="font-size:13px;font-weight:700;color:#9ca3af;">Not available</span>
+                    </div>
+                    <div style="width:100%;height:6px;background:#f3f4f6;border-radius:99px;overflow:hidden;"></div>
+                    <div style="font-size:11px;color:#f59e0b;margin-top:4px;">Upgrade to Growth to unlock campaigns</div>
+                  </div>
+                  <div>
+                    <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+                      <div style="display:flex;align-items:center;gap:6px;"><span class="material-symbols-outlined" style="font-size:15px;color:#3b82f6;font-variation-settings:'FILL' 1;">people</span><span style="font-size:13px;font-weight:600;color:#111827;">Team Members</span></div>
+                      <span style="font-size:13px;font-weight:700;color:#ef4444;">1 / 1</span>
+                    </div>
+                    <div style="width:100%;height:6px;background:#f3f4f6;border-radius:99px;overflow:hidden;"><div style="height:100%;width:100%;background:#ef4444;border-radius:99px;transition:width 0.6s;"></div></div>
+                    <div style="font-size:11px;color:#ef4444;margin-top:4px;">Limit reached · Upgrade to add more agents</div>
+                  </div>
+                  <div>
+                    <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+                      <div style="display:flex;align-items:center;gap:6px;"><span class="material-symbols-outlined" style="font-size:15px;color:#8b5cf6;font-variation-settings:'FILL' 1;">smart_toy</span><span style="font-size:13px;font-weight:600;color:#111827;">AI Conversations</span></div>
+                      <span style="font-size:13px;font-weight:700;color:#111827;">230 / 500</span>
+                    </div>
+                    <div style="width:100%;height:6px;background:#f3f4f6;border-radius:99px;overflow:hidden;"><div style="height:100%;width:46%;background:#8b5cf6;border-radius:99px;transition:width 0.6s;"></div></div>
+                    <div style="font-size:11px;color:#9ca3af;margin-top:4px;">46% utilized · 270 remaining this month</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right panel for Usage tab -->
+          <div>
+            <div class="panel-card">
+              <div class="panel-card-header"><div class="panel-card-title">Upgrade to unlock more</div></div>
+              <div class="panel-card-body">
+                <p style="font-size:12px;color:#6b7280;line-height:1.5;margin-bottom:14px;">You're on the Starter (free) plan. Upgrade to Growth or Pro to get more resources and unlock all features.</p>
+                <button onclick="switchBillTab('plans')" style="width:100%;padding:10px;background:#10b981;border:none;border-radius:9px;font-size:13px;font-weight:700;color:#fff;cursor:pointer;box-shadow:0 2px 8px rgba(16,185,129,0.25);transition:all 0.2s;" onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">View Plans</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Success State -->
+      <div class="success-state" id="billing-success" style="text-align:center;padding:60px 20px;">
+        <div style="width:80px;height:80px;background:#f0fdf4;border-radius:24px;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;box-shadow:0 8px 24px rgba(16,185,129,0.15);">
+          <span class="material-symbols-outlined" style="font-size:40px;color:#10b981;font-variation-settings:'FILL' 1;">verified</span>
+        </div>
+        <h2 style="font-size:24px;font-weight:800;color:#111827;margin-bottom:6px;">Upgrade Successful! 🎉</h2>
+        <p style="font-size:14px;color:#6b7280;margin-bottom:28px;">Your plan is now active. New features are unlocked.</p>
+        <div style="background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:20px;max-width:400px;margin:0 auto 24px;text-align:left;box-shadow:0 1px 4px rgba(0,0,0,0.05);">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;"><span class="material-symbols-outlined" style="color:#10b981;font-size:18px;font-variation-settings:'FILL' 1;">task_alt</span><span style="font-size:13px;font-weight:600;color:#111827;">Plan upgraded successfully</span></div>
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;"><span class="material-symbols-outlined" style="color:#10b981;font-size:18px;font-variation-settings:'FILL' 1;">task_alt</span><span style="font-size:13px;font-weight:600;color:#111827;">New features unlocked</span></div>
+          <div style="display:flex;align-items:center;gap:10px;"><span class="material-symbols-outlined" style="color:#10b981;font-size:18px;font-variation-settings:'FILL' 1;">task_alt</span><span style="font-size:13px;font-weight:600;color:#111827;">AI Jennifer ready for advanced tasks</span></div>
+        </div>
+        <button onclick="location.href='../index.html'" style="display:inline-flex;align-items:center;gap:6px;padding:10px 24px;background:#10b981;border:none;border-radius:10px;font-size:13px;font-weight:700;color:#fff;cursor:pointer;box-shadow:0 3px 10px rgba(16,185,129,0.25);">
+          <span class="material-symbols-outlined" style="font-size:15px;">dashboard</span>Go to Dashboard
+        </button>
+      </div>
+
+    </div><!-- /content-container -->
+  </main>
+</div>
+
+<!-- Processing Overlay -->
+<div class="processing-overlay" id="billing-loader">
+  <div style="text-align:center;">
+    <div style="width:52px;height:52px;border:3px solid #f3f4f6;border-top-color:#10b981;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px;"></div>
+    <div style="font-size:16px;font-weight:800;color:#111827;">Processing Payment…</div>
+    <div style="font-size:12px;color:#9ca3af;margin-top:4px;font-weight:500;">Please do not refresh this page</div>
+  </div>
+</div>
+
+<script src="../sidebar.js"></script>
+<script src="../shell.js"></script>
+<script>
+  /* ── Tab Switching ── */
+  function switchBillTab(tab) {
+    const tabs = ['plans','history','invoices','usage'];
+    tabs.forEach(t => {
+      const btn = document.getElementById('tab-' + t);
+      if (btn) btn.classList.toggle('active', t === tab);
+      const el = document.getElementById('content-' + t);
+      if (el) el.style.display = t === tab ? 'block' : 'none';
+    });
+    document.getElementById('billing-success').style.display = 'none';
+  }
+
+  /* ── Billing Cycle Toggle ── */
+  const prices = {
+    monthly: { starter: '₦0', growth: '₦20,000', pro: '₦50,000', billingGrowth: 'Billed monthly', billingPro: 'Billed monthly', billingStarter: 'Always free' },
+    yearly:  { starter: '₦0', growth: '₦16,000', pro: '₦40,000', billingGrowth: 'Billed yearly (save 20%)', billingPro: 'Billed yearly (save 20%)', billingStarter: 'Always free' },
+  };
+
+  function setCycle(cycle) {
+    document.getElementById('cycle-monthly').classList.toggle('active', cycle === 'monthly');
+    document.getElementById('cycle-yearly').classList.toggle('active', cycle === 'yearly');
+    const p = prices[cycle];
+    document.getElementById('price-starter').textContent  = p.starter;
+    document.getElementById('price-growth').textContent   = p.growth;
+    document.getElementById('price-pro').textContent      = p.pro;
+    document.getElementById('billing-starter').textContent = p.billingStarter;
+    document.getElementById('billing-growth').textContent  = p.billingGrowth;
+    document.getElementById('billing-pro').textContent     = p.billingPro;
+  }
+
+  /* ── Upgrade Flow ── */
+  function triggerUpgrade(plan) {
+    const loader = document.getElementById('billing-loader');
+    loader.style.display = 'flex';
+    setTimeout(() => {
+      loader.style.display = 'none';
+      // Hide all tab content
+      ['plans','history','invoices','usage'].forEach(t => {
+        const el = document.getElementById('content-' + t);
+        if (el) el.style.display = 'none';
+      });
+      document.getElementById('billing-success').style.display = 'block';
+      QR.showToast(`Upgraded to ${plan} successfully!`, 'success');
+    }, 2200);
+  }
+</script>
+</body>
+</html>

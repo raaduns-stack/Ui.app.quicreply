@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Settings — QuicReply Sales OS</title>
+  <meta name="description" content="QuicReply Settings — manage your business profile, integrations, and system preferences." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+  <link rel="stylesheet" href="../shell.css" />
+  <style>
+    /* ══════════════════════════════════════════
+       Settings Page — Premium SaaS Level
+    ══════════════════════════════════════════ */
+
+    /* ── Settings Layout ── */
+    .settings-layout {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 20px;
+      align-items: start;
+    }
+    @media (max-width: 1100px) {
+      .settings-layout { grid-template-columns: 1fr; }
+    }
+
+    /* ── Tab Nav ── */
+    .settings-tabs {
+      display: flex;
+      border-bottom: 1px solid #e5e7eb;
+      gap: 0;
+      margin-bottom: 24px;
+    }
+    .settings-tab {
+      padding: 10px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #6b7280;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .settings-tab:hover { color: #111827; }
+    .settings-tab.active { color: #ba0031; border-bottom-color: #ba0031; font-weight: 700; }
+
+    /* ── Section Cards ── */
+    .set-card {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+    .set-card:last-child { margin-bottom: 0; }
+    .set-card-header {
+      padding: 16px 20px 14px;
+      border-bottom: 1px solid #f3f4f6;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .set-card-num {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      background: #111827;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .set-card-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #111827;
+    }
+    .set-card-body { padding: 20px; }
+
+    /* ── Form Fields ── */
+    .set-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #6b7280;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 6px;
+      display: block;
+    }
+    .set-input {
+      width: 100%;
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 9px;
+      padding: 9px 12px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #111827;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.2s;
+      outline: none;
+    }
+    .set-input:focus { border-color: #ba0031; box-shadow: 0 0 0 3px rgba(186,0,49,0.08); }
+    .set-select {
+      width: 100%;
+      background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236b7280'/%3E%3C/svg%3E") no-repeat right 12px center;
+      border: 1px solid #e5e7eb;
+      border-radius: 9px;
+      padding: 9px 32px 9px 12px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #111827;
+      font-family: 'Inter', sans-serif;
+      appearance: none;
+      cursor: pointer;
+      outline: none;
+      transition: all 0.2s;
+    }
+    .set-select:focus { border-color: #ba0031; box-shadow: 0 0 0 3px rgba(186,0,49,0.08); }
+
+    /* ── Toggle Switch ── */
+    .set-toggle {
+      position: relative;
+      display: inline-block;
+      width: 42px; height: 24px;
+      flex-shrink: 0;
+    }
+    .set-toggle input { opacity: 0; width: 0; height: 0; }
+    .set-toggle-slider {
+      position: absolute; inset: 0;
+      background: #e5e7eb;
+      border-radius: 24px;
+      cursor: pointer;
+      transition: 0.25s;
+    }
+    .set-toggle-slider::before {
+      content: '';
+      position: absolute;
+      width: 18px; height: 18px;
+      left: 3px; bottom: 3px;
+      background: #fff;
+      border-radius: 50%;
+      transition: 0.25s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    }
+    .set-toggle input:checked + .set-toggle-slider { background: #10b981; }
+    .set-toggle input:checked + .set-toggle-slider::before { transform: translateX(18px); }
+
+    /* ── Progress Bar ── */
+    .set-progress-track {
+      width: 100%; height: 5px;
+      background: #f3f4f6;
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .set-progress-fill {
+      height: 100%;
+      border-radius: 99px;
+      transition: width 0.6s ease;
+    }
+
+    /* ── Right-side Panel Cards ── */
+    .panel-card {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+      overflow: hidden;
+      margin-bottom: 14px;
+    }
+    .panel-card:last-child { margin-bottom: 0; }
+    .panel-card-header {
+      padding: 14px 16px 10px;
+      border-bottom: 1px solid #f3f4f6;
+    }
+    .panel-card-title { font-size: 13px; font-weight: 700; color: #111827; }
+    .panel-card-body { padding: 14px 16px; }
+
+    /* ── Status Row ── */
+    .status-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #f9fafb;
+    }
+    .status-row:last-child { border-bottom: none; }
+
+    /* ── Quick Action Row ── */
+    .qa-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 0;
+      border-bottom: 1px solid #f9fafb;
+      cursor: pointer;
+      transition: all 0.15s;
+      border-radius: 8px;
+    }
+    .qa-row:last-child { border-bottom: none; }
+    .qa-row:hover { background: #fafafa; padding-left: 4px; }
+    .qa-icon {
+      width: 34px; height: 34px;
+      border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    /* ── Automation Check Row ── */
+    .auto-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 0;
+    }
+
+    /* ── AI Persona Avatar ── */
+    .ai-avatar {
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ba0031, #f43f5e);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    /* ── Team Table ── */
+    .team-table th {
+      padding: 9px 14px;
+      font-size: 10px; font-weight: 700;
+      color: #9ca3af;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      background: #f9fafb;
+      border-bottom: 1px solid #f3f4f6;
+      text-align: left;
+    }
+    .team-table td {
+      padding: 11px 14px;
+      font-size: 12px;
+      color: #374151;
+      border-bottom: 1px solid #f9fafb;
+      vertical-align: middle;
+    }
+    .team-table tr:last-child td { border-bottom: none; }
+    .team-table tr:hover td { background: #fafafa; }
+
+    /* ── Success Banner ── */
+    .success-banner {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 16px;
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 9px;
+      margin-top: 14px;
+    }
+
+    /* ── API Upgrade Banner ── */
+    .api-upgrade-banner {
+      background: linear-gradient(135deg, #111827 0%, #1e293b 100%);
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    /* ── Plan Badge ── */
+    .plan-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 10px; border-radius: 99px;
+      font-size: 10px; font-weight: 800;
+      letter-spacing: 0.04em;
+    }
+
+    /* ── Pulse ── */
+    @keyframes pulse-ring {
+      0%   { box-shadow: 0 0 0 0 rgba(16,185,129,0.4); }
+      70%  { box-shadow: 0 0 0 5px rgba(16,185,129,0); }
+      100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); }
+    }
+    .pulse-dot { animation: pulse-ring 2s infinite; }
+
+    /* ── Divider ── */
+    .set-divider {
+      height: 1px; background: #f3f4f6;
+      margin: 4px 0;
+    }
+  </style>
+</head>
+<body>
+<div id="sidebar-mount"></div>
+<div class="layout-with-sidebar" id="main-layout">
+  <div id="topbar-mount" data-title="Settings · System Preferences"></div>
+
+  <main class="flex-1 p-5 lg:p-7" style="display:flex;flex-direction:column;gap:0;">
+    <div class="content-container">
+
+      <!-- ══ PAGE HEADER ══ -->
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
+        <div>
+          <h1 style="font-size:22px;font-weight:800;color:#111827;letter-spacing:-0.02em;line-height:1.2;">Settings</h1>
+          <p style="font-size:13px;color:#6b7280;margin-top:3px;font-weight:500;">Manage your business, integrations, and system preferences</p>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button id="btn-reset" onclick="handleReset()" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;background:#fff;border:1px solid #e5e7eb;border-radius:9px;font-size:13px;font-weight:600;color:#374151;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.06);transition:all 0.2s;" onmouseover="this.style.borderColor='#d1d5db'" onmouseout="this.style.borderColor='#e5e7eb'">
+            <span class="material-symbols-outlined" style="font-size:15px;">restart_alt</span>Reset
+          </button>
+          <button id="btn-save" onclick="handleSave()" style="display:inline-flex;align-items:center;gap:6px;padding:8px 18px;background:#10b981;border:none;border-radius:9px;font-size:13px;font-weight:700;color:#fff;cursor:pointer;box-shadow:0 2px 8px rgba(16,185,129,0.3);transition:all 0.2s;" onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">
+            <span class="material-symbols-outlined" style="font-size:15px;">check_circle</span>Save Changes
+          </button>
+        </div>
+      </div>
+
+      <!-- ══ TAB NAV ══ -->
+      <div class="settings-tabs">
+        <button class="settings-tab active" id="tab-profile" onclick="switchTab('profile')">Profile</button>
+        <button class="settings-tab" id="tab-billing" onclick="switchTab('billing')">Billing</button>
+        <button class="settings-tab" id="tab-integrations" onclick="switchTab('integrations')">Integrations</button>
+      </div>
+
+      <!-- ══ TWO-COLUMN SETTINGS LAYOUT ══ -->
+      <div class="settings-layout">
+
+        <!-- ═══ LEFT — Main Content ═══ -->
+        <div id="settings-main">
+
+          <!-- ▸ PROFILE TAB CONTENT -->
+          <div id="content-profile">
+
+            <!-- 1. Business Profile -->
+            <div class="set-card">
+              <div class="set-card-header">
+                <span class="set-card-num">1</span>
+                <span class="set-card-title">Business Profile</span>
+              </div>
+              <div class="set-card-body">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;">
+                  <div>
+                    <label class="set-label">Business Name</label>
+                    <input type="text" class="set-input" value="John's Gadget Store" id="biz-name" />
+                  </div>
+                  <div>
+                    <label class="set-label">Industry / Business Niche</label>
+                    <div style="position:relative;">
+                      <div style="position:absolute;left:10px;top:50%;transform:translateY(-50%);display:flex;align-items:center;">
+                        <span class="material-symbols-outlined" style="font-size:16px;color:#6b7280;">storefront</span>
+                      </div>
+                      <select class="set-select" style="padding-left:34px;" id="biz-niche">
+                        <option selected>Gadget Vendor</option>
+                        <option>Hair &amp; Wigs</option>
+                        <option>Fashion / Apparel</option>
+                        <option>Consumer Tech</option>
+                        <option>Food &amp; Beverage</option>
+                        <option>Real Estate</option>
+                        <option>Healthcare</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Auto-configure banner -->
+                <div class="success-banner" id="success-banner">
+                  <div style="width:24px;height:24px;border-radius:50%;background:#10b981;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <span class="material-symbols-outlined" style="font-size:14px;color:#fff;font-variation-settings:'FILL' 1;">check</span>
+                  </div>
+                  <span style="font-size:13px;font-weight:500;color:#166534;flex:1;">Optimizing your workspace for Gadget Vendors…</span>
+                  <div style="width:18px;height:18px;border:2px solid #10b981;border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite;flex-shrink:0;"></div>
+                </div>
+
+                <!-- Auto-configure toggle -->
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px;padding:12px 14px;background:#f9fafb;border:1px solid #f3f4f6;border-radius:9px;">
+                  <div>
+                    <div style="font-size:13px;font-weight:600;color:#111827;">Auto-configure system</div>
+                    <div style="font-size:11px;color:#9ca3af;margin-top:2px;">This will auto-setup currency, timezone, AI persona, and workflows.</div>
+                  </div>
+                  <label class="set-toggle">
+                    <input type="checkbox" checked id="auto-config" />
+                    <span class="set-toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- 2. Localization Settings -->
+            <div class="set-card">
+              <div class="set-card-header">
+                <span class="set-card-num">2</span>
+                <span class="set-card-title">Localization Settings</span>
+              </div>
+              <div class="set-card-body">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+                  <div>
+                    <label class="set-label">Currency</label>
+                    <div style="position:relative;">
+                      <div style="position:absolute;left:10px;top:50%;transform:translateY(-50%);">
+                        <span class="material-symbols-outlined" style="font-size:16px;color:#6b7280;">currency_exchange</span>
+                      </div>
+                      <select class="set-select" style="padding-left:34px;" id="currency">
+                        <option selected>₦ Naira (NGN)</option>
+                        <option>$ USD</option>
+                        <option>£ GBP</option>
+                        <option>€ EUR</option>
+                        <option>GHS Cedi</option>
+                      </select>
+                    </div>
+                    <div style="font-size:11px;color:#9ca3af;margin-top:5px;font-weight:500;">Default currency for transactions</div>
+                  </div>
+                  <div>
+                    <label class="set-label">Timezone</label>
+                    <div style="position:relative;">
+                      <div style="position:absolute;left:10px;top:50%;transform:translateY(-50%);">
+                        <span class="material-symbols-outlined" style="font-size:16px;color:#6b7280;">public</span>
+                      </div>
+                      <select class="set-select" style="padding-left:34px;" id="timezone">
+                        <option selected>Africa/Lagos (GMT+1)</option>
+                        <option>UTC</option>
+                        <option>America/New_York (GMT-5)</option>
+                        <option>Europe/London (GMT+0)</option>
+                        <option>Asia/Kolkata (GMT+5:30)</option>
+                      </select>
+                    </div>
+                    <div style="font-size:11px;color:#9ca3af;margin-top:5px;font-weight:500;">System timezone for your workspace</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 3. AI Configuration (Jennifer) -->
+            <div class="set-card">
+              <div class="set-card-header">
+                <span class="set-card-num">3</span>
+                <span class="set-card-title">AI Configuration (Jennifer)</span>
+              </div>
+              <div class="set-card-body">
+                <div style="display:flex;align-items:center;gap:14px;padding:14px;background:#f9fafb;border:1px solid #f3f4f6;border-radius:10px;margin-bottom:14px;">
+                  <!-- AI Avatar -->
+                  <div class="ai-avatar">
+                    <span class="material-symbols-outlined" style="font-size:24px;color:#fff;font-variation-settings:'FILL' 1;">smart_toy</span>
+                    <!-- Active indicator -->
+                    <div style="position:absolute;bottom:1px;right:1px;width:12px;height:12px;background:#10b981;border:2px solid #fff;border-radius:50%;" class="pulse-dot"></div>
+                  </div>
+                  <div style="flex:1;min-width:0;">
+                    <div style="font-size:10px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:2px;">Persona</div>
+                    <div style="font-size:14px;font-weight:700;color:#111827;">Sales Assistant for Gadget Vendor</div>
+                    <div style="font-size:12px;color:#6b7280;margin-top:1px;">Your AI assistant is customized for your business niche.</div>
+                    <span style="display:inline-flex;align-items:center;gap:4px;margin-top:6px;padding:3px 8px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:99px;font-size:10px;font-weight:700;color:#166534;">
+                      <span style="width:6px;height:6px;border-radius:50%;background:#10b981;flex-shrink:0;"></span>Active
+                    </span>
+                  </div>
+                  <div style="display:flex;gap:8px;">
+                    <button onclick="QR.showToast('Opening persona editor…','info')" style="display:inline-flex;align-items:center;gap:5px;padding:7px 12px;background:#fff;border:1px solid #e5e7eb;border-radius:8px;font-size:12px;font-weight:600;color:#374151;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='#ba0031';this.style.color='#ba0031'" onmouseout="this.style.borderColor='#e5e7eb';this.style.color='#374151'">
+                      <span class="material-symbols-outlined" style="font-size:14px;">edit</span>Edit Persona
+                    </button>
+                    <button onclick="QR.showToast('Re-training Jennifer…','info')" style="display:inline-flex;align-items:center;gap:5px;padding:7px 12px;background:#fff;border:1px solid #e5e7eb;border-radius:8px;font-size:12px;font-weight:600;color:#374151;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='#6366f1';this.style.color='#6366f1'" onmouseout="this.style.borderColor='#e5e7eb';this.style.color='#374151'">
+                      <span class="material-symbols-outlined" style="font-size:14px;">model_training</span>Re-train AI
+                    </button>
+                  </div>
+                </div>
+
+                <!-- AI Settings Row -->
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+                  <div>
+                    <label class="set-label">Response Style</label>
+                    <select class="set-select">
+                      <option selected>Professional</option>
+                      <option>Friendly &amp; Casual</option>
+                      <option>Aggressive Sales</option>
+                      <option>Conservative</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="set-label">AI Language</label>
+                    <select class="set-select">
+                      <option selected>English</option>
+                      <option>Pidgin English</option>
+                      <option>Yoruba + English</option>
+                      <option>French</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 4. Team Management -->
+            <div class="set-card">
+              <div class="set-card-header">
+                <span class="set-card-num">4</span>
+                <span class="set-card-title">Team Management</span>
+              </div>
+              <div class="set-card-body">
+                <!-- Invite Row -->
+                <div style="display:flex;gap:10px;align-items:center;margin-bottom:16px;">
+                  <div style="font-size:13px;font-weight:600;color:#374151;white-space:nowrap;">Invite Team Member</div>
+                  <input type="text" class="set-input" placeholder="Enter name or email address" style="flex:1;" id="invite-email" />
+                  <select class="set-select" style="width:120px;flex-shrink:0;" id="invite-role">
+                    <option>Agent</option>
+                    <option>Admin</option>
+                    <option>Viewer</option>
+                  </select>
+                  <div style="font-size:13px;font-weight:600;color:#6b7280;white-space:nowrap;">Role</div>
+                  <button onclick="handleInvite()" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;background:#10b981;border:none;border-radius:8px;font-size:13px;font-weight:700;color:#fff;cursor:pointer;box-shadow:0 2px 6px rgba(16,185,129,0.25);white-space:nowrap;flex-shrink:0;transition:all 0.2s;" onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">
+                    <span class="material-symbols-outlined" style="font-size:15px;font-variation-settings:'FILL' 1;">person_add</span>Invite
+                  </button>
+                </div>
+
+                <!-- Team Table -->
+                <div style="overflow-x:auto;">
+                  <table class="team-table w-full" style="border-collapse:collapse;">
+                    <thead>
+                      <tr>
+                        <th>Team Member</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Joined</th>
+                        <th>Status</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>
+                          <div style="display:flex;align-items:center;gap:9px;">
+                            <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;flex-shrink:0;">JD</div>
+                            <div>
+                              <div style="font-weight:700;color:#111827;">John Doe</div>
+                              <span style="font-size:10px;font-weight:700;color:#6b7280;background:#f3f4f6;padding:1px 6px;border-radius:4px;">You</span>
+                            </div>
+                          </div>
+                        </td>
+                        <td style="color:#6b7280;">john@acme.com</td>
+                        <td><span style="background:rgba(186,0,49,0.08);color:#ba0031;padding:3px 8px;border-radius:99px;font-size:10px;font-weight:700;">Admin</span></td>
+                        <td style="color:#9ca3af;">May 10, 2024</td>
+                        <td>
+                          <span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:#10b981;">
+                            <span style="width:6px;height:6px;border-radius:50%;background:#10b981;flex-shrink:0;"></span>Active
+                          </span>
+                        </td>
+                        <td>
+                          <button onclick="QR.showToast('Cannot remove yourself','error')" style="background:none;border:none;cursor:pointer;color:#d1d5db;padding:4px;">···</button>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <div style="display:flex;align-items:center;gap:9px;">
+                            <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#6366f1);display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;flex-shrink:0;">SJ</div>
+                            <span style="font-weight:700;color:#111827;">Sarah Jenkins</span>
+                          </div>
+                        </td>
+                        <td style="color:#6b7280;">sarah@acme.com</td>
+                        <td><span style="background:#f0fdf4;color:#059669;padding:3px 8px;border-radius:99px;font-size:10px;font-weight:700;border:1px solid #bbf7d0;">Agent</span></td>
+                        <td style="color:#9ca3af;">May 12, 2024</td>
+                        <td>
+                          <span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:#10b981;">
+                            <span style="width:6px;height:6px;border-radius:50%;background:#10b981;flex-shrink:0;"></span>Active
+                          </span>
+                        </td>
+                        <td>
+                          <button onclick="QR.showToast('Member options opened','info')" style="background:none;border:none;cursor:pointer;color:#d1d5db;padding:4px;font-size:16px;letter-spacing:1px;">···</button>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <div style="display:flex;align-items:center;gap:9px;">
+                            <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#f59e0b,#ef4444);display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;flex-shrink:0;">MB</div>
+                            <span style="font-weight:700;color:#111827;">Michael Brown</span>
+                          </div>
+                        </td>
+                        <td style="color:#6b7280;">michael@acme.com</td>
+                        <td><span style="background:#f5f3ff;color:#7c3aed;padding:3px 8px;border-radius:99px;font-size:10px;font-weight:700;border:1px solid #ddd6fe;">Viewer</span></td>
+                        <td style="color:#9ca3af;">May 15, 2024</td>
+                        <td>
+                          <span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:#10b981;">
+                            <span style="width:6px;height:6px;border-radius:50%;background:#10b981;flex-shrink:0;"></span>Active
+                          </span>
+                        </td>
+                        <td>
+                          <button onclick="QR.showToast('Member options opened','info')" style="background:none;border:none;cursor:pointer;color:#d1d5db;padding:4px;font-size:16px;letter-spacing:1px;">···</button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- API Upgrade Banner -->
+            <div class="api-upgrade-banner">
+              <div style="display:flex;align-items:center;gap:14px;">
+                <div style="width:42px;height:42px;border-radius:11px;background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                  <span class="material-symbols-outlined" style="font-size:20px;color:#10b981;font-variation-settings:'FILL' 1;">whatsapp</span>
+                </div>
+                <div>
+                  <div style="font-size:14px;font-weight:700;color:#fff;">Upgrade to Official WhatsApp API</div>
+                  <div style="font-size:12px;color:#94a3b8;margin-top:2px;">For high-volume messaging and advanced automation.</div>
+                  <div style="display:flex;align-items:center;gap:12px;margin-top:8px;flex-wrap:wrap;">
+                    <span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:#94a3b8;">
+                      <span class="material-symbols-outlined" style="font-size:12px;color:#10b981;">check</span>Unlimited messaging
+                    </span>
+                    <span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:#94a3b8;">
+                      <span class="material-symbols-outlined" style="font-size:12px;color:#10b981;">check</span>Campaign automation
+                    </span>
+                    <span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:#94a3b8;">
+                      <span class="material-symbols-outlined" style="font-size:12px;color:#10b981;">check</span>Verified business account
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <button onclick="location.href='../api-setup/index.html'" style="display:inline-flex;align-items:center;gap:7px;padding:10px 20px;background:#10b981;border:none;border-radius:9px;font-size:13px;font-weight:700;color:#fff;cursor:pointer;box-shadow:0 4px 12px rgba(16,185,129,0.3);white-space:nowrap;flex-shrink:0;transition:all 0.2s;" onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">
+                Start API Setup
+                <span class="material-symbols-outlined" style="font-size:14px;">chevron_right</span>
+              </button>
+            </div>
+
+          </div><!-- /content-profile -->
+
+          <!-- ▸ BILLING TAB CONTENT -->
+          <div id="content-billing" style="display:none;">
+            <!-- Plan Grid -->
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px;">
+
+              <!-- Starter -->
+              <div style="background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,0.05);">
+                <div style="font-size:11px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:10px;">Starter</div>
+                <div style="font-size:28px;font-weight:800;color:#111827;line-height:1;margin-bottom:2px;">$99<span style="font-size:13px;color:#9ca3af;font-weight:500;">/mo</span></div>
+                <div style="height:1px;background:#f3f4f6;margin:14px 0;"></div>
+                <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">
+                  <div style="display:flex;align-items:center;gap:7px;font-size:12px;font-weight:500;color:#374151;"><span class="material-symbols-outlined" style="font-size:14px;color:#10b981;font-variation-settings:'FILL' 1;">check_circle</span>3 Agent Seats</div>
+                  <div style="display:flex;align-items:center;gap:7px;font-size:12px;font-weight:500;color:#374151;"><span class="material-symbols-outlined" style="font-size:14px;color:#10b981;font-variation-settings:'FILL' 1;">check_circle</span>QR Session Mode</div>
+                  <div style="display:flex;align-items:center;gap:7px;font-size:12px;font-weight:500;color:#9ca3af;"><span class="material-symbols-outlined" style="font-size:14px;color:#d1d5db;">cancel</span>No Official Meta API</div>
+                </div>
+                <button disabled style="width:100%;padding:9px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;font-size:12px;font-weight:700;color:#9ca3af;cursor:not-allowed;">CURRENT PLAN</button>
+              </div>
+
+              <!-- Professional (highlighted) -->
+              <div style="background:#fff;border:2px solid #ba0031;border-radius:14px;padding:20px;box-shadow:0 4px 20px rgba(186,0,49,0.12);position:relative;">
+                <div style="position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:#ba0031;color:#fff;font-size:10px;font-weight:800;padding:3px 12px;border-radius:99px;text-transform:uppercase;letter-spacing:0.05em;white-space:nowrap;">Recommended</div>
+                <div style="font-size:11px;font-weight:700;color:#ba0031;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:10px;">Professional</div>
+                <div style="font-size:28px;font-weight:800;color:#111827;line-height:1;margin-bottom:2px;">$499<span style="font-size:13px;color:#9ca3af;font-weight:500;">/mo</span></div>
+                <div style="height:1px;background:#f3f4f6;margin:14px 0;"></div>
+                <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">
+                  <div style="display:flex;align-items:center;gap:7px;font-size:12px;font-weight:600;color:#111827;"><span class="material-symbols-outlined" style="font-size:14px;color:#10b981;font-variation-settings:'FILL' 1;">check_circle</span>10 Agent Seats</div>
+                  <div style="display:flex;align-items:center;gap:7px;font-size:12px;font-weight:600;color:#111827;"><span class="material-symbols-outlined" style="font-size:14px;color:#10b981;font-variation-settings:'FILL' 1;">check_circle</span>Official Meta API</div>
+                  <div style="display:flex;align-items:center;gap:7px;font-size:12px;font-weight:600;color:#111827;"><span class="material-symbols-outlined" style="font-size:14px;color:#10b981;font-variation-settings:'FILL' 1;">check_circle</span>AI Jennifer (Sales Automation)</div>
+                </div>
+                <button onclick="QR.showToast('Upgrading to Professional…','info')" style="width:100%;padding:9px;background:#ba0031;border:none;border-radius:8px;font-size:12px;font-weight:700;color:#fff;cursor:pointer;box-shadow:0 3px 10px rgba(186,0,49,0.25);transition:all 0.2s;" onmouseover="this.style.background='#e80040'" onmouseout="this.style.background='#ba0031'">UPGRADE NOW</button>
+              </div>
+
+              <!-- Enterprise -->
+              <div style="background:#0f172a;border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:20px;box-shadow:0 4px 20px rgba(0,0,0,0.15);">
+                <div style="font-size:11px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:10px;">Enterprise</div>
+                <div style="font-size:28px;font-weight:800;color:#fff;line-height:1;margin-bottom:2px;">Custom</div>
+                <div style="height:1px;background:rgba(255,255,255,0.06);margin:14px 0;"></div>
+                <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">
+                  <div style="display:flex;align-items:center;gap:7px;font-size:12px;font-weight:600;color:#cbd5e1;"><span class="material-symbols-outlined" style="font-size:14px;color:#ba0031;font-variation-settings:'FILL' 1;">star</span>Unlimited Seats</div>
+                  <div style="display:flex;align-items:center;gap:7px;font-size:12px;font-weight:600;color:#cbd5e1;"><span class="material-symbols-outlined" style="font-size:14px;color:#ba0031;font-variation-settings:'FILL' 1;">star</span>Infinite Messaging Tier</div>
+                  <div style="display:flex;align-items:center;gap:7px;font-size:12px;font-weight:600;color:#cbd5e1;"><span class="material-symbols-outlined" style="font-size:14px;color:#ba0031;font-variation-settings:'FILL' 1;">star</span>Dedicated Success Manager</div>
+                </div>
+                <button onclick="QR.showToast('Contacting sales team…','info')" style="width:100%;padding:9px;background:transparent;border:1px solid rgba(255,255,255,0.15);border-radius:8px;font-size:12px;font-weight:700;color:#fff;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(255,255,255,0.3)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.15)'">CONTACT SALES</button>
+              </div>
+
+            </div>
+
+            <!-- Usage -->
+            <div class="set-card">
+              <div class="set-card-header">
+                <span class="set-card-num" style="background:#6366f1;">✦</span>
+                <span class="set-card-title">Current Resource Utilization</span>
+              </div>
+              <div class="set-card-body" style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+                <div>
+                  <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+                    <span style="font-size:12px;font-weight:600;color:#374151;">Seats Used</span>
+                    <span style="font-size:12px;font-weight:700;color:#111827;">3 / 10</span>
+                  </div>
+                  <div class="set-progress-track"><div class="set-progress-fill" style="width:30%;background:#ba0031;"></div></div>
+                  <div style="font-size:11px;color:#9ca3af;margin-top:4px;">30% utilized</div>
+                </div>
+                <div>
+                  <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+                    <span style="font-size:12px;font-weight:600;color:#374151;">Monthly Messages</span>
+                    <span style="font-size:12px;font-weight:700;color:#111827;">1,420 / 5,000</span>
+                  </div>
+                  <div class="set-progress-track"><div class="set-progress-fill" style="width:28%;background:#3b82f6;"></div></div>
+                  <div style="font-size:11px;color:#9ca3af;margin-top:4px;">28% utilized</div>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /content-billing -->
+
+          <!-- ▸ INTEGRATIONS TAB CONTENT -->
+          <div id="content-integrations" style="display:none;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+              <div style="font-size:13px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:0.05em;">Storefront &amp; E-commerce</div>
+              <input type="text" placeholder="Search apps…" class="set-input" style="width:180px;" />
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:20px;">
+              <div class="set-card" style="margin-bottom:0;">
+                <div style="padding:16px;">
+                  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+                    <div style="width:42px;height:42px;border-radius:10px;background:#f0fdf4;display:flex;align-items:center;justify-content:center;"><span class="material-symbols-outlined" style="color:#10b981;font-size:22px;">shopping_cart</span></div>
+                    <span style="background:#ecfdf5;color:#059669;border:1px solid #a7f3d0;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:700;">Connected</span>
+                  </div>
+                  <div style="font-size:14px;font-weight:700;color:#111827;margin-bottom:4px;">Shopify Premium</div>
+                  <div style="font-size:12px;color:#6b7280;line-height:1.5;margin-bottom:12px;">Inventory sync, order tracking, and abandoned cart recovery.</div>
+                  <div style="display:flex;justify-content:space-between;align-items:center;padding-top:10px;border-top:1px solid #f3f4f6;">
+                    <span style="font-size:11px;color:#9ca3af;font-weight:500;">Sync: 2m ago</span>
+                    <button onclick="QR.showToast('Opening Shopify config…','info')" style="font-size:11px;font-weight:700;color:#ba0031;background:none;border:none;cursor:pointer;">CONFIGURE</button>
+                  </div>
+                </div>
+              </div>
+              <div class="set-card" style="margin-bottom:0;">
+                <div style="padding:16px;">
+                  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+                    <div style="width:42px;height:42px;border-radius:10px;background:#f5f3ff;display:flex;align-items:center;justify-content:center;"><span class="material-symbols-outlined" style="color:#8b5cf6;font-size:22px;">language</span></div>
+                    <span style="background:#f8fafc;color:#94a3b8;border:1px solid #e5e7eb;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:700;">Available</span>
+                  </div>
+                  <div style="font-size:14px;font-weight:700;color:#111827;margin-bottom:4px;">WooCommerce</div>
+                  <div style="font-size:12px;color:#6b7280;line-height:1.5;margin-bottom:12px;">Sync your WordPress store leads and product catalogs instantly.</div>
+                  <div style="display:flex;justify-content:flex-end;padding-top:10px;border-top:1px solid #f3f4f6;">
+                    <button onclick="QR.showToast('Connecting WooCommerce…','info')" style="font-size:11px;font-weight:700;color:#fff;background:#ba0031;border:none;border-radius:7px;padding:6px 12px;cursor:pointer;">CONNECT</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div style="font-size:13px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:16px;">Data &amp; CRM Systems</div>
+            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;">
+              <div class="set-card" style="margin-bottom:0;">
+                <div style="padding:16px;">
+                  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+                    <div style="width:42px;height:42px;border-radius:10px;background:#f0fdf4;display:flex;align-items:center;justify-content:center;"><span class="material-symbols-outlined" style="color:#10b981;font-size:22px;">table_view</span></div>
+                    <span style="background:#ecfdf5;color:#059669;border:1px solid #a7f3d0;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:700;">Active Sync</span>
+                  </div>
+                  <div style="font-size:14px;font-weight:700;color:#111827;margin-bottom:4px;">Google Sheets</div>
+                  <div style="font-size:12px;color:#6b7280;line-height:1.5;margin-bottom:12px;">Auto-export incoming leads to master sheets for team review.</div>
+                  <div style="display:flex;justify-content:space-between;align-items:center;padding-top:10px;border-top:1px solid #f3f4f6;">
+                    <span style="font-size:11px;color:#9ca3af;font-weight:500;">Sync: Live</span>
+                    <button onclick="QR.showToast('Opening Sheets manager…','info')" style="font-size:11px;font-weight:700;color:#ba0031;background:none;border:none;cursor:pointer;">MANAGE</button>
+                  </div>
+                </div>
+              </div>
+              <div class="set-card" style="margin-bottom:0;">
+                <div style="padding:16px;">
+                  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+                    <div style="width:42px;height:42px;border-radius:10px;background:#eff6ff;display:flex;align-items:center;justify-content:center;"><span class="material-symbols-outlined" style="color:#3b82f6;font-size:22px;">ads_click</span></div>
+                    <span style="background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:700;">Setup Req.</span>
+                  </div>
+                  <div style="font-size:14px;font-weight:700;color:#111827;margin-bottom:4px;">Meta Pixel / Ads</div>
+                  <div style="font-size:12px;color:#6b7280;line-height:1.5;margin-bottom:12px;">Track conversion events back to your Facebook &amp; Instagram campaigns.</div>
+                  <div style="display:flex;justify-content:flex-end;padding-top:10px;border-top:1px solid #f3f4f6;">
+                    <button onclick="QR.showToast('Opening Pixel setup…','info')" style="font-size:11px;font-weight:700;color:#fff;background:#ba0031;border:none;border-radius:7px;padding:6px 12px;cursor:pointer;">CONFIGURE</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div><!-- /content-integrations -->
+
+        </div><!-- /settings-main -->
+
+        <!-- ═══ RIGHT — System Panel ═══ -->
+        <div id="settings-panel">
+
+          <!-- System Status -->
+          <div class="panel-card">
+            <div class="panel-card-header">
+              <div class="panel-card-title">System Status</div>
+            </div>
+            <div class="panel-card-body" style="padding-top:8px;padding-bottom:8px;">
+              <div class="status-row">
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <div style="width:28px;height:28px;border-radius:7px;background:#f0fdf4;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <span class="material-symbols-outlined" style="font-size:14px;color:#10b981;font-variation-settings:'FILL' 1;">whatsapp</span>
+                  </div>
+                  <span style="font-size:12px;font-weight:600;color:#374151;">WhatsApp Mode</span>
+                </div>
+                <span style="background:#f0fdf4;color:#166534;border:1px solid #bbf7d0;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:800;">QR Mode</span>
+              </div>
+              <div class="status-row">
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <div style="width:28px;height:28px;border-radius:7px;background:#fffbeb;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <span class="material-symbols-outlined" style="font-size:14px;color:#f59e0b;">api</span>
+                  </div>
+                  <span style="font-size:12px;font-weight:600;color:#374151;">API Status</span>
+                </div>
+                <span style="background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:800;">Not Setup</span>
+              </div>
+              <div class="status-row">
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <div style="width:28px;height:28px;border-radius:7px;background:#f5f3ff;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <span class="material-symbols-outlined" style="font-size:14px;color:#8b5cf6;">smart_toy</span>
+                  </div>
+                  <span style="font-size:12px;font-weight:600;color:#374151;">AI Status</span>
+                </div>
+                <span style="background:#f0fdf4;color:#166534;border:1px solid #bbf7d0;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:800;">Active</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Actions -->
+          <div class="panel-card">
+            <div class="panel-card-header">
+              <div class="panel-card-title">Quick Actions</div>
+            </div>
+            <div class="panel-card-body" style="padding-top:4px;padding-bottom:4px;">
+              <div class="qa-row" onclick="location.href='../api-setup/index.html'">
+                <div class="qa-icon" style="background:#fff7ed;">
+                  <span class="material-symbols-outlined" style="font-size:16px;color:#f59e0b;">api</span>
+                </div>
+                <div style="flex:1;min-width:0;">
+                  <div style="font-size:12px;font-weight:700;color:#111827;">Setup API</div>
+                  <div style="font-size:11px;color:#9ca3af;">Upgrade to official WhatsApp API</div>
+                </div>
+                <span class="material-symbols-outlined" style="font-size:16px;color:#d1d5db;">chevron_right</span>
+              </div>
+              <div class="qa-row" onclick="QR.showToast('Invite flow opened','info')">
+                <div class="qa-icon" style="background:#eff6ff;">
+                  <span class="material-symbols-outlined" style="font-size:16px;color:#3b82f6;">group_add</span>
+                </div>
+                <div style="flex:1;min-width:0;">
+                  <div style="font-size:12px;font-weight:700;color:#111827;">Invite Team</div>
+                  <div style="font-size:11px;color:#9ca3af;">Add new members to your workspace</div>
+                </div>
+                <span class="material-symbols-outlined" style="font-size:16px;color:#d1d5db;">chevron_right</span>
+              </div>
+              <div class="qa-row" onclick="location.href='../ai/setup.html'">
+                <div class="qa-icon" style="background:#f5f3ff;">
+                  <span class="material-symbols-outlined" style="font-size:16px;color:#8b5cf6;">tune</span>
+                </div>
+                <div style="flex:1;min-width:0;">
+                  <div style="font-size:12px;font-weight:700;color:#111827;">Configure AI</div>
+                  <div style="font-size:11px;color:#9ca3af;">Customize Jennifer's behavior</div>
+                </div>
+                <span class="material-symbols-outlined" style="font-size:16px;color:#d1d5db;">chevron_right</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Smart Automation Preview -->
+          <div class="panel-card">
+            <div class="panel-card-header">
+              <div class="panel-card-title">Smart Automation Preview</div>
+            </div>
+            <div class="panel-card-body">
+              <p style="font-size:12px;color:#6b7280;margin-bottom:12px;line-height:1.5;">When you selected 'Gadget Vendor', QuicReply configured your system automatically.</p>
+              <div style="display:flex;flex-direction:column;gap:4px;">
+                <div class="auto-row">
+                  <span class="material-symbols-outlined" style="font-size:14px;color:#10b981;font-variation-settings:'FILL' 1;">check_circle</span>
+                  <span style="font-size:12px;font-weight:600;color:#374151;flex:1;">Currency</span>
+                  <span class="material-symbols-outlined" style="font-size:12px;color:#d1d5db;">arrow_forward</span>
+                  <span style="font-size:12px;font-weight:600;color:#111827;">₦ Naira</span>
+                </div>
+                <div class="auto-row">
+                  <span class="material-symbols-outlined" style="font-size:14px;color:#10b981;font-variation-settings:'FILL' 1;">check_circle</span>
+                  <span style="font-size:12px;font-weight:600;color:#374151;flex:1;">Timezone</span>
+                  <span class="material-symbols-outlined" style="font-size:12px;color:#d1d5db;">arrow_forward</span>
+                  <span style="font-size:12px;font-weight:600;color:#111827;">Africa/Lagos</span>
+                </div>
+                <div class="auto-row">
+                  <span class="material-symbols-outlined" style="font-size:14px;color:#10b981;font-variation-settings:'FILL' 1;">check_circle</span>
+                  <span style="font-size:12px;font-weight:600;color:#374151;flex:1;">AI Persona</span>
+                  <span class="material-symbols-outlined" style="font-size:12px;color:#d1d5db;">arrow_forward</span>
+                  <span style="font-size:12px;font-weight:600;color:#111827;text-align:right;max-width:110px;">Gadget Sales Asst.</span>
+                </div>
+                <div class="auto-row">
+                  <span class="material-symbols-outlined" style="font-size:14px;color:#10b981;font-variation-settings:'FILL' 1;">check_circle</span>
+                  <span style="font-size:12px;font-weight:600;color:#374151;flex:1;">Workflows</span>
+                  <span class="material-symbols-outlined" style="font-size:12px;color:#d1d5db;">arrow_forward</span>
+                  <span style="font-size:12px;font-weight:600;color:#111827;">Gadget Vendor Flow</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Need Help -->
+          <div class="panel-card">
+            <div class="panel-card-header">
+              <div class="panel-card-title">Need help?</div>
+            </div>
+            <div class="panel-card-body">
+              <p style="font-size:12px;color:#6b7280;margin-bottom:12px;line-height:1.5;">Our support team is ready to help you set up everything perfectly.</p>
+              <button onclick="QR.showToast('Opening support chat…','info')" style="width:100%;display:flex;align-items:center;justify-content:center;gap:7px;padding:9px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:9px;font-size:12px;font-weight:700;color:#374151;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='#ba0031';this.style.color='#ba0031'" onmouseout="this.style.borderColor='#e5e7eb';this.style.color='#374151'">
+                <span class="material-symbols-outlined" style="font-size:16px;">support_agent</span>Contact Support
+              </button>
+            </div>
+          </div>
+
+        </div><!-- /settings-panel -->
+      </div><!-- /settings-layout -->
+
+    </div><!-- /content-container -->
+  </main>
+</div>
+
+<script src="../sidebar.js"></script>
+<script src="../shell.js"></script>
+<script>
+  /* ── Tab Switching ── */
+  function switchTab(tab) {
+    ['profile','billing','integrations'].forEach(t => {
+      document.getElementById('content-' + t).style.display = t === tab ? 'block' : 'none';
+      const btn = document.getElementById('tab-' + t);
+      btn.classList.toggle('active', t === tab);
+    });
+    // Hide panel on billing/integrations for better layout, show on profile
+    document.getElementById('settings-panel').style.display = tab === 'profile' ? 'block' : 'none';
+  }
+
+  /* ── Save ── */
+  function handleSave() {
+    const btn = document.getElementById('btn-save');
+    btn.textContent = 'Saving…';
+    btn.style.background = '#059669';
+    setTimeout(() => {
+      btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:15px;vertical-align:-4px;">check_circle</span> Saved!';
+      QR.showToast('Settings saved successfully', 'success');
+      setTimeout(() => {
+        btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:15px;vertical-align:-4px;">check_circle</span> Save Changes';
+        btn.style.background = '#10b981';
+      }, 2000);
+    }, 800);
+  }
+
+  /* ── Reset ── */
+  function handleReset() {
+    document.getElementById('biz-name').value = "John's Gadget Store";
+    document.getElementById('biz-niche').selectedIndex = 0;
+    document.getElementById('currency').selectedIndex = 0;
+    document.getElementById('timezone').selectedIndex = 0;
+    QR.showToast('Settings reset to defaults', 'info');
+  }
+
+  /* ── Invite ── */
+  function handleInvite() {
+    const email = document.getElementById('invite-email').value.trim();
+    if (!email) { QR.showToast('Please enter a name or email', 'error'); return; }
+    QR.showToast('Invitation sent to ' + email, 'success');
+    document.getElementById('invite-email').value = '';
+  }
+
+  /* ── Niche change triggers banner ── */
+  document.getElementById('biz-niche').addEventListener('change', function() {
+    const banner = document.getElementById('success-banner');
+    banner.style.display = 'flex';
+    banner.querySelector('span').textContent = 'Optimizing your workspace for ' + this.value + '…';
+  });
+</script>
+<style>
+  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+</style>
+</body>
+</html>

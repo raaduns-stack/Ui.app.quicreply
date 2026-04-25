@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Broadcast Setup - Onboarding | QuicReply</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+    rel="stylesheet" />
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#ba0031",
+            "primary-variant": "#e80040",
+            "surface": "#f8f9fa",
+            "on-surface": "#191c1d",
+            "secondary": "#5f5e5e",
+            "outline": "#e1e3e4",
+            "wa-green": "#25D366",
+            "wa-dark": "#128C7E",
+          },
+          borderRadius: {
+            "DEFAULT": "0.5rem",
+            "lg": "1.25rem",
+            "xl": "2rem",
+            "2xl": "2.5rem",
+            "full": "9999px"
+          },
+          fontFamily: { sans: ["Inter", "sans-serif"] },
+          boxShadow: {
+            "premium": "0 20px 50px -12px rgba(0,0,0,0.08)",
+            "premium-hover": "0 30px 60px -12px rgba(186,0,49,0.12)",
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="../../shell.css" />
+  <style>
+    body {
+      min-height: 100vh;
+      padding: 0;
+      margin: 0;
+      background:
+        radial-gradient(circle at top, rgba(186, 0, 49, .08), transparent 30%),
+        var(--surface);
+      overflow-x: hidden;
+    }
+
+    .main-content {
+      min-height: calc(100vh - var(--topbar-height));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 24px 80px;
+    }
+
+    .onboarding-container {
+      max-width: 1080px;
+      width: 100%;
+      animation: fadeIn .35s ease-out;
+    }
+
+    .flow-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .section-card {
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: #fff;
+      padding: 20px;
+    }
+
+    .flow-card {
+      border: 1.5px solid var(--border);
+      border-radius: 18px;
+      padding: 14px;
+      background: #fff;
+      cursor: pointer;
+      transition: .2s ease;
+    }
+
+    .flow-card:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 20px rgba(186, 0, 49, 0.04);
+    }
+
+    .flow-card.selected {
+      border-color: var(--brand);
+      background: linear-gradient(180deg, rgba(186, 0, 49, .08), rgba(186, 0, 49, .02));
+    }
+  </style>
+</head>
+
+<body>
+
+
+
+  <body>
+
+    <div id="topbar-mount" data-title="Onboarding · Broadcast Setup"></div>
+
+    <div class="main-content">
+      <div class="onboarding-container space-y-6">
+        <div class="flex justify-center items-center px-4">
+          <div class="step-dot done"><span class="material-symbols-outlined text-sm">check</span></div>
+          <div class="step-line done"></div>
+          <div class="step-dot active"><span class="material-symbols-outlined text-sm">storefront</span></div>
+          <div class="step-line"></div>
+          <div class="step-dot"></div>
+          <div class="step-line"></div>
+          <div class="step-dot"><span class="material-symbols-outlined text-sm">flag</span></div>
+        </div>
+
+        <div class="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <span class="flow-pill">Broadcast Model Flow</span>
+            <h1 class="text-3xl font-black text-gray-900 mt-3">Business and broadcast setup</h1>
+            <p class="text-gray-600 mt-2 max-w-2xl">
+              We will capture your profile, campaign intent, and traffic sources so the broadcast model is tuned for
+              fast
+              sending and scale.
+            </p>
+          </div>
+          <div class="card-sm max-w-sm">
+            <p class="text-xs font-bold uppercase tracking-widest text-gray-500">Broadcast Mode Active</p>
+            <p class="text-xs text-gray-500 mt-2">`org.name`, `org.campaignIntent`, `org.trafficSources`</p>
+          </div>
+        </div>
+
+        <form id="onboarding-form" class="grid grid-cols-1 xl:grid-cols-[1.2fr_.8fr] gap-6">
+          <div class="space-y-6">
+            <div class="section-card space-y-5">
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">domain</span>
+                <h2 class="text-base font-bold text-gray-900">A. Business Info</h2>
+              </div>
+              <div class="grid gap-4 md:grid-cols-2">
+                <div class="space-y-2">
+                  <label class="text-sm font-semibold text-gray-700">Business Name</label>
+                  <input id="businessName" class="input-field" type="text" placeholder="Acme Media Group" required />
+                </div>
+                <div class="space-y-2">
+                  <label class="text-sm font-semibold text-gray-700">Industry</label>
+                  <select id="industry" class="input-field" required>
+                    <option value="" selected disabled>Select industry</option>
+                    <option value="ecommerce">E-commerce / Retail</option>
+                    <option value="real-estate">Real Estate</option>
+                    <option value="saas">Software / SaaS</option>
+                    <option value="education">Education / Coaching</option>
+                    <option value="healthcare">Healthcare</option>
+                    <option value="services">Services / Agency</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+                <div class="space-y-2">
+                  <label class="text-sm font-semibold text-gray-700">Country</label>
+                  <select id="country" class="input-field" required>
+                    <option value="" selected disabled>Select country</option>
+                    <option value="US">United States</option>
+                    <option value="IN">India</option>
+                    <option value="UK">United Kingdom</option>
+                    <option value="CA">Canada</option>
+                    <option value="AU">Australia</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="section-card space-y-5">
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">campaign</span>
+                <h2 class="text-base font-bold text-gray-900">B. Broadcast Intent</h2>
+              </div>
+              <div class="grid gap-3 md:grid-cols-2">
+                <label class="flow-card block" data-goal-card="generate-leads">
+                  <input type="radio" name="goal" value="generate_leads" class="sr-only" required />
+                  <div class="font-semibold text-gray-900">Generate leads</div>
+                  <p class="text-xs text-gray-600 mt-1">Capture and qualify inbound enquiries faster.</p>
+                </label>
+                <label class="flow-card block" data-goal-card="manage-conversations">
+                  <input type="radio" name="goal" value="manage_conversations" class="sr-only" required />
+                  <div class="font-semibold text-gray-900">Manage conversations</div>
+                  <p class="text-xs text-gray-600 mt-1">Keep every chat organized and routed.</p>
+                </label>
+                <label class="flow-card block" data-goal-card="close-sales">
+                  <input type="radio" name="goal" value="close_sales" class="sr-only" required />
+                  <div class="font-semibold text-gray-900">Close sales</div>
+                  <p class="text-xs text-gray-600 mt-1">Turn WhatsApp chats into confirmed revenue.</p>
+                </label>
+                <label class="flow-card selected block" data-goal-card="run-campaigns">
+                  <input type="radio" name="goal" value="run_campaigns" class="sr-only" checked required />
+                  <div class="font-semibold text-gray-900">Run campaigns</div>
+                  <p class="text-xs text-gray-600 mt-1">Launch broadcasts, promotions, and re-engagement.</p>
+                </label>
+              </div>
+            </div>
+
+            <div class="section-card space-y-5">
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">traffic</span>
+                <h2 class="text-base font-bold text-gray-900">C. Data Source</h2>
+              </div>
+              <div class="grid gap-3 md:grid-cols-2">
+                <label class="flow-card block" data-traffic-card="ads">
+                  <input type="checkbox" name="traffic" value="ads" class="sr-only" />
+                  <div class="font-semibold text-gray-900">Ads</div>
+                  <p class="text-xs text-gray-600 mt-1">Facebook, Instagram, Google, or TikTok traffic.</p>
+                </label>
+                <label class="flow-card block" data-traffic-card="website">
+                  <input type="checkbox" name="traffic" value="website" class="sr-only" />
+                  <div class="font-semibold text-gray-900">Website</div>
+                  <p class="text-xs text-gray-600 mt-1">Leads coming through landing pages or forms.</p>
+                </label>
+                <label class="flow-card block" data-traffic-card="whatsapp">
+                  <input type="checkbox" name="traffic" value="whatsapp" class="sr-only" />
+                  <div class="font-semibold text-gray-900">WhatsApp</div>
+                  <p class="text-xs text-gray-600 mt-1">Existing conversations and direct replies.</p>
+                </label>
+                <label class="flow-card block" data-traffic-card="other">
+                  <input type="checkbox" name="traffic" value="other" class="sr-only" />
+                  <div class="font-semibold text-gray-900">Other</div>
+                  <p class="text-xs text-gray-600 mt-1">Import from Excel, CRM, or external lists.</p>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <aside class="space-y-6">
+            <div class="section-card space-y-4">
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">hub</span>
+                <h2 class="text-base font-bold text-gray-900">Broadcast Profile</h2>
+              </div>
+              <ul class="space-y-3 text-sm text-gray-600">
+                <li class="flex gap-2"><span
+                    class="material-symbols-outlined text-primary text-sm mt-0.5">check_circle</span><span><strong
+                      class="text-gray-900">org.name</strong>: Sender identity.</span></li>
+                <li class="flex gap-2"><span
+                    class="material-symbols-outlined text-primary text-sm mt-0.5">check_circle</span><span><strong
+                      class="text-gray-900">org.broadcastGoal</strong>: Campaign focus.</span></li>
+                <li class="flex gap-2"><span
+                    class="material-symbols-outlined text-primary text-sm mt-0.5">check_circle</span><span><strong
+                      class="text-gray-900">org.dataSources</strong>: Recipient lists.</span></li>
+              </ul>
+            </div>
+
+            <div class="section-card space-y-4">
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">tips_and_updates</span>
+                <h2 class="text-base font-bold text-gray-900">Broadcast Tip</h2>
+              </div>
+              <p class="text-sm text-gray-600">
+                Broadcast continues into WhatsApp connection first, then the API upgrade path if you need higher volume.
+              </p>
+            </div>
+
+            <div class="section-card space-y-3">
+              <p class="text-xs font-bold uppercase tracking-widest text-gray-500">DB mapping</p>
+              <div class="rounded-2xl bg-red-50 border border-red-100 p-4 text-sm text-red-800 leading-6 font-mono">
+                {<br />
+                &nbsp;&nbsp;"flow": "broadcast",<br />
+                &nbsp;&nbsp;"intent": "run_campaigns",<br />
+                &nbsp;&nbsp;"sources": [...]<br />
+                }
+              </div>
+            </div>
+          </aside>
+
+          <div class="xl:col-span-2 flex flex-col md:flex-row items-center justify-between gap-4 pt-2">
+            <button type="button" onclick="location.href='../index.html'"
+              class="btn-ghost w-full md:w-auto justify-center">
+              <span class="material-symbols-outlined text-sm">arrow_back</span> Back
+            </button>
+            <div class="flex items-center gap-3 w-full md:w-auto">
+              <div id="error-message"
+                class="hidden text-sm text-red-600 bg-red-50 px-4 py-3 rounded-xl border border-red-200">
+                Please fill details and select at least one source.
+              </div>
+              <button type="submit" class="btn-primary py-3 px-6 text-base w-full md:w-auto justify-center">
+                Continue to WhatsApp <span class="material-symbols-outlined text-sm">arrow_forward</span>
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script src="../../sidebar.js"></script>
+    <script src="../../shell.js"></script>
+    <script>
+      const goalCards = document.querySelectorAll("[data-goal-card]");
+      const trafficCards = document.querySelectorAll("[data-traffic-card]");
+      const goalRadios = document.querySelectorAll("input[name='goal']");
+      const trafficInputs = document.querySelectorAll("input[name='traffic']");
+      const form = document.getElementById("onboarding-form");
+      const errorMsg = document.getElementById("error-message");
+
+      function syncCards(cards) {
+        cards.forEach((card) => {
+          const input = card.querySelector("input");
+          card.classList.toggle("selected", Boolean(input && input.checked));
+        });
+      }
+
+      goalRadios.forEach((radio) => radio.addEventListener("change", () => syncCards(goalCards)));
+      trafficInputs.forEach((input) => input.addEventListener("change", () => syncCards(trafficCards)));
+
+      syncCards(goalCards);
+      syncCards(trafficCards);
+
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        if (!form.checkValidity() || document.querySelectorAll("input[name='traffic']:checked").length === 0) {
+          errorMsg.classList.remove("hidden");
+          return;
+        }
+
+        const profile = {
+          name: document.getElementById("businessName").value.trim(),
+          industry: document.getElementById("industry").value,
+          country: document.getElementById("country").value,
+          primaryGoal: document.querySelector("input[name='goal']:checked").value,
+          trafficSources: [...document.querySelectorAll("input[name='traffic']:checked")].map((input) => input.value),
+          flow: "broadcast",
+        };
+
+        if (window.QR && window.QR.saveOrgProfile) {
+          window.QR.saveOrgProfile(profile);
+        } else {
+          localStorage.setItem("qr_org_profile", JSON.stringify(profile));
+        }
+        localStorage.setItem("qr_onboarding_flow", "broadcast");
+        location.href = "whatsapp.html";
+      });
+    </script>
+
+    <script>
+      function toggleMobileMenu() {
+        const menu = document.getElementById('mobile-menu');
+        const l1 = document.getElementById('hb-line-1');
+        const l2 = document.getElementById('hb-line-2');
+        const l3 = document.getElementById('hb-line-3');
+        if (!menu || !l1 || !l2 || !l3) return;
+        const isOpen = !menu.classList.contains('hidden');
+        if (isOpen) {
+          menu.classList.add('hidden');
+          l1.style.transform = ''; l2.style.opacity = '1'; l3.style.transform = '';
+        } else {
+          menu.classList.remove('hidden');
+          l1.style.transform = 'translateY(8px) rotate(45deg)';
+          l2.style.opacity = '0';
+          l3.style.transform = 'translateY(-8px) rotate(-45deg)';
+        }
+      }
+    </script>
+
+
+
+    <div id="footer-mount"></div>
+  </body>
+
+</html>

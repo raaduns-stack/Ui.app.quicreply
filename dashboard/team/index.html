@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Team — QuicReply Sales OS</title>
+  <meta name="description" content="QuicReply Team — manage your team members, roles, and monitor performance." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+  <link rel="stylesheet" href="../shell.css" />
+  <style>
+    /* ══════════════════════════════════════════
+       Team Page — Premium SaaS Level
+    ══════════════════════════════════════════ */
+
+    /* ── Two-column layout ── */
+    .team-layout {
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      gap: 20px;
+      align-items: start;
+    }
+    @media (max-width: 1100px) {
+      .team-layout { grid-template-columns: 1fr; }
+    }
+
+    /* ── Tab Nav ── */
+    .team-tabs {
+      display: flex;
+      border-bottom: 1px solid #e5e7eb;
+      gap: 0;
+      margin-bottom: 0;
+    }
+    .team-tab {
+      padding: 10px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #6b7280;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: all 0.2s;
+    }
+    .team-tab:hover { color: #111827; }
+    .team-tab.active { color: #ba0031; border-bottom-color: #ba0031; font-weight: 700; }
+
+    /* ── KPI Cards ── */
+    .tm-kpi {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+      transition: all 0.25s cubic-bezier(.4,0,.2,1);
+    }
+    .tm-kpi:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.09); }
+    .tm-kpi-icon {
+      width: 44px; height: 44px;
+      border-radius: 11px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .tm-kpi-label {
+      font-size: 11px; font-weight: 700;
+      color: #9ca3af;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 2px;
+    }
+    .tm-kpi-value {
+      font-size: 26px; font-weight: 800;
+      color: #111827;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+    .tm-kpi-change {
+      display: flex; align-items: center; gap: 3px;
+      font-size: 11px; font-weight: 700;
+      margin-top: 3px;
+    }
+
+    /* ── Main table card ── */
+    .team-card {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+      overflow: hidden;
+    }
+    .team-card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 16px 12px;
+      border-bottom: 1px solid #f3f4f6;
+      flex-wrap: wrap; gap: 10px;
+    }
+    .team-card-title { font-size: 14px; font-weight: 700; color: #111827; }
+
+    /* ── Member Table ── */
+    .tm-table th {
+      padding: 9px 14px;
+      font-size: 10px; font-weight: 700;
+      color: #9ca3af;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      background: #f9fafb;
+      border-bottom: 1px solid #f3f4f6;
+      white-space: nowrap;
+      text-align: left;
+    }
+    .tm-table td {
+      padding: 11px 14px;
+      font-size: 12px;
+      color: #374151;
+      border-bottom: 1px solid #f9fafb;
+      vertical-align: middle;
+    }
+    .tm-table tr:last-child td { border-bottom: none; }
+    .tm-table tr:hover td { background: #fafafa; cursor: pointer; }
+
+    /* ── Performance bar ── */
+    .perf-bar-track {
+      width: 80px; height: 5px;
+      background: #f3f4f6;
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .perf-bar-fill {
+      height: 100%;
+      border-radius: 99px;
+      background: #10b981;
+      transition: width 0.6s ease;
+    }
+    .perf-bar-fill.med  { background: #f59e0b; }
+    .perf-bar-fill.low  { background: #ef4444; }
+
+    /* ── Member Avatar ── */
+    .tm-avatar {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 800;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    /* ── Status dot ── */
+    .tm-status-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* ── Right Panel Cards ── */
+    .panel-card {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+      overflow: hidden;
+      margin-bottom: 14px;
+    }
+    .panel-card:last-child { margin-bottom: 0; }
+    .panel-card-header {
+      padding: 13px 16px 10px;
+      border-bottom: 1px solid #f3f4f6;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .panel-card-title { font-size: 13px; font-weight: 700; color: #111827; }
+    .panel-card-body { padding: 14px 16px; }
+
+    /* ── Invite input ── */
+    .invite-input {
+      width: 100%;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 8px 11px;
+      font-size: 12px;
+      font-weight: 500;
+      color: #111827;
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      transition: all 0.2s;
+    }
+    .invite-input:focus { border-color: #ba0031; box-shadow: 0 0 0 3px rgba(186,0,49,0.08); background: #fff; }
+    .invite-input::placeholder { color: #9ca3af; }
+    .invite-select {
+      flex: 1;
+      background: #f9fafb url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236b7280'/%3E%3C/svg%3E") no-repeat right 10px center;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 8px 28px 8px 10px;
+      font-size: 12px;
+      font-weight: 500;
+      color: #111827;
+      font-family: 'Inter', sans-serif;
+      appearance: none;
+      outline: none;
+      cursor: pointer;
+    }
+
+    /* ── Activity Feed ── */
+    .activity-item {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 11px 16px;
+      border-bottom: 1px solid #f9fafb;
+      transition: background 0.12s;
+    }
+    .activity-item:last-child { border-bottom: none; }
+    .activity-item:hover { background: #fafafa; }
+    .activity-icon {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    /* ── Pagination ── */
+    .pag-btn {
+      width: 28px; height: 28px;
+      border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 600;
+      border: 1px solid #e5e7eb;
+      background: #fff;
+      cursor: pointer;
+      transition: all 0.15s;
+      color: #374151;
+    }
+    .pag-btn:hover { background: #f9fafb; }
+    .pag-btn.active { background: #ba0031; color: #fff; border-color: #ba0031; }
+
+    /* ── Filter chip ── */
+    .filter-pill {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 5px 12px;
+      border-radius: 8px;
+      font-size: 12px; font-weight: 600;
+      border: 1px solid #e5e7eb;
+      background: #fff;
+      color: #374151;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .filter-pill:hover { background: #f9fafb; }
+
+    /* ── Role badge ── */
+    .role-admin { background: rgba(186,0,49,0.07); color: #ba0031; border:1px solid rgba(186,0,49,0.15); }
+    .role-agent { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
+    .role-viewer { background: #f5f3ff; color: #7c3aed; border: 1px solid #ddd6fe; }
+
+    /* ── Pulse ── */
+    @keyframes pulse-ring {
+      0%   { box-shadow: 0 0 0 0 rgba(16,185,129,0.4); }
+      70%  { box-shadow: 0 0 0 5px rgba(16,185,129,0); }
+      100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); }
+    }
+    .live-dot { animation: pulse-ring 2s infinite; }
+
+    /* ═══════════════════════════════════════════
+       RESPONSIVE — Team Page
+       All !important needed to override inline styles
+    ═══════════════════════════════════════════ */
+
+    /* KPI grid helper (applied via class below) */
+    .tm-kpi-grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    /* ── CRITICAL: prevent grid blowout ──
+       Without min-width:0, a child with any explicit width (e.g. the
+       640px-min-width table) can force the grid track wider than the
+       available space, pushing the entire page beyond 100vw and causing
+       a horizontal scroll that clips both the fixed sidebar (left) and
+       the right panel (right). */
+    .team-layout > * {
+      min-width: 0;
+      overflow: hidden;   /* contain any child overflow within the column */
+    }
+    /* The table wrapper itself needs overflow-x:auto so the table scrolls */
+    .tm-table-wrapper {
+      overflow-x: auto !important;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* Panel cards: allow content to be visible (not clipped by overflow:hidden) */
+    .panel-card {
+      overflow: visible !important;
+    }
+
+    /* Right panel: prevent from exceeding its track on small layouts */
+    .team-layout > *:last-child {
+      width: 100%;
+      max-width: 280px;
+    }
+    @media (max-width: 1100px) {
+      .team-layout > *:last-child { max-width: none; }
+    }
+
+    /* Content container: never allow horizontal bleed */
+    .content-container {
+      overflow-x: hidden;
+    }
+
+    /* Tablet: 768–1100px */
+    @media (max-width: 1100px) {
+      .team-layout { grid-template-columns: 1fr !important; }
+    }
+    @media (max-width: 900px) {
+      .tm-kpi-grid { grid-template-columns: repeat(2, 1fr) !important; }
+    }
+
+    /* Mobile: ≤ 767px */
+    @media (max-width: 767px) {
+      main { padding: 12px !important; }
+
+      /* Page header stacks */
+      #page-header { flex-direction: column !important; align-items: flex-start !important; }
+      #header-actions { width: 100%; justify-content: flex-start; }
+
+      /* KPI: 2 cols */
+      .tm-kpi-grid { grid-template-columns: repeat(2, 1fr) !important; }
+      .tm-kpi-value { font-size: 22px !important; }
+      .tm-kpi { padding: 14px !important; }
+
+      /* Tab nav: scrolls horizontally, no scrollbar visible */
+      .team-tabs {
+        overflow-x: auto;
+        white-space: nowrap;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+      }
+      .team-tabs::-webkit-scrollbar { display: none; }
+
+      /* Table: horizontal scroll */
+      .tm-table-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        width: 100%;
+      }
+      .tm-table { min-width: 640px; width: 100%; }
+
+      /* Perf bar narrower */
+      .perf-bar-track { width: 60px !important; }
+
+      /* Layout: full width on mobile */
+      .team-layout { grid-template-columns: 1fr !important; }
+    }
+
+    /* Small phones: ≤ 480px */
+    @media (max-width: 480px) {
+      .tm-kpi-grid { grid-template-columns: 1fr !important; }
+      .tm-kpi-value { font-size: 20px !important; }
+      .tm-kpi-icon { width: 38px !important; height: 38px !important; }
+
+      /* Header buttons full-width stack */
+      #header-actions { flex-direction: column !important; width: 100%; }
+      #header-actions button { width: 100%; justify-content: center; }
+
+      /* Filter row wraps */
+      .team-filter-row { flex-wrap: wrap !important; }
+      .team-search { width: 100% !important; }
+    }
+  </style>
+</head>
+<body>
+<div id="sidebar-mount"></div>
+<div class="layout-with-sidebar" id="main-layout">
+  <div id="topbar-mount" data-title="Team · Member Management"></div>
+
+  <main class="flex-1 p-5 lg:p-7" style="display:flex;flex-direction:column;gap:20px;">
+    <div class="content-container" style="display:flex;flex-direction:column;gap:20px;">
+
+      <!-- ══ 1. PAGE HEADER ══ -->
+      <div id="page-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+        <div>
+          <h1 style="font-size:22px;font-weight:800;color:#111827;letter-spacing:-0.02em;line-height:1.2;">Team</h1>
+          <p style="font-size:13px;color:#6b7280;margin-top:3px;font-weight:500;">Manage your team members, roles, and monitor performance</p>
+        </div>
+        <div id="header-actions" style="display:flex;gap:8px;align-items:center;">
+          <button onclick="QR.showToast('Exporting team report…','info')" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;background:#fff;border:1px solid #e5e7eb;border-radius:9px;font-size:13px;font-weight:600;color:#374151;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.06);transition:all 0.2s;" onmouseover="this.style.borderColor='#d1d5db'" onmouseout="this.style.borderColor='#e5e7eb'">
+            <span class="material-symbols-outlined" style="font-size:15px;">upload</span>Export
+          </button>
+          <button onclick="QR.openModal('modal-invite')" style="display:inline-flex;align-items:center;gap:6px;padding:8px 18px;background:#10b981;border:none;border-radius:9px;font-size:13px;font-weight:700;color:#fff;cursor:pointer;box-shadow:0 2px 8px rgba(16,185,129,0.3);transition:all 0.2s;" onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">
+            <span class="material-symbols-outlined" style="font-size:15px;font-variation-settings:'FILL' 1;">person_add</span>Invite Team
+          </button>
+        </div>
+      </div>
+
+      <!-- ══ 2. TAB NAV ══ -->
+      <div class="team-tabs">
+        <button class="team-tab active" id="tab-members" onclick="switchTab('members')">Team Members</button>
+        <button class="team-tab" id="tab-roles" onclick="switchTab('roles')">Roles &amp; Permissions</button>
+        <button class="team-tab" id="tab-log" onclick="switchTab('log')">Activity Log</button>
+      </div>
+
+      <!-- ══ 3. KPI ROW ══ -->
+      <div class="tm-kpi-grid" id="kpi-section">
+
+        <div class="tm-kpi">
+          <div class="tm-kpi-icon" style="background:#f0fdf4;">
+            <span class="material-symbols-outlined" style="font-size:22px;color:#10b981;font-variation-settings:'FILL' 1;">group</span>
+          </div>
+          <div>
+            <div class="tm-kpi-label">Total Members</div>
+            <div class="tm-kpi-value">8</div>
+            <div class="tm-kpi-change" style="color:#10b981;">
+              <span class="material-symbols-outlined" style="font-size:12px;">arrow_upward</span>
+              <span>2 new this month</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="tm-kpi">
+          <div class="tm-kpi-icon" style="background:#eef2ff;">
+            <span class="material-symbols-outlined" style="font-size:22px;color:#6366f1;font-variation-settings:'FILL' 1;">support_agent</span>
+          </div>
+          <div>
+            <div class="tm-kpi-label">Active Agents</div>
+            <div class="tm-kpi-value">6</div>
+            <div class="tm-kpi-change" style="color:#6b7280;">
+              <span style="width:6px;height:6px;border-radius:50%;background:#10b981;display:inline-block;" class="live-dot"></span>
+              <span style="color:#6b7280;font-weight:500;">75% of team active</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="tm-kpi">
+          <div class="tm-kpi-icon" style="background:#eff6ff;">
+            <span class="material-symbols-outlined" style="font-size:22px;color:#3b82f6;font-variation-settings:'FILL' 1;">chat_bubble</span>
+          </div>
+          <div>
+            <div class="tm-kpi-label">Conversations Handled</div>
+            <div class="tm-kpi-value">2,430</div>
+            <div class="tm-kpi-change" style="color:#10b981;">
+              <span class="material-symbols-outlined" style="font-size:12px;">arrow_upward</span>
+              <span>18% vs last 7 days</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="tm-kpi">
+          <div class="tm-kpi-icon" style="background:#fffbeb;">
+            <span class="material-symbols-outlined" style="font-size:22px;color:#f59e0b;font-variation-settings:'FILL' 1;">timer</span>
+          </div>
+          <div>
+            <div class="tm-kpi-label">Avg. Response Time</div>
+            <div class="tm-kpi-value">1m 42s</div>
+            <div class="tm-kpi-change" style="color:#ef4444;">
+              <span class="material-symbols-outlined" style="font-size:12px;">arrow_downward</span>
+              <span>12% vs last 7 days</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ══ 4. MAIN TWO-COLUMN LAYOUT ══ -->
+      <div class="team-layout" id="members-section">
+
+        <!-- ═══ LEFT — Table + Activity ═══ -->
+        <div>
+
+          <!-- Team Members Table Card -->
+          <div class="team-card" style="margin-bottom:16px;">
+            <div class="team-card-header">
+              <div class="team-card-title">Team Members</div>
+              <div class="team-filter-row" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                <!-- Search -->
+                <div style="position:relative;">
+                  <span class="material-symbols-outlined" style="position:absolute;left:8px;top:50%;transform:translateY(-50%);font-size:14px;color:#9ca3af;">search</span>
+                  <input type="text" placeholder="Search team members…" id="member-search" oninput="filterMembers()" style="padding:7px 10px 7px 28px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;font-size:12px;font-weight:500;color:#111827;font-family:'Inter',sans-serif;outline:none;width:180px;transition:all 0.2s;" onfocus="this.style.borderColor='#ba0031';this.style.boxShadow='0 0 0 3px rgba(186,0,49,0.08)'" onblur="this.style.borderColor='#e5e7eb';this.style.boxShadow='none'" />
+                </div>
+                <!-- Role Filter -->
+                <div style="position:relative;">
+                  <select id="role-filter" onchange="filterMembers()" style="padding:7px 28px 7px 10px;background:#fff url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236b7280'/%3E%3C/svg%3E\") no-repeat right 9px center;border:1px solid #e5e7eb;border-radius:8px;font-size:12px;font-weight:600;color:#374151;font-family:'Inter',sans-serif;appearance:none;outline:none;cursor:pointer;">
+                    <option value="all">All Roles</option>
+                    <option value="admin">Admin</option>
+                    <option value="agent">Agent</option>
+                    <option value="viewer">Viewer</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Table -->
+            <div class="tm-table-wrapper" style="overflow-x:auto;">
+              <table class="tm-table w-full" style="border-collapse:collapse;" id="members-table">
+                <thead>
+                  <tr>
+                    <th>Member</th>
+                    <th>Role</th>
+                    <th style="text-align:right;">Conversations</th>
+                    <th style="text-align:right;">Response Time</th>
+                    <th>Performance</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="members-tbody">
+                  <!-- Row: John Doe -->
+                  <tr data-role="admin" onclick="location.href='profile.html'">
+                    <td>
+                      <div style="display:flex;align-items:center;gap:9px;">
+                        <div class="tm-avatar" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);">JD</div>
+                        <div>
+                          <div style="font-weight:700;color:#111827;font-size:12px;">John Doe <span style="font-size:10px;background:#f3f4f6;color:#6b7280;padding:1px 5px;border-radius:4px;font-weight:600;">(You)</span></div>
+                          <div style="font-size:11px;color:#9ca3af;">john@acme.com</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td><span style="padding:3px 8px;border-radius:99px;font-size:10px;font-weight:700;" class="role-admin">Admin</span></td>
+                    <td style="text-align:right;font-weight:700;color:#111827;">430</td>
+                    <td style="text-align:right;font-weight:600;color:#374151;">1m 12s</td>
+                    <td>
+                      <div style="display:flex;align-items:center;gap:6px;">
+                        <div class="perf-bar-track"><div class="perf-bar-fill" style="width:92%;"></div></div>
+                        <span style="font-size:11px;font-weight:700;color:#111827;white-space:nowrap;">92%</span>
+                      </div>
+                    </td>
+                    <td>
+                      <span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:#10b981;">
+                        <span class="tm-status-dot" style="background:#10b981;"></span>Active
+                      </span>
+                    </td>
+                    <td><button onclick="event.stopPropagation();QR.showToast('Options opened','info')" style="background:none;border:none;cursor:pointer;color:#d1d5db;font-size:16px;letter-spacing:1px;padding:4px;">···</button></td>
+                  </tr>
+                  <!-- Row: Sarah Jenkins -->
+                  <tr data-role="admin" onclick="location.href='profile.html'">
+                    <td>
+                      <div style="display:flex;align-items:center;gap:9px;">
+                        <div class="tm-avatar" style="background:linear-gradient(135deg,#3b82f6,#6366f1);">SJ</div>
+                        <div>
+                          <div style="font-weight:700;color:#111827;font-size:12px;">Sarah Jenkins</div>
+                          <div style="font-size:11px;color:#9ca3af;">sarah@acme.com</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td><span style="padding:3px 8px;border-radius:99px;font-size:10px;font-weight:700;" class="role-admin">Admin</span></td>
+                    <td style="text-align:right;font-weight:700;color:#111827;">398</td>
+                    <td style="text-align:right;font-weight:600;color:#374151;">1m 45s</td>
+                    <td>
+                      <div style="display:flex;align-items:center;gap:6px;">
+                        <div class="perf-bar-track"><div class="perf-bar-fill" style="width:88%;"></div></div>
+                        <span style="font-size:11px;font-weight:700;color:#111827;">88%</span>
+                      </div>
+                    </td>
+                    <td>
+                      <span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:#10b981;">
+                        <span class="tm-status-dot" style="background:#10b981;"></span>Active
+                      </span>
+                    </td>
+                    <td><button onclick="event.stopPropagation();QR.showToast('Options opened','info')" style="background:none;border:none;cursor:pointer;color:#d1d5db;font-size:16px;letter-spacing:1px;padding:4px;">···</button></td>
+                  </tr>
+                  <!-- Row: Michael Brown -->
+                  <tr data-role="agent" onclick="location.href='profile.html'">
+                    <td>
+                      <div style="display:flex;align-items:center;gap:9px;">
+                        <div class="tm-avatar" style="background:linear-gradient(135deg,#f59e0b,#ef4444);">MB</div>
+                        <div>
+                          <div style="font-weight:700;color:#111827;font-size:12px;">Michael Brown</div>
+                          <div style="font-size:11px;color:#9ca3af;">michael@acme.com</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td><span style="padding:3px 8px;border-radius:99px;font-size:10px;font-weight:700;" class="role-agent">Agent</span></td>
+                    <td style="text-align:right;font-weight:700;color:#111827;">320</td>
+                    <td style="text-align:right;font-weight:600;color:#374151;">2m 05s</td>
+                    <td>
+                      <div style="display:flex;align-items:center;gap:6px;">
+                        <div class="perf-bar-track"><div class="perf-bar-fill" style="width:85%;"></div></div>
+                        <span style="font-size:11px;font-weight:700;color:#111827;">85%</span>
+                      </div>
+                    </td>
+                    <td>
+                      <span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:#10b981;">
+                        <span class="tm-status-dot" style="background:#10b981;"></span>Active
+                      </span>
+                    </td>
+                    <td><button onclick="event.stopPropagation();QR.showToast('Options opened','info')" style="background:none;border:none;cursor:pointer;color:#d1d5db;font-size:16px;letter-spacing:1px;padding:4px;">···</button></td>
+                  </tr>
+                  <!-- Row: Emma Ward -->
+                  <tr data-role="agent" onclick="location.href='profile.html'">
+                    <td>
+                      <div style="display:flex;align-items:center;gap:9px;">
+                        <div class="tm-avatar" style="background:linear-gradient(135deg,#10b981,#3b82f6);">EW</div>
+                        <div>
+                          <div style="font-weight:700;color:#111827;font-size:12px;">Emma Ward</div>
+                          <div style="font-size:11px;color:#9ca3af;">emma@acme.com</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td><span style="padding:3px 8px;border-radius:99px;font-size:10px;font-weight:700;" class="role-agent">Agent</span></td>
+                    <td style="text-align:right;font-weight:700;color:#111827;">280</td>
+                    <td style="text-align:right;font-weight:600;color:#374151;">2m 15s</td>
+                    <td>
+                      <div style="display:flex;align-items:center;gap:6px;">
+                        <div class="perf-bar-track"><div class="perf-bar-fill" style="width:76%;"></div></div>
+                        <span style="font-size:11px;font-weight:700;color:#111827;">76%</span>
+                      </div>
+                    </td>
+                    <td>
+                      <span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:#10b981;">
+                        <span class="tm-status-dot" style="background:#10b981;"></span>Active
+                      </span>
+                    </td>
+                    <td><button onclick="event.stopPropagation();QR.showToast('Options opened','info')" style="background:none;border:none;cursor:pointer;color:#d1d5db;font-size:16px;letter-spacing:1px;padding:4px;">···</button></td>
+                  </tr>
+                  <!-- Row: David Wilson -->
+                  <tr data-role="agent" onclick="location.href='profile.html'">
+                    <td>
+                      <div style="display:flex;align-items:center;gap:9px;">
+                        <div class="tm-avatar" style="background:linear-gradient(135deg,#8b5cf6,#ec4899);">DW</div>
+                        <div>
+                          <div style="font-weight:700;color:#111827;font-size:12px;">David Wilson</div>
+                          <div style="font-size:11px;color:#9ca3af;">david@acme.com</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td><span style="padding:3px 8px;border-radius:99px;font-size:10px;font-weight:700;" class="role-agent">Agent</span></td>
+                    <td style="text-align:right;font-weight:700;color:#111827;">210</td>
+                    <td style="text-align:right;font-weight:600;color:#374151;">2m 40s</td>
+                    <td>
+                      <div style="display:flex;align-items:center;gap:6px;">
+                        <div class="perf-bar-track"><div class="perf-bar-fill" style="width:72%;"></div></div>
+                        <span style="font-size:11px;font-weight:700;color:#111827;">72%</span>
+                      </div>
+                    </td>
+                    <td>
+                      <span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:#10b981;">
+                        <span class="tm-status-dot" style="background:#10b981;"></span>Active
+                      </span>
+                    </td>
+                    <td><button onclick="event.stopPropagation();QR.showToast('Options opened','info')" style="background:none;border:none;cursor:pointer;color:#d1d5db;font-size:16px;letter-spacing:1px;padding:4px;">···</button></td>
+                  </tr>
+                  <!-- Row: Olivia Martinez -->
+                  <tr data-role="agent" onclick="location.href='profile.html'">
+                    <td>
+                      <div style="display:flex;align-items:center;gap:9px;">
+                        <div class="tm-avatar" style="background:linear-gradient(135deg,#f43f5e,#f59e0b);">OM</div>
+                        <div>
+                          <div style="font-weight:700;color:#111827;font-size:12px;">Olivia Martinez</div>
+                          <div style="font-size:11px;color:#9ca3af;">olivia@acme.com</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td><span style="padding:3px 8px;border-radius:99px;font-size:10px;font-weight:700;" class="role-agent">Agent</span></td>
+                    <td style="text-align:right;font-weight:700;color:#111827;">180</td>
+                    <td style="text-align:right;font-weight:600;color:#374151;">3m 10s</td>
+                    <td>
+                      <div style="display:flex;align-items:center;gap:6px;">
+                        <div class="perf-bar-track"><div class="perf-bar-fill med" style="width:68%;"></div></div>
+                        <span style="font-size:11px;font-weight:700;color:#111827;">68%</span>
+                      </div>
+                    </td>
+                    <td>
+                      <span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:#10b981;">
+                        <span class="tm-status-dot" style="background:#10b981;"></span>Active
+                      </span>
+                    </td>
+                    <td><button onclick="event.stopPropagation();QR.showToast('Options opened','info')" style="background:none;border:none;cursor:pointer;color:#d1d5db;font-size:16px;letter-spacing:1px;padding:4px;">···</button></td>
+                  </tr>
+                  <!-- Row: Daniel Foster -->
+                  <tr data-role="agent" onclick="location.href='profile.html'">
+                    <td>
+                      <div style="display:flex;align-items:center;gap:9px;">
+                        <div class="tm-avatar" style="background:linear-gradient(135deg,#64748b,#374151);">DF</div>
+                        <div>
+                          <div style="font-weight:700;color:#111827;font-size:12px;">Daniel Foster</div>
+                          <div style="font-size:11px;color:#9ca3af;">daniel@acme.com</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td><span style="padding:3px 8px;border-radius:99px;font-size:10px;font-weight:700;" class="role-agent">Agent</span></td>
+                    <td style="text-align:right;font-weight:700;color:#111827;">160</td>
+                    <td style="text-align:right;font-weight:600;color:#374151;">3m 25s</td>
+                    <td>
+                      <div style="display:flex;align-items:center;gap:6px;">
+                        <div class="perf-bar-track"><div class="perf-bar-fill med" style="width:65%;"></div></div>
+                        <span style="font-size:11px;font-weight:700;color:#111827;">65%</span>
+                      </div>
+                    </td>
+                    <td>
+                      <span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:#f59e0b;">
+                        <span class="tm-status-dot" style="background:#f59e0b;"></span>Away
+                      </span>
+                    </td>
+                    <td><button onclick="event.stopPropagation();QR.showToast('Options opened','info')" style="background:none;border:none;cursor:pointer;color:#d1d5db;font-size:16px;letter-spacing:1px;padding:4px;">···</button></td>
+                  </tr>
+                  <!-- Row: Sophia Lee -->
+                  <tr data-role="agent" onclick="location.href='profile.html'">
+                    <td>
+                      <div style="display:flex;align-items:center;gap:9px;">
+                        <div class="tm-avatar" style="background:linear-gradient(135deg,#6366f1,#a78bfa);">SL</div>
+                        <div>
+                          <div style="font-weight:700;color:#111827;font-size:12px;">Sophia Lee</div>
+                          <div style="font-size:11px;color:#9ca3af;">sophia@acme.com</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td><span style="padding:3px 8px;border-radius:99px;font-size:10px;font-weight:700;" class="role-agent">Agent</span></td>
+                    <td style="text-align:right;font-weight:700;color:#111827;">98</td>
+                    <td style="text-align:right;font-weight:600;color:#374151;">4m 05s</td>
+                    <td>
+                      <div style="display:flex;align-items:center;gap:6px;">
+                        <div class="perf-bar-track"><div class="perf-bar-fill low" style="width:55%;"></div></div>
+                        <span style="font-size:11px;font-weight:700;color:#111827;">55%</span>
+                      </div>
+                    </td>
+                    <td>
+                      <span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:#9ca3af;">
+                        <span class="tm-status-dot" style="background:#9ca3af;"></span>Offline
+                      </span>
+                    </td>
+                    <td><button onclick="event.stopPropagation();QR.showToast('Options opened','info')" style="background:none;border:none;cursor:pointer;color:#d1d5db;font-size:16px;letter-spacing:1px;padding:4px;">···</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Pagination -->
+            <div style="padding:12px 16px;border-top:1px solid #f3f4f6;display:flex;align-items:center;justify-content:space-between;">
+              <span style="font-size:12px;color:#9ca3af;font-weight:500;" id="showing-count">Showing 1 to 8 of 8 members</span>
+              <div style="display:flex;align-items:center;gap:4px;">
+                <button class="pag-btn" onclick="QR.showToast('Previous page','info')">
+                  <span class="material-symbols-outlined" style="font-size:14px;">chevron_left</span>
+                </button>
+                <button class="pag-btn active">1</button>
+                <button class="pag-btn" onclick="QR.showToast('More pages coming','info')">2</button>
+                <button class="pag-btn" onclick="QR.showToast('Next page','info')">
+                  <span class="material-symbols-outlined" style="font-size:14px;">chevron_right</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Team Activity Feed -->
+          <div class="team-card">
+            <div class="team-card-header">
+              <div class="team-card-title">Team Activity Feed</div>
+              <a href="#" style="font-size:12px;font-weight:700;color:#ba0031;text-decoration:none;" onclick="switchTab('log');return false;">View all</a>
+            </div>
+            <div>
+              <div class="activity-item">
+                <div class="activity-icon" style="background:#f0fdf4;">
+                  <span class="material-symbols-outlined" style="font-size:15px;color:#10b981;font-variation-settings:'FILL' 1;">person_add</span>
+                </div>
+                <div style="flex:1;min-width:0;">
+                  <div style="font-size:12px;color:#374151;line-height:1.5;"><strong style="color:#111827;">Sarah Jenkins</strong> joined the team</div>
+                  <div style="font-size:11px;color:#9ca3af;margin-top:1px;">2 hours ago</div>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon" style="background:#f5f3ff;">
+                  <span class="material-symbols-outlined" style="font-size:15px;color:#8b5cf6;">manage_accounts</span>
+                </div>
+                <div style="flex:1;min-width:0;">
+                  <div style="font-size:12px;color:#374151;line-height:1.5;"><strong style="color:#111827;">Michael Brown's</strong> role changed to <strong style="color:#2563eb;">Agent</strong></div>
+                  <div style="font-size:11px;color:#9ca3af;margin-top:1px;">1 day ago</div>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon" style="background:#fffbeb;">
+                  <span class="material-symbols-outlined" style="font-size:15px;color:#f59e0b;font-variation-settings:'FILL' 1;">emoji_events</span>
+                </div>
+                <div style="flex:1;min-width:0;">
+                  <div style="font-size:12px;color:#374151;line-height:1.5;"><strong style="color:#111827;">Emma Ward</strong> completed 50+ conversations</div>
+                  <div style="font-size:11px;color:#9ca3af;margin-top:1px;">2 days ago</div>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon" style="background:#fef2f2;">
+                  <span class="material-symbols-outlined" style="font-size:15px;color:#ef4444;font-variation-settings:'FILL' 1;">person_off</span>
+                </div>
+                <div style="flex:1;min-width:0;">
+                  <div style="font-size:12px;color:#374151;line-height:1.5;"><strong style="color:#111827;">Daniel Foster</strong> status changed to <strong style="color:#f59e0b;">Away</strong></div>
+                  <div style="font-size:11px;color:#9ca3af;margin-top:1px;">3 days ago</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /left -->
+
+        <!-- ═══ RIGHT — Panel ═══ -->
+        <div>
+
+          <!-- Invite Team Member -->
+          <div class="panel-card">
+            <div class="panel-card-header">
+              <div class="panel-card-title">Invite Team Member</div>
+            </div>
+            <div class="panel-card-body">
+              <p style="font-size:12px;color:#6b7280;margin-bottom:12px;">Add new members to your workspace</p>
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <input type="email" class="invite-input" placeholder="Enter email address" id="invite-email-panel" />
+                <div style="display:flex;gap:8px;align-items:center;">
+                  <select class="invite-select" id="invite-role-panel">
+                    <option>Agent</option>
+                    <option>Admin</option>
+                    <option>Viewer</option>
+                  </select>
+                  <button onclick="handlePanelInvite()" style="display:inline-flex;align-items:center;gap:5px;padding:8px 14px;background:#10b981;border:none;border-radius:8px;font-size:12px;font-weight:700;color:#fff;cursor:pointer;box-shadow:0 2px 6px rgba(16,185,129,0.25);flex-shrink:0;transition:all 0.2s;white-space:nowrap;" onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">
+                    <span class="material-symbols-outlined" style="font-size:13px;font-variation-settings:'FILL' 1;">send</span>Send Invite
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Team Performance Chart -->
+          <div class="panel-card">
+            <div class="panel-card-header">
+              <div class="panel-card-title">Team Performance</div>
+              <select onchange="updatePerfChart(this.value)" style="font-size:11px;font-weight:600;color:#374151;border:1px solid #e5e7eb;border-radius:7px;padding:4px 8px;background:#fff;cursor:pointer;outline:none;">
+                <option value="7d">Last 7 days</option>
+                <option value="30d">Last 30 days</option>
+              </select>
+            </div>
+            <div class="panel-card-body" style="padding-bottom:10px;">
+              <canvas id="perfChart" height="100"></canvas>
+              <div style="display:flex;justify-content:space-between;margin-top:14px;padding-top:12px;border-top:1px solid #f3f4f6;">
+                <div style="text-align:center;">
+                  <div style="font-size:18px;font-weight:800;color:#111827;line-height:1;">2,430</div>
+                  <div style="font-size:10px;font-weight:600;color:#9ca3af;margin-top:2px;">Total Conversations</div>
+                </div>
+                <div style="width:1px;background:#f3f4f6;"></div>
+                <div style="text-align:center;">
+                  <div style="font-size:18px;font-weight:800;color:#111827;line-height:1;">1m 42s</div>
+                  <div style="font-size:10px;font-weight:600;color:#9ca3af;margin-top:2px;">Avg. Response Time</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Role Overview Donut -->
+          <div class="panel-card">
+            <div class="panel-card-header">
+              <div class="panel-card-title">Role Overview</div>
+            </div>
+            <div class="panel-card-body" style="display:flex;align-items:center;gap:16px;">
+              <div style="position:relative;flex-shrink:0;">
+                <canvas id="roleChart" width="100" height="100"></canvas>
+                <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;">
+                  <div style="font-size:18px;font-weight:800;color:#111827;line-height:1;">8</div>
+                  <div style="font-size:9px;font-weight:700;color:#9ca3af;text-transform:uppercase;">Total</div>
+                </div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:6px;flex:1;">
+                <div style="display:flex;align-items:center;justify-content:space-between;">
+                  <div style="display:flex;align-items:center;gap:6px;">
+                    <span style="width:8px;height:8px;border-radius:50%;background:#10b981;flex-shrink:0;"></span>
+                    <span style="font-size:12px;font-weight:600;color:#374151;">Admin</span>
+                  </div>
+                  <span style="font-size:12px;font-weight:700;color:#111827;">2 (25%)</span>
+                </div>
+                <div style="display:flex;align-items:center;justify-content:space-between;">
+                  <div style="display:flex;align-items:center;gap:6px;">
+                    <span style="width:8px;height:8px;border-radius:50%;background:#6366f1;flex-shrink:0;"></span>
+                    <span style="font-size:12px;font-weight:600;color:#374151;">Agent</span>
+                  </div>
+                  <span style="font-size:12px;font-weight:700;color:#111827;">6 (75%)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Need More Agents? -->
+          <div class="panel-card" style="background:linear-gradient(135deg,#f9fafb,#fff);border:1px solid #e5e7eb;">
+            <div class="panel-card-body" style="padding:16px;">
+              <div style="font-size:14px;font-weight:700;color:#111827;margin-bottom:4px;">Need more agents?</div>
+              <div style="font-size:12px;color:#6b7280;line-height:1.5;margin-bottom:14px;">Upgrade your plan to add more agents and unlock advanced team features.</div>
+              <button onclick="location.href='../settings/billing.html'" style="width:100%;display:flex;align-items:center;justify-content:center;gap:6px;padding:9px;background:#fff;border:1px solid #e5e7eb;border-radius:9px;font-size:12px;font-weight:700;color:#374151;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.06);transition:all 0.2s;" onmouseover="this.style.borderColor='#ba0031';this.style.color='#ba0031'" onmouseout="this.style.borderColor='#e5e7eb';this.style.color='#374151'">
+                <span class="material-symbols-outlined" style="font-size:14px;">trending_up</span>Upgrade Plan
+              </button>
+            </div>
+          </div>
+
+        </div><!-- /right panel -->
+
+      </div><!-- /team-layout -->
+
+      <!-- ══ ROLES TAB ══ -->
+      <div id="roles-section" style="display:none;">
+        <div class="team-card">
+          <div class="team-card-header"><div class="team-card-title">Roles &amp; Permissions</div></div>
+          <div style="padding:20px;">
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;">
+              <!-- Admin -->
+              <div style="background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:18px;">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+                  <div style="width:32px;height:32px;border-radius:8px;background:rgba(186,0,49,0.08);display:flex;align-items:center;justify-content:center;"><span class="material-symbols-outlined" style="font-size:16px;color:#ba0031;">admin_panel_settings</span></div>
+                  <div style="font-size:13px;font-weight:700;color:#111827;">Admin</div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                  <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#374151;"><span class="material-symbols-outlined" style="font-size:13px;color:#10b981;font-variation-settings:'FILL' 1;">check_circle</span>Full system access</div>
+                  <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#374151;"><span class="material-symbols-outlined" style="font-size:13px;color:#10b981;font-variation-settings:'FILL' 1;">check_circle</span>Manage team &amp; roles</div>
+                  <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#374151;"><span class="material-symbols-outlined" style="font-size:13px;color:#10b981;font-variation-settings:'FILL' 1;">check_circle</span>Billing &amp; integrations</div>
+                  <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#374151;"><span class="material-symbols-outlined" style="font-size:13px;color:#10b981;font-variation-settings:'FILL' 1;">check_circle</span>Analytics &amp; exports</div>
+                </div>
+              </div>
+              <!-- Agent -->
+              <div style="background:#fff;border:2px solid #6366f1;border-radius:12px;padding:18px;">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+                  <div style="width:32px;height:32px;border-radius:8px;background:#eef2ff;display:flex;align-items:center;justify-content:center;"><span class="material-symbols-outlined" style="font-size:16px;color:#6366f1;">support_agent</span></div>
+                  <div style="font-size:13px;font-weight:700;color:#111827;">Agent</div>
+                  <span style="background:#6366f1;color:#fff;font-size:9px;font-weight:800;padding:2px 7px;border-radius:99px;margin-left:auto;">DEFAULT</span>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                  <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#374151;"><span class="material-symbols-outlined" style="font-size:13px;color:#10b981;font-variation-settings:'FILL' 1;">check_circle</span>Inbox &amp; conversations</div>
+                  <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#374151;"><span class="material-symbols-outlined" style="font-size:13px;color:#10b981;font-variation-settings:'FILL' 1;">check_circle</span>Contacts &amp; pipeline</div>
+                  <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#374151;"><span class="material-symbols-outlined" style="font-size:13px;color:#10b981;font-variation-settings:'FILL' 1;">check_circle</span>Send campaigns</div>
+                  <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#9ca3af;"><span class="material-symbols-outlined" style="font-size:13px;color:#d1d5db;">cancel</span>No billing access</div>
+                </div>
+              </div>
+              <!-- Viewer -->
+              <div style="background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:18px;">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+                  <div style="width:32px;height:32px;border-radius:8px;background:#f5f3ff;display:flex;align-items:center;justify-content:center;"><span class="material-symbols-outlined" style="font-size:16px;color:#8b5cf6;">visibility</span></div>
+                  <div style="font-size:13px;font-weight:700;color:#111827;">Viewer</div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                  <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#374151;"><span class="material-symbols-outlined" style="font-size:13px;color:#10b981;font-variation-settings:'FILL' 1;">check_circle</span>Read-only access</div>
+                  <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#374151;"><span class="material-symbols-outlined" style="font-size:13px;color:#10b981;font-variation-settings:'FILL' 1;">check_circle</span>View analytics</div>
+                  <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#9ca3af;"><span class="material-symbols-outlined" style="font-size:13px;color:#d1d5db;">cancel</span>No send access</div>
+                  <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#9ca3af;"><span class="material-symbols-outlined" style="font-size:13px;color:#d1d5db;">cancel</span>No billing access</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ ACTIVITY LOG TAB ══ -->
+      <div id="log-section" style="display:none;">
+        <div class="team-card">
+          <div class="team-card-header"><div class="team-card-title">Activity Log</div></div>
+          <div>
+            <div class="activity-item">
+              <div class="activity-icon" style="background:#f0fdf4;"><span class="material-symbols-outlined" style="font-size:15px;color:#10b981;font-variation-settings:'FILL' 1;">person_add</span></div>
+              <div style="flex:1;"><div style="font-size:12px;color:#374151;"><strong style="color:#111827;">Sarah Jenkins</strong> joined as Admin</div><div style="font-size:11px;color:#9ca3af;margin-top:1px;">2 hours ago · May 20, 2024</div></div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-icon" style="background:#f5f3ff;"><span class="material-symbols-outlined" style="font-size:15px;color:#8b5cf6;">manage_accounts</span></div>
+              <div style="flex:1;"><div style="font-size:12px;color:#374151;"><strong style="color:#111827;">Michael Brown's</strong> role changed from Viewer → Agent</div><div style="font-size:11px;color:#9ca3af;margin-top:1px;">1 day ago · May 19, 2024</div></div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-icon" style="background:#fffbeb;"><span class="material-symbols-outlined" style="font-size:15px;color:#f59e0b;font-variation-settings:'FILL' 1;">emoji_events</span></div>
+              <div style="flex:1;"><div style="font-size:12px;color:#374151;"><strong style="color:#111827;">Emma Ward</strong> hit 50+ conversations milestone</div><div style="font-size:11px;color:#9ca3af;margin-top:1px;">2 days ago · May 18, 2024</div></div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-icon" style="background:#fef2f2;"><span class="material-symbols-outlined" style="font-size:15px;color:#ef4444;font-variation-settings:'FILL' 1;">person_off</span></div>
+              <div style="flex:1;"><div style="font-size:12px;color:#374151;"><strong style="color:#111827;">Daniel Foster</strong> went Away</div><div style="font-size:11px;color:#9ca3af;margin-top:1px;">3 days ago · May 17, 2024</div></div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-icon" style="background:#eff6ff;"><span class="material-symbols-outlined" style="font-size:15px;color:#3b82f6;font-variation-settings:'FILL' 1;">login</span></div>
+              <div style="flex:1;"><div style="font-size:12px;color:#374151;"><strong style="color:#111827;">John Doe</strong> logged in from new device</div><div style="font-size:11px;color:#9ca3af;margin-top:1px;">4 days ago · May 16, 2024</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content-container -->
+  </main>
+</div>
+
+<!-- Invite Modal -->
+<div id="modal-invite" class="modal-backdrop hidden">
+  <div class="modal-box" style="max-width:440px;">
+    <h2 style="font-size:18px;font-weight:800;color:#111827;margin-bottom:4px;">Invite Team Member</h2>
+    <p style="font-size:13px;color:#6b7280;margin-bottom:20px;">Add a new member to your QuicReply workspace.</p>
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div>
+        <label style="font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;display:block;margin-bottom:5px;">Email Address</label>
+        <input type="email" class="input-field" placeholder="colleague@company.com" id="modal-invite-email" />
+      </div>
+      <div>
+        <label style="font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;display:block;margin-bottom:5px;">Role</label>
+        <select class="input-field text-sm" id="modal-invite-role">
+          <option>Agent</option>
+          <option>Admin</option>
+          <option>Viewer</option>
+        </select>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:20px;">
+      <button class="btn-secondary flex-1 justify-center" data-modal-close="modal-invite">Cancel</button>
+      <button class="btn-primary flex-1 justify-center" onclick="handleModalInvite()" style="background:#10b981;border:none;">
+        <span class="material-symbols-outlined" style="font-size:15px;">send</span>Send Invite
+      </button>
+    </div>
+  </div>
+</div>
+
+<script src="../sidebar.js"></script>
+<script src="../shell.js"></script>
+<script>
+  /* ── Chart.js Global Defaults ── */
+  Chart.defaults.font.family = "'Inter', system-ui, sans-serif";
+  Chart.defaults.color = '#9ca3af';
+
+  /* ── Team Performance Line Chart ── */
+  const perfCtx = document.getElementById('perfChart').getContext('2d');
+  let perfChart = null;
+
+  const perfData = {
+    '7d': {
+      labels: ['May 14','May 15','May 16','May 17','May 18','May 19','May 20'],
+      data:   [280, 310, 260, 350, 390, 345, 295],
+    },
+    '30d': {
+      labels: ['W1','W2','W3','W4'],
+      data:   [1100, 1350, 1200, 1580],
+    },
+  };
+
+  function buildPerfChart(key) {
+    const d = perfData[key];
+    if (perfChart) perfChart.destroy();
+    perfChart = new Chart(perfCtx, {
+      type: 'line',
+      data: {
+        labels: d.labels,
+        datasets: [{
+          data: d.data,
+          borderColor: '#10b981',
+          backgroundColor: 'rgba(16,185,129,0.08)',
+          borderWidth: 2,
+          pointRadius: 3,
+          pointHoverRadius: 5,
+          pointBackgroundColor: '#10b981',
+          pointBorderColor: '#fff',
+          pointBorderWidth: 1.5,
+          tension: 0.4,
+          fill: true,
+        }],
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false }, tooltip: {
+          backgroundColor: '#0f172a', titleColor: '#f1f5f9', bodyColor: '#94a3b8',
+          padding: 10, cornerRadius: 8,
+        }},
+        scales: {
+          x: { grid: { display: false }, border: { display: false }, ticks: { font: { size: 9, weight: '600' }, maxRotation: 0 }},
+          y: { grid: { color: '#f3f4f6' }, border: { display: false }, ticks: { font: { size: 9, weight: '600' },
+            callback: v => v >= 1000 ? (v/1000).toFixed(1)+'k' : v }},
+        },
+      },
+    });
+  }
+
+  buildPerfChart('7d');
+
+  function updatePerfChart(key) { buildPerfChart(key); }
+
+  /* ── Role Donut Chart ── */
+  const roleCtx = document.getElementById('roleChart').getContext('2d');
+  new Chart(roleCtx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Admin','Agent'],
+      datasets: [{
+        data: [25, 75],
+        backgroundColor: ['#10b981','#6366f1'],
+        borderColor: '#fff',
+        borderWidth: 3,
+        hoverOffset: 4,
+      }],
+    },
+    options: {
+      cutout: '70%',
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#0f172a', titleColor: '#f1f5f9', bodyColor: '#94a3b8',
+          padding: 8, cornerRadius: 8,
+          callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed}%` },
+        },
+      },
+    },
+  });
+
+  /* ── Tab Switching ── */
+  function switchTab(tab) {
+    const tabs = ['members','roles','log'];
+    tabs.forEach(t => {
+      document.getElementById('tab-' + t).classList.toggle('active', t === tab);
+    });
+    document.getElementById('members-section').style.display = tab === 'members' ? 'grid' : 'none';
+    document.getElementById('roles-section').style.display   = tab === 'roles'   ? 'block' : 'none';
+    document.getElementById('log-section').style.display     = tab === 'log'     ? 'block' : 'none';
+    document.getElementById('kpi-section').style.display     = tab === 'members' ? 'grid'  : 'none';
+  }
+
+  /* ── Member Filter ── */
+  function filterMembers() {
+    const search = document.getElementById('member-search').value.toLowerCase();
+    const role   = document.getElementById('role-filter').value;
+    let visible  = 0;
+    document.querySelectorAll('#members-tbody tr').forEach(row => {
+      const nameEl = row.querySelector('td:first-child');
+      const name = nameEl ? nameEl.textContent.toLowerCase() : '';
+      const rowRole = row.getAttribute('data-role');
+      const matchSearch = !search || name.includes(search);
+      const matchRole   = role === 'all' || rowRole === role;
+      row.style.display = matchSearch && matchRole ? '' : 'none';
+      if (matchSearch && matchRole) visible++;
+    });
+    document.getElementById('showing-count').textContent = `Showing 1 to ${visible} of ${visible} members`;
+  }
+
+  /* ── Invites ── */
+  function handlePanelInvite() {
+    const email = document.getElementById('invite-email-panel').value.trim();
+    if (!email) { QR.showToast('Please enter an email address','error'); return; }
+    QR.showToast('Invite sent to ' + email, 'success');
+    document.getElementById('invite-email-panel').value = '';
+  }
+
+  function handleModalInvite() {
+    const email = document.getElementById('modal-invite-email').value.trim();
+    if (!email) { QR.showToast('Please enter an email address','error'); return; }
+    QR.closeModal('modal-invite');
+    QR.showToast('Invite sent to ' + email, 'success');
+    document.getElementById('modal-invite-email').value = '';
+  }
+</script>
+</body>
+</html>

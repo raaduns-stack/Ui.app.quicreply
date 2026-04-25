@@ -1,0 +1,64 @@
+﻿        <!-- Performance Tiers: High/Medium/Low -->
+        <div class="card p-0 overflow-hidden">
+          <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+             <div>
+                <h2 class="text-xs font-black text-gray-900 uppercase tracking-widest">Campaign Performance Tiers</h2>
+                <p class="text-[10px] text-gray-400 font-bold uppercase mt-1">Grouped by conversion success</p>
+             </div>
+             <button class="btn-secondary text-xs h-8 px-4" onclick="QR.showToast('Full report generated','info')">VIEW ALL</button>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-gray-50/50 border-b border-gray-100">
+                  <th class="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Campaign Name</th>
+                  <th class="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Performance</th>
+                  <th class="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">ROI</th>
+                  <th class="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Conversions</th>
+                  <th class="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest text-right">Revenue</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-50">
+                <!-- Tier: High -->
+                <tr class="hover:bg-emerald-50/20 transition-colors">
+                  <td class="px-6 py-4">
+                    <p class="text-sm font-black text-gray-900">May Flash Sale (Day 2)</p>
+                    <span class="text-[9px] font-bold bg-emerald-100 text-emerald-600 px-1.5 rounded">HIGH PERFORMANCE</span>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="performance-bar w-24 h-1.5 bg-gray-100 rounded-full overflow-hidden"><div class="h-full bg-emerald-500" style="width: 92%"></div></div>
+                  </td>
+                  <td class="px-6 py-4 font-black text-emerald-600 text-xs">18.2x</td>
+                  <td class="px-6 py-4 font-black text-gray-900 text-xs">1,082</td>
+                  <td class="px-6 py-4 text-right font-black text-gray-900 text-sm">$8,412</td>
+                </tr>
+                <!-- Tier: Medium -->
+                <tr class="hover:bg-blue-50/20 transition-colors">
+                  <td class="px-6 py-4">
+                    <p class="text-sm font-black text-gray-900">Q2 Outreach Beta</p>
+                    <span class="text-[9px] font-bold bg-blue-100 text-blue-600 px-1.5 rounded">MODERATE SUCCESS</span>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="performance-bar w-24 h-1.5 bg-gray-100 rounded-full overflow-hidden"><div class="h-full bg-blue-500" style="width: 58%"></div></div>
+                  </td>
+                  <td class="px-6 py-4 font-black text-gray-900 text-xs">9.4x</td>
+                  <td class="px-6 py-4 font-black text-gray-900 text-xs">412</td>
+                  <td class="px-6 py-4 text-right font-black text-gray-900 text-sm">$3,120</td>
+                </tr>
+                <!-- Tier: Low -->
+                <tr class="hover:bg-rose-50/20 transition-colors">
+                  <td class="px-6 py-4">
+                    <p class="text-sm font-black text-gray-900">Support Follow-up (Legacy)</p>
+                    <span class="text-[9px] font-bold bg-rose-100 text-rose-600 px-1.5 rounded">ACTION REQUIRED</span>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="performance-bar w-24 h-1.5 bg-gray-100 rounded-full overflow-hidden"><div class="h-full bg-rose-500" style="width: 14%"></div></div>
+                  </td>
+                  <td class="px-6 py-4 font-black text-rose-600 text-xs">2.1x</td>
+                  <td class="px-6 py-4 font-black text-gray-900 text-xs">28</td>
+                  <td class="px-6 py-4 text-right font-black text-gray-900 text-sm">$480</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>

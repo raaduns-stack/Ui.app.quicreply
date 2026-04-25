@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>QuicReply | Authentication</title>
+    <link rel="icon" type="image/png" href="assets/images/fav.png" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed": "#40000b",
+                        "inverse-surface": "#2e3132",
+                        "inverse-on-surface": "#f0f1f2",
+                        "tertiary-fixed": "#86f6da",
+                        "outline": "#926e6e",
+                        "on-tertiary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "on-tertiary-fixed-variant": "#005143",
+                        "surface": "#f8f9fa",
+                        "on-surface": "#191c1d",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed-dim": "#69dabe",
+                        "secondary-fixed": "#e5e2e1",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "on-background": "#191c1d",
+                        "surface-container-high": "#e7e8e9",
+                        "on-secondary-container": "#656464",
+                        "on-primary-container": "#fffbff",
+                        "on-tertiary-fixed": "#00201a",
+                        "surface-tint": "#bf0032",
+                        "on-tertiary-container": "#f4fffa",
+                        "on-primary-fixed-variant": "#920024",
+                        "surface-variant": "#e1e3e4",
+                        "secondary": "#5f5e5e",
+                        "surface-container-low": "#f3f4f5",
+                        "primary-fixed": "#ffdada",
+                        "on-error-container": "#93000a",
+                        "background": "#f8f9fa",
+                        "on-primary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "tertiary-container": "#00846e",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "secondary-container": "#e5e2e1",
+                        "primary-fixed-dim": "#ffb3b4",
+                        "tertiary": "#006857",
+                        "surface-dim": "#d9dadb",
+                        "outline-variant": "#e7bcbc",
+                        "primary": "#ba0031",
+                        "surface-container": "#edeeef",
+                        "surface-bright": "#f8f9fa",
+                        "inverse-primary": "#ffb3b4",
+                        "on-secondary-fixed-variant": "#474646",
+                        "surface-container-highest": "#e1e3e4",
+                        "error-container": "#ffdad6",
+                        "on-surface-variant": "#5e3f3f",
+                        "primary-container": "#e80040"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .glow-effect {
+            box-shadow: 0 0 50px -10px rgba(186, 0, 49, 0.15);
+        }
+
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0) rotate(-1deg);
+            }
+
+            50% {
+                transform: translateY(-20px) rotate(1deg);
+            }
+        }
+
+        .bg-mesh {
+            background-color: #f8f9fa;
+            background-image:
+                radial-gradient(at 0% 0%, rgba(186, 0, 49, 0.08) 0, transparent 50%),
+                radial-gradient(at 50% 0%, rgba(232, 0, 64, 0.05) 0, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(186, 0, 49, 0.1) 0, transparent 50%);
+        }
+    </style>
+</head>
+
+<body class="bg-surface text-on-surface antialiased selection:bg-primary-fixed selection:text-on-primary-fixed">
+    <main class="min-h-screen flex overflow-hidden">
+        <!-- Left Side: Editorial & Product Branding -->
+        <section
+            class="hidden lg:flex lg:w-1/2 relative bg-mesh flex-col justify-between p-16 overflow-hidden border-r border-outline-variant/20">
+            <!-- Background Decoration -->
+            <div
+                class="absolute top-[-10%] right-[-10%] w-[600px] h-[600px] bg-primary/10 rounded-full blur-[120px] animate-pulse">
+            </div>
+            <div
+                class="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-primary-container/15 rounded-full blur-[100px]">
+            </div>
+            <!-- Branding -->
+            <div class="relative z-10 flex items-center gap-3">
+                <a href="index.html">
+                    <img src="assets/images/logo.png" alt="QuicReply Logo" class="h-10">
+                </a>
+            </div>
+            <!-- Editorial Content -->
+            <div class="relative z-10 mt-12">
+                <div class="space-y-6 max-w-xl">
+                    <h1 class="text-7xl font-extrabold leading-[0.95] tracking-tight text-on-surface">
+                        The <span class="text-primary relative inline-block">velocity<span
+                                class="absolute bottom-2 left-0 w-full h-3 bg-primary/10 -z-10"></span></span> <br />of
+                        modern enterprise.
+                    </h1>
+                    <p class="text-xl text-secondary/80 max-w-md leading-relaxed font-medium">
+                        Elevate your customer interactions with our editorial-grade dashboard and AI-assisted responses.
+                        Precision meets speed.
+                    </p>
+                </div>
+                <!-- Mockup Card -->
+                <div class="relative mt-20 max-w-2xl animate-float">
+                    <div
+                        class="absolute -inset-4 bg-gradient-to-tr from-primary/10 to-transparent blur-2xl rounded-3xl -z-10">
+                    </div>
+                    <div
+                        class="bg-surface-container-lowest rounded-2xl shadow-[0px_48px_80px_-16px_rgba(25,28,29,0.12)] border border-outline-variant/20 p-8 transform">
+                        <div class="flex items-center justify-between mb-10">
+                            <div class="flex gap-2">
+                                <div class="w-3 h-3 rounded-full bg-error/20"></div>
+                                <div class="w-3 h-3 rounded-full bg-surface-variant"></div>
+                                <div class="w-3 h-3 rounded-full bg-surface-variant"></div>
+                            </div>
+                            <div class="h-1.5 w-32 bg-surface-container-high rounded-full"></div>
+                        </div>
+                        <div class="grid grid-cols-12 gap-8">
+                            <div class="col-span-4 space-y-4">
+                                <div
+                                    class="h-14 bg-surface-container-low rounded-xl w-full border border-outline-variant/10">
+                                </div>
+                                <div class="h-3 bg-surface-container-high rounded-full w-4/5"></div>
+                                <div class="h-3 bg-surface-container-high rounded-full w-2/3"></div>
+                                <div class="pt-4 space-y-2">
+                                    <div class="h-2 w-full bg-primary/5 rounded"></div>
+                                    <div class="h-2 w-full bg-primary/5 rounded"></div>
+                                </div>
+                            </div>
+                            <div class="col-span-8 space-y-6">
+                                <div class="flex items-start gap-4">
+                                    <div
+                                        class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                                        <span class="material-symbols-outlined text-primary text-xl">person</span>
+                                    </div>
+                                    <div
+                                        class="p-5 bg-surface-container-low rounded-2xl rounded-tl-none w-full border border-outline-variant/10">
+                                        <div class="h-2 w-3/4 bg-on-surface-variant/20 rounded mb-3"></div>
+                                        <div class="h-2 w-1/2 bg-on-surface-variant/10 rounded"></div>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-4 justify-end">
+                                    <div
+                                        class="p-5 bg-primary text-on-primary rounded-2xl rounded-tr-none w-4/5 shadow-lg shadow-primary/20">
+                                        <div class="h-2 w-full bg-on-primary/30 rounded mb-3"></div>
+                                        <div class="h-2 w-2/3 bg-on-primary/30 rounded"></div>
+                                    </div>
+                                    <div
+                                        class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shrink-0">
+                                        <span class="material-symbols-outlined text-on-primary text-xl"
+                                            style="font-variation-settings: 'FILL' 1;">bolt</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Footer Stats -->
+            <div class="relative z-10 flex gap-16 pt-12">
+                <div>
+                    <div class="text-4xl font-black text-on-surface tracking-tighter">99.9%</div>
+                    <div class="text-[10px] text-secondary font-bold tracking-[0.2em] uppercase mt-1 opacity-70">Uptime
+                        SLA</div>
+                </div>
+                <div>
+                    <div class="text-4xl font-black text-on-surface tracking-tighter">24ms</div>
+                    <div class="text-[10px] text-secondary font-bold tracking-[0.2em] uppercase mt-1 opacity-70">Avg
+                        Latency</div>
+                </div>
+            </div>
+        </section>
+        <!-- Right Side: Form Content -->
+        <section
+            class="w-full lg:w-1/2 bg-surface flex items-center justify-center p-6 md:p-12 relative overflow-y-auto">
+            <!-- Mobile Branding -->
+            <div class="absolute top-8 left-8 lg:hidden flex items-center gap-2">
+                <a href="index.html">
+                    <img src="assets/images/logo.png" alt="QuicReply Logo" class="h-14">
+                </a>
+            </div>
+            <!-- Form Container -->
+            <div class="w-full max-w-md">
+                <div
+                    class="glass-panel p-8 md:p-10 rounded-3xl shadow-2xl shadow-on-surface/5 transition-all duration-500 hover:-translate-y-1 hover:shadow-primary/5 group">
+                    <div class="space-y-2 mb-10">
+                        <h2 class="text-4xl font-bold tracking-tight text-on-surface">Welcome back.</h2>
+                        <p class="text-secondary font-medium">Sign in to your editorial dashboard.</p>
+                    </div>
+                    <!-- Login Form -->
+                    <form action="#" class="space-y-6">
+                        <div class="space-y-5">
+                            <div class="group/field">
+                                <label
+                                    class="block text-[11px] font-bold text-on-surface/60 mb-2 tracking-[0.1em] uppercase"
+                                    for="email">Email Address</label>
+                                <input
+                                    class="w-full bg-surface-container-low border border-outline-variant/20 rounded-xl px-5 py-4 text-on-surface placeholder:text-secondary/40 focus:ring-4 focus:ring-primary/10 focus:bg-surface-container-lowest focus:border-primary/30 transition-all duration-300 outline-none"
+                                    id="email" placeholder="name@company.com" type="email" />
+                            </div>
+                            <div class="group/field">
+                                <div class="flex justify-between mb-2">
+                                    <label
+                                        class="block text-[11px] font-bold text-on-surface/60 tracking-[0.1em] uppercase"
+                                        for="password">Password</label>
+                                    <a class="text-xs text-primary font-bold hover:text-primary-container transition-colors"
+                                        href="#">Forgot?</a>
+                                </div>
+                                <input
+                                    class="w-full bg-surface-container-low border border-outline-variant/20 rounded-xl px-5 py-4 text-on-surface placeholder:text-secondary/40 focus:ring-4 focus:ring-primary/10 focus:bg-surface-container-lowest focus:border-primary/30 transition-all duration-300 outline-none"
+                                    id="password" placeholder="••••••••" type="password" />
+                            </div>
+                        </div>
+                        <button
+                            class="w-full bg-primary text-on-primary font-bold py-5 rounded-2xl shadow-xl shadow-primary/25 hover:shadow-2xl hover:shadow-primary/40 hover:-translate-y-0.5 active:scale-[0.98] transition-all duration-300 text-lg tracking-tight"
+                            type="submit">
+                            Log In
+                        </button>
+                        <div class="relative py-4">
+                            <div class="absolute inset-0 flex items-center">
+                                <div class="w-full border-t border-outline-variant/30"></div>
+                            </div>
+                            <div class="relative flex justify-center text-[10px] uppercase tracking-widest font-bold">
+                                <span class="bg-white/50 backdrop-blur px-4 text-secondary/50">Or continue with</span>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <button
+                                class="flex items-center justify-center gap-3 py-4 px-4 bg-surface-container-low hover:bg-surface-container-high border border-outline-variant/10 hover:border-outline-variant/40 rounded-xl transition-all duration-300 font-bold text-sm text-on-surface group/social hover:-translate-y-0.5"
+                                type="button">
+                                <svg class="w-5 h-5 transition-transform group-hover/social:scale-110"
+                                    viewbox="0 0 24 24">
+                                    <path
+                                        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                                        fill="currentColor"></path>
+                                    <path
+                                        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                                        fill="currentColor"></path>
+                                    <path
+                                        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"
+                                        fill="currentColor"></path>
+                                    <path
+                                        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                                        fill="currentColor"></path>
+                                </svg>
+                                Google
+                            </button>
+                            <button
+                                class="flex items-center justify-center gap-3 py-4 px-4 bg-surface-container-low hover:bg-surface-container-high border border-outline-variant/10 hover:border-outline-variant/40 rounded-xl transition-all duration-300 font-bold text-sm text-on-surface group/social hover:-translate-y-0.5"
+                                type="button">
+                                <svg class="w-5 h-5 transition-transform group-hover/social:scale-110"
+                                    viewbox="0 0 24 24">
+                                    <path
+                                        d="M12 2C6.477 2 2 6.477 2 12c0 4.419 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.341-3.369-1.341-.454-1.155-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.202 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482C19.138 20.161 22 16.416 22 12c0-5.523-4.477-10-10-10z"
+                                        fill="currentColor"></path>
+                                </svg>
+                                GitHub
+                            </button>
+                        </div>
+                    </form>
+                    <p class="text-center text-sm text-secondary/70 font-medium mt-10">
+                        Don't have an account? <a
+                            class="text-primary hover:text-primary-container hover:underline font-bold transition-colors"
+                            href="pricing.html">Sign up for free</a>
+                    </p>
+                </div>
+                <!-- Absolute Bottom Link -->
+                <div class="text-center mt-12 text-[10px] text-secondary/40 font-bold tracking-widest uppercase">
+                    © 2026 QuicReply. Performance Optimized.
+                </div>
+                <div class="text-center mt-6 text-[10px] text-secondary/40 font-medium max-w-sm mx-auto space-y-3 px-4">
+                    <p>QuicReply is a product of RaaDuns Software Solutions Limited (RC: 7074360), with offices in Abuja
+                        and Cape Town, and headquarters in London, United Kingdom.</p>
+                    <p>All trademarks, logos, and brand elements are the property of RaaDuns Software Solutions Limited.
+                    </p>
+                    <p>QuicReply is an independent platform and is not affiliated with or endorsed by WhatsApp or Meta.
+                        Use of the platform is subject to our Terms of Service and Privacy Policy.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+    <!-- Signup Overlay (Enhanced) -->
+    <div class="fixed inset-0 bg-surface z-[100] translate-x-full transition-transform duration-700 overflow-y-auto hidden"
+        id="signup-overlay">
+        <div class="min-h-screen flex">
+            <section class="w-full lg:w-1/2 bg-surface flex items-center justify-center p-6 md:p-12 relative">
+                <div class="w-full max-w-md">
+                    <div class="glass-panel p-10 rounded-3xl border-outline-variant/20">
+                        <div class="space-y-2 mb-8">
+                            <h2 class="text-4xl font-bold tracking-tight text-on-surface">Start Free Trial.</h2>
+                            <p class="text-secondary font-medium">Join 10,000+ teams automating with QuicReply.</p>
+                        </div>
+                        <form action="#" class="space-y-5">
+                            <div class="group">
+                                <label
+                                    class="block text-[10px] font-bold text-on-surface/60 mb-2 tracking-[0.1em] uppercase">Full
+                                    Name</label>
+                                <input
+                                    class="w-full bg-surface-container-low border border-outline-variant/10 rounded-xl px-5 py-4 focus:ring-4 focus:ring-primary/10 outline-none"
+                                    placeholder="John Doe" type="text" />
+                            </div>
+                            <div class="group">
+                                <label
+                                    class="block text-[10px] font-bold text-on-surface/60 mb-2 tracking-[0.1em] uppercase">Email
+                                    Address</label>
+                                <input
+                                    class="w-full bg-surface-container-low border border-outline-variant/10 rounded-xl px-5 py-4 focus:ring-4 focus:ring-primary/10 outline-none"
+                                    placeholder="john@company.com" type="email" />
+                            </div>
+                            <div class="group">
+                                <label
+                                    class="block text-[10px] font-bold text-on-surface/60 mb-2 tracking-[0.1em] uppercase">Password</label>
+                                <input
+                                    class="w-full bg-surface-container-low border border-outline-variant/10 rounded-xl px-5 py-4 focus:ring-4 focus:ring-primary/10 outline-none"
+                                    placeholder="Create a strong password" type="password" />
+                            </div>
+                            <div class="flex items-start gap-3 py-2">
+                                <input class="mt-1 rounded border-outline-variant text-primary focus:ring-primary"
+                                    id="terms" type="checkbox" />
+                                <label class="text-xs text-secondary/70 font-medium leading-relaxed" for="terms">
+                                    I agree to the <a class="text-primary font-bold underline" href="#">Terms of
+                                        Service</a> and <a class="text-primary font-bold underline" href="#">Privacy
+                                        Policy</a>.
+                                </label>
+                            </div>
+                            <button
+                                class="w-full bg-primary text-on-primary font-bold py-5 rounded-2xl shadow-xl shadow-primary/25 hover:shadow-2xl hover:shadow-primary/40 active:scale-[0.98] transition-all duration-300 tracking-tight"
+                                type="submit">
+                                Start Free Trial
+                            </button>
+                        </form>
+                        <p class="text-center text-sm text-secondary/70 font-medium mt-8">
+                            Already using QuicReply? <a class="text-primary hover:underline font-bold"
+                                href="login.html">Log in</a>
+                        </p>
+                    </div>
+                </div>
+            </section>
+            <section class="hidden lg:block lg:w-1/2 relative">
+                <img alt="Corporate workspace" class="absolute inset-0 w-full h-full object-cover"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuASGztQayt58InKtyzOnzhxz1fXH5gWV1nJYRi6haMxSW3BryYSG4tpUFb3EKrGYdpYTTdDxkSyPZMn_t4LH8v5fyyrtplQJxfnC1sBcs3HpOeHfpy1a0qUQYlg0smgfKxg-L13IESt0aeZpHRHsHMqAoZxypmLitrHbyGlN8xdKIuClLks99BFhIxP6V5uL-STGzJppCLu47oNLQJ-gTUtbeNxRmgOjCHpq44ZE4FkS2Y-UDzyMHKgL7ouL9A1VnPEv9Okl_aWvfY" />
+                <div class="absolute inset-0 bg-primary/20 mix-blend-multiply"></div>
+                <div
+                    class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex items-end p-20">
+                    <blockquote class="text-white max-w-lg">
+                        <p class="text-4xl font-bold italic leading-tight mb-8">"QuicReply transformed our response time
+                            from hours to seconds. Our CSAT scores have never been higher."</p>
+                        <footer>
+                            <div class="font-black text-xl">Sarah Jenkins</div>
+                            <div class="text-white/60 font-medium uppercase tracking-[0.2em] text-[10px] mt-1">Head of
+                                Support, CloudScale</div>
+                        </footer>
+                    </blockquote>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- ─── FLOATING WhatsApp BUTTON ─────────────────────────────── -->
+    <div class="fixed bottom-8 right-8 z-[1000] group">
+        <div
+            class="absolute -top-12 right-0 bg-on-surface text-white px-4 py-2 rounded-2xl shadow-2xl text-xs font-black whitespace-nowrap opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all pointer-events-none">
+            Try Jennifer now
+            <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-on-surface rotate-45"></div>
+        </div>
+        <a href="demo.html"
+            class="w-16 h-16 bg-[#25D366] text-white rounded-2xl flex items-center justify-center shadow-2xl shadow-[#25D366]/40 hover:scale-110 hover:rotate-3 transition-all duration-300 active:scale-95">
+            <svg class="w-8 h-8 fill-current" viewBox="0 0 24 24">
+                <path
+                    d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.72.937 3.659 1.432 5.628 1.433h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z">
+                </path>
+            </svg>
+        </a>
+    </div>
+</body>
+
+</html>

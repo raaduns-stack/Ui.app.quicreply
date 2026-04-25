@@ -1,0 +1,173 @@
+/* 
+ * QuicReply — Velocity Crimson Design System
+ * Creative North Star: The Editorial Pulse
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;0,14..32,900&display=swap');
+
+/* ─── Design Tokens ──────────────────────────────────── */
+:root {
+    --primary:              #ba0031;
+    --primary-container:    #e80040;
+    --on-primary:           #ffffff;
+
+    --background:           #f8f9fa;
+    --surface:              #f8f9fa;
+    --surface-low:          #f3f4f5;
+    --surface-lowest:       #ffffff;
+    --surface-high:         #e7e8e9;
+    --surface-highest:      #e1e3e4;
+
+    --on-surface:           #191c1d;
+    --on-surface-var:       #5e3f3f;
+    --secondary:            #5f5e5e;
+    --outline-var:          rgba(146,110,110,0.15);
+
+    --shadow-ambient:       0px 12px 32px rgba(25, 28, 29, 0.06);
+    --radius-card:          1rem;
+    --radius-pill:          9999px;
+
+    --transition-smooth:    all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ─── Base ───────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background-color: var(--background);
+    color: var(--on-surface);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Typography ─────────────────────────────────────── */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--on-surface);
+}
+
+/* ─── The "No-Line" Rule ─────────────────────────────── */
+/* Section boundaries are defined via background color shifts,
+   never 1px solid lines. Ghost borders only as accessibility fallback. */
+
+/* ─── Glassmorphism ──────────────────────────────────── */
+.glass {
+    background: rgba(248, 249, 250, 0.82);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--outline-var);
+}
+
+/* ─── Cards — Tonal Layering ─────────────────────────── */
+.card-lifted {
+    background-color: var(--surface-lowest);
+    border-radius: var(--radius-card);
+    transition: var(--transition-smooth);
+    /* Ghost border fallback */
+    box-shadow:
+        0 0 0 1px var(--outline-var),
+        var(--shadow-ambient);
+}
+
+.card-lifted:hover {
+    transform: translateY(-4px);
+    box-shadow:
+        0 0 0 1px rgba(186, 0, 49, 0.12),
+        0px 20px 48px rgba(25, 28, 29, 0.10);
+}
+
+/* ─── Buttons ─────────────────────────────────────────── */
+.btn-primary {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-container) 100%);
+    color: var(--on-primary);
+    border-radius: var(--radius-pill);
+    padding: 0.75rem 1.75rem;
+    font-weight: 700;
+    font-size: 0.875rem;
+    letter-spacing: -0.01em;
+    text-align: center;
+    transition: var(--transition-smooth);
+    box-shadow: 0 4px 14px rgba(186, 0, 49, 0.25);
+    text-decoration: none;
+}
+
+.btn-primary:hover {
+    box-shadow: 0 6px 20px rgba(186, 0, 49, 0.35);
+    transform: translateY(-1px);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.btn-secondary {
+    display: inline-block;
+    background-color: var(--surface-high);
+    color: var(--on-surface);
+    border-radius: var(--radius-pill);
+    padding: 0.75rem 1.75rem;
+    font-weight: 700;
+    font-size: 0.875rem;
+    text-align: center;
+    transition: var(--transition-smooth);
+    text-decoration: none;
+}
+
+.btn-secondary:hover {
+    background-color: var(--surface-highest);
+    transform: translateY(-1px);
+}
+
+/* ─── Pipeline Cards ─────────────────────────────────── */
+.pipeline-card {
+    border-radius: var(--radius-card);
+    transition: var(--transition-smooth);
+}
+
+.pipeline-card:hover {
+    transform: translateY(-3px);
+}
+
+/* ─── Feature & Testimonial Cards ───────────────────── */
+.feature-card,
+.testimonial-card,
+.pricing-card {
+    border-radius: var(--radius-card);
+    transition: var(--transition-smooth);
+}
+
+/* ─── Float Animation (Hero badges) ──────────────────── */
+@keyframes float {
+    0%   { transform: translateY(0px); }
+    50%  { transform: translateY(-8px); }
+    100% { transform: translateY(0px); }
+}
+
+.animate-float {
+    animation: float 4s ease-in-out infinite;
+}
+
+/* ─── Fade-in-up Scroll Animations ───────────────────── */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.6s ease-out forwards;
+}
+
+/* ─── Focus Accessibility ────────────────────────────── */
+a:focus-visible,
+button:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 3px;
+    border-radius: 4px;
+}

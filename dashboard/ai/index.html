@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AI / Jennifer — QuicReply Sales OS</title>
+  <meta name="description" content="Jennifer AI — Automate conversations, qualify leads, and close sales with AI on QuicReply." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+  <link rel="stylesheet" href="../shell.css" />
+  <style>
+    /* ── AI Module Sub-Nav ── */
+    .ai-subnav {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      border-bottom: 1px solid #e5e7eb;
+      margin-bottom: 24px;
+    }
+    .ai-subnav-item {
+      padding: 10px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #6b7280;
+      position: relative;
+      cursor: pointer;
+      border-radius: 8px 8px 0 0;
+      transition: color 0.15s, background 0.15s;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .ai-subnav-item:hover { color: #111827; background: #f9fafb; }
+    .ai-subnav-item.active {
+      color: var(--brand);
+      font-weight: 700;
+    }
+    .ai-subnav-item.active::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0; right: 0;
+      height: 2px;
+      background: var(--brand);
+      border-radius: 2px 2px 0 0;
+    }
+
+    /* ── Jennifer Hero Card ── */
+    .jennifer-hero {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+      overflow: hidden;
+      position: relative;
+    }
+    .jennifer-hero::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--brand), #e80040, #f59e0b);
+    }
+
+    /* ── Jennifer Avatar ── */
+    .jennifer-avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #fef2f2, #fff1f2);
+      border: 1.5px solid rgba(186,0,49,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(186,0,49,0.12);
+    }
+
+    /* ── KPI Cards ── */
+    .ai-kpi-card {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+      transition: all 0.25s cubic-bezier(.4,0,.2,1);
+      position: relative;
+      overflow: hidden;
+    }
+    .ai-kpi-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.09);
+      border-color: rgba(186,0,49,0.15);
+    }
+    .ai-kpi-card::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      border-radius: 14px 14px 0 0;
+      opacity: 0;
+      transition: opacity 0.25s;
+    }
+    .ai-kpi-card:hover::after { opacity: 1; }
+    .ai-kpi-card.kpi-purple::after { background: #7c3aed; }
+    .ai-kpi-card.kpi-green::after  { background: #10b981; }
+    .ai-kpi-card.kpi-blue::after   { background: #3b82f6; }
+    .ai-kpi-card.kpi-amber::after  { background: #f59e0b; }
+
+    .ai-kpi-icon {
+      width: 48px; height: 48px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .ai-kpi-label {
+      font-size: 10px; font-weight: 700; color: #9ca3af;
+      text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 2px;
+    }
+    .ai-kpi-value {
+      font-size: 26px; font-weight: 800; color: #111827;
+      line-height: 1.1; letter-spacing: -0.02em;
+    }
+    .ai-kpi-sub {
+      font-size: 11px; color: #9ca3af; margin-top: 3px;
+    }
+
+    /* ── Dash Card base (reuse pattern) ── */
+    .dash-card {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+      overflow: hidden;
+    }
+    .dash-card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 18px 12px;
+      border-bottom: 1px solid #f3f4f6;
+    }
+    .dash-card-title {
+      font-size: 13px; font-weight: 700; color: #111827;
+    }
+    .dash-card-link {
+      font-size: 12px; font-weight: 600; color: var(--brand);
+      text-decoration: none; transition: opacity 0.15s;
+    }
+    .dash-card-link:hover { opacity: 0.75; }
+
+    /* ── Status connection rows ── */
+    .conn-row {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 18px;
+      border-bottom: 1px solid #f9fafb;
+    }
+    .conn-row:last-child { border-bottom: none; }
+
+    /* ── Knowledge preview items ── */
+    .kb-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 18px;
+      border-bottom: 1px solid #f9fafb;
+      transition: background 0.12s;
+      cursor: pointer;
+    }
+    .kb-item:last-child { border-bottom: none; }
+    .kb-item:hover { background: #fafafa; }
+
+    /* ── Feed rows ── */
+    .feed-row {
+      display: flex; align-items: center; gap: 12px;
+      padding: 11px 18px;
+      border-bottom: 1px solid #f9fafb;
+      transition: background 0.12s;
+    }
+    .feed-row:last-child { border-bottom: none; }
+    .feed-row:hover { background: #fafafa; }
+
+    /* ── Pills ── */
+    .pill {
+      display: inline-flex; align-items: center;
+      padding: 2px 8px; border-radius: 99px;
+      font-size: 10px; font-weight: 700; letter-spacing: 0.03em;
+      white-space: nowrap; flex-shrink: 0;
+    }
+    .pill-ai       { background:#f5f3ff; color:#7c3aed; border:1px solid #ddd6fe; }
+    .pill-qr       { background:#f9fafb; color:#6b7280; border:1px solid #e5e7eb; }
+    .pill-lead     { background:#ecfdf5; color:#059669; border:1px solid #a7f3d0; }
+    .pill-api      { background:#eff6ff; color:#2563eb; border:1px solid #bfdbfe; }
+    .pill-active   { background:#f0fdf4; color:#166534; border:1px solid #bbf7d0; }
+
+    /* ── Rec Cards ── */
+    .rec-card {
+      border-radius: 12px; padding: 16px; flex: 1;
+      display: flex; flex-direction: column;
+      transition: all 0.2s;
+    }
+    .rec-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+    .rec-card-purple { background: #fdf4ff; border: 1px solid #f3e0ff; }
+    .rec-card-indigo { background: #f5f3ff; border: 1px solid #e0d9fd; }
+
+    /* ── Plan card ── */
+    .plan-card {
+      background: linear-gradient(135deg, rgba(186,0,49,0.07) 0%, rgba(186,0,49,0.02) 100%);
+      border: 1px solid rgba(186,0,49,0.15);
+      border-radius: 12px; padding: 16px;
+    }
+
+    /* ── Quick Action card ── */
+    .quick-action-btn {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid #e5e7eb;
+      background: #f9fafb;
+      font-size: 12px; font-weight: 600; color: #374151;
+      cursor: pointer; text-decoration: none;
+      transition: all 0.15s;
+    }
+    .quick-action-btn:hover { background: #f3f4f6; border-color: #d1d5db; color: #111827; }
+
+    /* ── Pulse animation ── */
+    @keyframes pulse-ring {
+      0%   { box-shadow: 0 0 0 0 rgba(16,185,129,0.4); }
+      70%  { box-shadow: 0 0 0 6px rgba(16,185,129,0); }
+      100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); }
+    }
+    .pulse-dot { animation: pulse-ring 2s infinite; }
+
+    /* ── Autonomy ring ── */
+    .autonomy-ring {
+      width: 88px; height: 88px;
+      border-radius: 50%;
+      border: 8px solid var(--brand);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      box-shadow: 0 0 0 4px rgba(186,0,49,0.08);
+    }
+
+    /* ── Progress bar ── */
+    .prog-track { flex:1; height:5px; background:#f3f4f6; border-radius:99px; overflow:hidden; }
+    .prog-fill  { height:100%; border-radius:99px; transition: width 0.6s ease; }
+
+    /* ── Responsive ── */
+    @media (max-width: 1023px) {
+      .ai-main-grid { grid-template-columns: 1fr !important; }
+      .ai-kpi-grid  { grid-template-columns: repeat(2,1fr) !important; }
+    }
+    @media (max-width: 599px) {
+      .ai-kpi-grid  { grid-template-columns: 1fr !important; }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="sidebar-mount"></div>
+
+  <div class="layout-with-sidebar" id="main-layout">
+    <div id="topbar-mount" data-title="AI / Jennifer · Overview"></div>
+
+    <main class="flex-1 p-5 lg:p-7" style="display:flex;flex-direction:column;gap:20px;">
+      <div class="content-container" style="display:flex;flex-direction:column;gap:20px;">
+
+        <!-- ══ PAGE HEADER ══ -->
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+          <div>
+            <h1 class="text-[22px] font-extrabold text-gray-900 tracking-tight" style="letter-spacing:-0.02em;">AI / Jennifer</h1>
+            <p class="text-[13px] text-gray-500 mt-1 font-medium">Automate conversations, qualify leads, and close sales with AI</p>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <span class="pill pill-active" style="font-size:11px;padding:4px 12px;">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block mr-1.5"></span>
+              AI Active
+            </span>
+            <a href="test.html" class="btn-secondary" style="height:36px;padding:0 14px;font-size:13px;border-color:#e5e7eb;box-shadow:none;">
+              <span class="material-symbols-outlined" style="font-size:16px;">science</span>
+              Test AI
+            </a>
+            <a href="knowledge.html" class="btn-primary" style="height:36px;padding:0 14px;font-size:13px;">
+              <span class="material-symbols-outlined" style="font-size:16px;">add_circle</span>
+              Add Knowledge
+            </a>
+          </div>
+        </div>
+
+        <!-- ══ SUBNAV ══ -->
+        <div class="ai-subnav" style="margin-bottom:0;">
+          <a href="index.html"     class="ai-subnav-item active">Overview</a>
+          <a href="setup.html"     class="ai-subnav-item">Setup</a>
+          <a href="knowledge.html" class="ai-subnav-item">Knowledge Base</a>
+          <a href="test.html"      class="ai-subnav-item">Test AI</a>
+          <a href="settings.html"  class="ai-subnav-item">Settings</a>
+        </div>
+
+        <!-- ══ HERO STATUS CARD ══ -->
+        <div class="jennifer-hero">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:20px;padding:24px 24px 22px;flex-wrap:wrap;">
+            <!-- Left: Avatar + Identity -->
+            <div style="display:flex;align-items:center;gap:16px;min-width:0;">
+              <div class="jennifer-avatar">
+                <span class="material-symbols-outlined" style="font-size:28px;color:var(--brand);font-variation-settings:'FILL' 1;">smart_toy</span>
+              </div>
+              <div style="min-width:0;">
+                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                  <h2 style="font-size:18px;font-weight:800;color:#111827;letter-spacing:-0.02em;">Jennifer <span style="color:#6b7280;font-weight:600;font-size:14px;">(AI)</span></h2>
+                  <span class="pill pill-active">Active</span>
+                  <span class="pill pill-ai" style="font-size:10px;">82% Automated</span>
+                </div>
+                <p class="text-[12px] text-gray-500 mt-1.5 font-medium" style="max-width:480px;line-height:1.5;">
+                  Jennifer handles conversations, qualifies leads, and drives conversions automatically — 24/7, without human intervention.
+                </p>
+              </div>
+            </div>
+            <!-- Right: Autonomy dial + actions -->
+            <div style="display:flex;align-items:center;gap:16px;flex-shrink:0;flex-wrap:wrap;">
+              <div class="autonomy-ring">
+                <span style="font-size:20px;font-weight:800;color:#111827;line-height:1;">92%</span>
+                <span style="font-size:9px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:0.05em;margin-top:2px;">Success</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <a href="test.html" class="btn-primary" style="height:36px;padding:0 16px;font-size:13px;">
+                  <span class="material-symbols-outlined" style="font-size:16px;">science</span>
+                  Test AI
+                </a>
+                <a href="settings.html" class="btn-secondary" style="height:36px;padding:0 16px;font-size:13px;border-color:#e5e7eb;box-shadow:none;">
+                  <span class="material-symbols-outlined" style="font-size:16px;">tune</span>
+                  Manage Settings
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Efficiency bars -->
+          <div style="padding:16px 24px;border-top:1px solid #f3f4f6;display:grid;grid-template-columns:repeat(2,1fr);gap:16px;">
+            <div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+                <span class="text-[11px] font-bold text-gray-500">AI Conversations</span>
+                <span class="text-[11px] font-bold text-gray-900">84%</span>
+              </div>
+              <div class="prog-track"><div class="prog-fill" style="width:84%;background:var(--brand);"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+                <span class="text-[11px] font-bold text-gray-500">Human Takeover</span>
+                <span class="text-[11px] font-bold text-gray-900">16%</span>
+              </div>
+              <div class="prog-track"><div class="prog-fill" style="width:16%;background:#3b82f6;"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ KPI METRICS ══ -->
+        <div class="ai-kpi-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;">
+
+          <!-- Leads Qualified -->
+          <div class="ai-kpi-card kpi-purple">
+            <div class="ai-kpi-icon" style="background:#f5f3ff;">
+              <span class="material-symbols-outlined" style="font-size:22px;color:#7c3aed;">person_add</span>
+            </div>
+            <div style="flex:1;min-width:0;">
+              <div class="ai-kpi-label">Leads Qualified</div>
+              <div class="ai-kpi-value">1,248</div>
+              <div style="display:flex;align-items:center;gap:3px;margin-top:4px;">
+                <span class="material-symbols-outlined text-emerald-500" style="font-size:13px;">arrow_upward</span>
+                <span class="text-xs font-bold text-emerald-500">12.4%</span>
+                <span class="ai-kpi-sub">vs last week</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- AI Response Rate -->
+          <div class="ai-kpi-card kpi-green">
+            <div class="ai-kpi-icon" style="background:#ecfdf5;">
+              <span class="material-symbols-outlined" style="font-size:22px;color:#10b981;">bolt</span>
+            </div>
+            <div style="flex:1;min-width:0;">
+              <div class="ai-kpi-label">AI Response Rate</div>
+              <div class="ai-kpi-value">98.4%</div>
+              <div style="display:flex;align-items:center;gap:3px;margin-top:4px;">
+                <span class="material-symbols-outlined text-emerald-500" style="font-size:13px;">arrow_upward</span>
+                <span class="text-xs font-bold text-emerald-500">5%</span>
+                <span class="ai-kpi-sub">vs last week</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Time Saved -->
+          <div class="ai-kpi-card kpi-blue">
+            <div class="ai-kpi-icon" style="background:#eff6ff;">
+              <span class="material-symbols-outlined" style="font-size:22px;color:#3b82f6;">schedule</span>
+            </div>
+            <div style="flex:1;min-width:0;">
+              <div class="ai-kpi-label">Time Saved</div>
+              <div class="ai-kpi-value">94h</div>
+              <div style="display:flex;align-items:center;gap:3px;margin-top:4px;">
+                <span class="material-symbols-outlined text-emerald-500" style="font-size:13px;">arrow_upward</span>
+                <span class="text-xs font-bold text-emerald-500">22%</span>
+                <span class="ai-kpi-sub">this month</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Conversations Handled -->
+          <div class="ai-kpi-card kpi-amber">
+            <div class="ai-kpi-icon" style="background:#fffbeb;">
+              <span class="material-symbols-outlined" style="font-size:22px;color:#f59e0b;">chat</span>
+            </div>
+            <div style="flex:1;min-width:0;">
+              <div class="ai-kpi-label">Conversations</div>
+              <div class="ai-kpi-value">5,820</div>
+              <div style="display:flex;align-items:center;gap:3px;margin-top:4px;">
+                <span class="material-symbols-outlined text-emerald-500" style="font-size:13px;">arrow_upward</span>
+                <span class="text-xs font-bold text-emerald-500">18%</span>
+                <span class="ai-kpi-sub">vs last week</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ MID GRID — Connection Status + Knowledge Preview + Activity Feed ══ -->
+        <div class="ai-main-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start;">
+
+          <!-- LEFT: Connection Status + Knowledge Preview -->
+          <div style="display:flex;flex-direction:column;gap:16px;">
+
+            <!-- Connection Status -->
+            <div class="dash-card">
+              <div class="dash-card-header">
+                <div class="dash-card-title">Connection Status</div>
+              </div>
+              <!-- WhatsApp -->
+              <div class="conn-row">
+                <div style="width:36px;height:36px;border-radius:10px;background:#dcfce7;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                  <svg viewBox="0 0 24 24" fill="currentColor" style="width:18px;height:18px;color:#16a34a;" aria-hidden="true">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/>
+                  </svg>
+                </div>
+                <div style="flex:1;min-width:0;">
+                  <div class="text-xs font-bold text-gray-900">WhatsApp Session</div>
+                  <div class="text-[11px] text-gray-500 mt-0.5">Connected · QR Mode</div>
+                </div>
+                <span class="pill pill-active">Connected</span>
+                <button class="btn-ghost" style="padding:4px 8px;font-size:11px;font-weight:600;color:#374151;border:1px solid #e5e7eb;border-radius:7px;height:28px;" onclick="QR.showToast('Managing WhatsApp session','info')">Manage</button>
+              </div>
+              <!-- CRM -->
+              <div class="conn-row">
+                <div style="width:36px;height:36px;border-radius:10px;background:#fef3c7;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                  <span class="material-symbols-outlined" style="font-size:18px;color:#d97706;">sync_alt</span>
+                </div>
+                <div style="flex:1;min-width:0;">
+                  <div class="text-xs font-bold text-gray-900">CRM / Webhook Sync</div>
+                  <div class="text-[11px] text-gray-500 mt-0.5">Not connected yet</div>
+                </div>
+                <span class="pill" style="background:#fffbeb;color:#92400e;border:1px solid #fde68a;">Inactive</span>
+                <button class="btn-primary" style="height:28px;padding:0 12px;font-size:11px;border-radius:7px;" onclick="QR.showToast('CRM setup coming soon','info')">Set Up</button>
+              </div>
+            </div>
+
+            <!-- Knowledge Base Preview -->
+            <div class="dash-card">
+              <div class="dash-card-header">
+                <div>
+                  <div class="dash-card-title">Knowledge Base</div>
+                  <div class="text-[11px] text-gray-400 mt-0.5 font-medium">Jennifer learns from these sources</div>
+                </div>
+                <a href="knowledge.html" class="dash-card-link">Manage All</a>
+              </div>
+              <div class="kb-item" onclick="location.href='knowledge.html'">
+                <div style="width:30px;height:30px;border-radius:8px;background:#eff6ff;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                  <span class="material-symbols-outlined" style="font-size:15px;color:#3b82f6;">local_shipping</span>
+                </div>
+                <div style="flex:1;min-width:0;">
+                  <div class="text-xs font-semibold text-gray-900">Shipping Policy</div>
+                  <div class="text-[11px] text-gray-400">FAQ · Synced</div>
+                </div>
+                <span class="pill pill-active" style="font-size:9px;padding:1px 6px;">Active</span>
+              </div>
+              <div class="kb-item" onclick="location.href='knowledge.html'">
+                <div style="width:30px;height:30px;border-radius:8px;background:#ecfdf5;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                  <span class="material-symbols-outlined" style="font-size:15px;color:#059669;">sell</span>
+                </div>
+                <div style="flex:1;min-width:0;">
+                  <div class="text-xs font-semibold text-gray-900">Pricing Structure</div>
+                  <div class="text-[11px] text-gray-400">Price Sheet · Synced</div>
+                </div>
+                <span class="pill pill-active" style="font-size:9px;padding:1px 6px;">Active</span>
+              </div>
+              <div class="kb-item" onclick="location.href='knowledge.html'">
+                <div style="width:30px;height:30px;border-radius:8px;background:#fdf4ff;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                  <span class="material-symbols-outlined" style="font-size:15px;color:#9333ea;">inventory_2</span>
+                </div>
+                <div style="flex:1;min-width:0;">
+                  <div class="text-xs font-semibold text-gray-900">Product Catalog</div>
+                  <div class="text-[11px] text-gray-400">Document · Synced</div>
+                </div>
+                <span class="pill pill-active" style="font-size:9px;padding:1px 6px;">Active</span>
+              </div>
+              <div class="kb-item" onclick="location.href='knowledge.html'">
+                <div style="width:30px;height:30px;border-radius:8px;background:#fff7ed;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                  <span class="material-symbols-outlined" style="font-size:15px;color:#ea580c;">quiz</span>
+                </div>
+                <div style="flex:1;min-width:0;">
+                  <div class="text-xs font-semibold text-gray-900">FAQ Library</div>
+                  <div class="text-[11px] text-gray-400">42 Q&A Pairs · Synced</div>
+                </div>
+                <span class="pill pill-active" style="font-size:9px;padding:1px 6px;">Active</span>
+              </div>
+              <div style="padding:12px 18px;border-top:1px solid #f3f4f6;">
+                <a href="knowledge.html" class="btn-primary" style="width:100%;height:34px;justify-content:center;font-size:12px;">
+                  <span class="material-symbols-outlined" style="font-size:15px;">add_circle</span>
+                  Add Knowledge
+                </a>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- RIGHT: Activity Feed + Recommendations -->
+          <div style="display:flex;flex-direction:column;gap:16px;">
+
+            <!-- Jennifer Activity Feed -->
+            <div class="dash-card">
+              <div class="dash-card-header">
+                <div class="dash-card-title">Jennifer Activity Feed</div>
+                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Real-time</span>
+              </div>
+              <div class="feed-row">
+                <div style="width:30px;height:30px;border-radius:8px;background:#f5f3ff;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                  <span class="material-symbols-outlined" style="font-size:15px;color:#7c3aed;">smart_toy</span>
+                </div>
+                <div style="flex:1;min-width:0;">
+                  <div class="text-xs font-semibold text-gray-900 truncate">Jennifer qualified a lead from Instagram</div>
+                  <div class="text-[11px] text-gray-400">Asked about pricing — lead scored 82</div>
+                </div>
+                <span class="text-[11px] text-gray-400 shrink-0">2m ago</span>
+                <span class="pill pill-ai">AI</span>
+              </div>
+              <div class="feed-row">
+                <div style="width:30px;height:30px;border-radius:8px;background:#ecfdf5;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                  <span class="material-symbols-outlined" style="font-size:15px;color:#059669;">check_circle</span>
+                </div>
+                <div style="flex:1;min-width:0;">
+                  <div class="text-xs font-semibold text-gray-900 truncate">Jennifer replied to pricing inquiry</div>
+                  <div class="text-[11px] text-gray-400">Sarah M. — "What are your prices?"</div>
+                </div>
+                <span class="text-[11px] text-gray-400 shrink-0">8m ago</span>
+                <span class="pill pill-ai">AI</span>
+              </div>
+              <div class="feed-row">
+                <div style="width:30px;height:30px;border-radius:8px;background:#fef3c7;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                  <span class="material-symbols-outlined" style="font-size:15px;color:#d97706;">person</span>
+                </div>
+                <div style="flex:1;min-width:0;">
+                  <div class="text-xs font-semibold text-gray-900 truncate">Human takeover requested</div>
+                  <div class="text-[11px] text-gray-400">David C. — Refund request handed off</div>
+                </div>
+                <span class="text-[11px] text-gray-400 shrink-0">14m ago</span>
+                <span class="pill pill-qr">HUMAN</span>
+              </div>
+              <div class="feed-row">
+                <div style="width:30px;height:30px;border-radius:8px;background:#f5f3ff;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                  <span class="material-symbols-outlined" style="font-size:15px;color:#7c3aed;">smart_toy</span>
+                </div>
+                <div style="flex:1;min-width:0;">
+                  <div class="text-xs font-semibold text-gray-900 truncate">Jennifer handled a delivery inquiry</div>
+                  <div class="text-[11px] text-gray-400">Emily D. — "Do you deliver nationwide?"</div>
+                </div>
+                <span class="text-[11px] text-gray-400 shrink-0">32m ago</span>
+                <span class="pill pill-ai">AI</span>
+              </div>
+              <div class="feed-row">
+                <div style="width:30px;height:30px;border-radius:8px;background:#eff6ff;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                  <span class="material-symbols-outlined" style="font-size:15px;color:#2563eb;">person_add</span>
+                </div>
+                <div style="flex:1;min-width:0;">
+                  <div class="text-xs font-semibold text-gray-900 truncate">New lead moved to pipeline</div>
+                  <div class="text-[11px] text-gray-400">Jennifer scored & added — Mike B.</div>
+                </div>
+                <span class="text-[11px] text-gray-400 shrink-0">1h ago</span>
+                <span class="pill pill-lead">LEAD</span>
+              </div>
+            </div>
+
+            <!-- Smart Recommendations -->
+            <div class="dash-card">
+              <div class="dash-card-header">
+                <div class="dash-card-title">Smart Recommendations</div>
+              </div>
+              <div style="padding:14px 18px;display:flex;gap:12px;">
+                <!-- Rec 1 -->
+                <div class="rec-card rec-card-purple">
+                  <div style="width:36px;height:36px;border-radius:10px;background:#f3e8ff;display:flex;align-items:center;justify-content:center;margin-bottom:10px;flex-shrink:0;">
+                    <span class="material-symbols-outlined" style="font-size:18px;color:#9333ea;">school</span>
+                  </div>
+                  <div class="text-xs font-bold text-gray-900 mb-1">Improve AI Performance</div>
+                  <p class="text-[11px] text-gray-500 leading-relaxed mb-3 flex-1">Add more FAQs to increase Jennifer's response accuracy and reduce handoffs.</p>
+                  <a href="knowledge.html" class="text-white text-[11px] font-bold py-2 rounded-lg flex items-center justify-center gap-1 text-center" style="background:#9333ea;text-decoration:none;" onmouseover="this.style.background='#7e22ce'" onmouseout="this.style.background='#9333ea'">
+                    Add Knowledge <span class="material-symbols-outlined" style="font-size:13px;">chevron_right</span>
+                  </a>
+                </div>
+                <!-- Rec 2 -->
+                <div class="rec-card rec-card-indigo">
+                  <div style="width:36px;height:36px;border-radius:10px;background:#ede9fe;display:flex;align-items:center;justify-content:center;margin-bottom:10px;flex-shrink:0;">
+                    <span class="material-symbols-outlined" style="font-size:18px;color:#7c3aed;">campaign</span>
+                  </div>
+                  <div class="text-xs font-bold text-gray-900 mb-1">Use AI in Campaigns</div>
+                  <p class="text-[11px] text-gray-500 leading-relaxed mb-3 flex-1">Automate replies in broadcast campaigns to maximize lead capture.</p>
+                  <button class="w-full text-white text-[11px] font-bold py-2 rounded-lg flex items-center justify-center gap-1" style="background:#7c3aed;" onmouseover="this.style.background='#6d28d9'" onmouseout="this.style.background='#7c3aed'" onclick="QR.showToast('AI Campaigns enabled!','success')">
+                    Enable AI Campaigns <span class="material-symbols-outlined" style="font-size:13px;">chevron_right</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick Actions + Plan cards stacked -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+
+              <!-- Jennifer Plan -->
+              <div class="plan-card" style="display:flex;flex-direction:column;gap:8px;">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+                  <span class="material-symbols-outlined" style="font-size:18px;color:var(--brand);">workspace_premium</span>
+                  <span class="text-xs font-bold text-gray-900">Jennifer Plan</span>
+                </div>
+                <div class="text-[11px] text-gray-500">Growth Plan · AI Enabled</div>
+                <div class="text-[22px] font-extrabold" style="color:var(--brand);letter-spacing:-0.02em;">$49<span class="text-sm font-semibold text-gray-400">/mo</span></div>
+                <a href="../settings/billing.html" class="btn-secondary" style="height:30px;padding:0 12px;font-size:11px;border-radius:7px;border-color:#e5e7eb;box-shadow:none;text-align:center;justify-content:center;">Manage Plan</a>
+              </div>
+
+              <!-- Quick Actions -->
+              <div class="dash-card" style="border-radius:12px;overflow:visible;">
+                <div style="padding:12px 14px;border-bottom:1px solid #f3f4f6;">
+                  <div class="text-xs font-bold text-gray-900">Quick Actions</div>
+                </div>
+                <div style="padding:10px 14px;display:flex;flex-direction:column;gap:6px;">
+                  <a href="knowledge.html" class="quick-action-btn">
+                    <span class="material-symbols-outlined" style="font-size:15px;color:#7c3aed;">add_circle</span>
+                    Add Knowledge
+                  </a>
+                  <a href="test.html" class="quick-action-btn">
+                    <span class="material-symbols-outlined" style="font-size:15px;color:#10b981;">science</span>
+                    Test AI
+                  </a>
+                  <a href="settings.html" class="quick-action-btn">
+                    <span class="material-symbols-outlined" style="font-size:15px;color:#3b82f6;">tune</span>
+                    Configure AI
+                  </a>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script src="../sidebar.js"></script>
+  <script src="../shell.js"></script>
+</body>
+</html>

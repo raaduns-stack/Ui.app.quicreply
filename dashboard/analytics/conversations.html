@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Conversations Hub — QuicReply</title>
+<meta name="description" content="QuicReply Conversations Hub — view all conversations across channels, manage threads, and track resolution status."/>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link rel="stylesheet" href="../shell.css"/>
+<style>
+  .hub-card { background:var(--bg); border:1px solid var(--border); border-radius:var(--radius-lg); padding:20px; transition:all 0.3s cubic-bezier(.4, 0, .2, 1); cursor:pointer; box-shadow: var(--shadow-sm); }
+  .hub-card:hover { border-color:var(--brand-glow); transform:translateY(-4px); box-shadow: var(--shadow-lg); }
+  .status-dot { width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0; }
+  .sort-btn { font-size:12px; font-weight:700; color:var(--text-muted); cursor:pointer; padding:6px 12px; border-radius:8px; transition:all .2s; border: 1px solid transparent; }
+  .sort-btn:hover { color:var(--text); background:var(--surface); }
+  .sort-btn.active { color:var(--brand); background:var(--bg); border-color: var(--border); box-shadow: var(--shadow-sm); }
+</style>
+</head>
+<body>
+
+<div id="sidebar-mount"></div>
+
+  <div class="layout-with-sidebar" id="main-layout">
+    <div id="topbar-mount" data-title="Conversations Hub"></div>
+
+    <main class="flex-1 p-6 lg:p-10 space-y-10">
+      <div class="content-container space-y-10">
+    <div class="page-header border-b border-gray-100 pb-6 flex flex-wrap items-end justify-between gap-4">
+      <div>
+        <h1 class="tracking-tight">Conversations Hub</h1>
+        <p class="text-gray-500 font-medium mt-1">All conversations across WhatsApp channels — manage, assign, and resolve.</p>
+      </div>
+      <div class="flex gap-3">
+        <button class="btn-secondary text-sm h-10 px-4" onclick="QR.openModal('modal-new-conversation')">
+          <span class="material-symbols-outlined text-[18px]">add_comment</span>New Conversation
+        </button>
+        <a href="inbox.html" class="btn-primary text-sm h-10 px-4">
+          <span class="material-symbols-outlined text-[18px]">inbox</span>Open Inbox
+        </a>
+      </div>
+    </div>
+
+    <!-- Stats Row -->
+    <div class="grid grid-cols-2 lg:grid-cols-5 gap-3">
+      <div class="card-sm text-center">
+        <p class="text-xl font-extrabold text-gray-900">248</p>
+        <p class="text-xs text-gray-500 mt-0.5">Total Open</p>
+      </div>
+      <div class="card-sm text-center">
+        <p class="text-xl font-extrabold text-amber-400">12</p>
+        <p class="text-xs text-gray-500 mt-0.5">Unread</p>
+      </div>
+      <div class="card-sm text-center">
+        <p class="text-xl font-extrabold text-blue-400">87</p>
+        <p class="text-xs text-gray-500 mt-0.5">Waiting Reply</p>
+      </div>
+      <div class="card-sm text-center">
+        <p class="text-xl font-extrabold text-[#ba0031]">1,204</p>
+        <p class="text-xs text-gray-500 mt-0.5">Resolved Today</p>
+      </div>
+      <div class="card-sm text-center">
+        <p class="text-xl font-extrabold text-purple-400">4.2m</p>
+        <p class="text-xs text-gray-500 mt-0.5">Avg. Response</p>
+      </div>
+    </div>
+
+    <!-- Filters + Sort Bar -->
+    <div class="flex flex-wrap items-center gap-3">
+      <div class="flex flex-wrap gap-2 flex-1">
+        <button class="filter-chip active" data-conv-filter="all" onclick="convFilter(this,'all')">All</button>
+        <button class="filter-chip" data-conv-filter="open" onclick="convFilter(this,'open')">Open</button>
+        <button class="filter-chip" data-conv-filter="pending" onclick="convFilter(this,'pending')">Pending</button>
+        <button class="filter-chip" data-conv-filter="resolved" onclick="convFilter(this,'resolved')">Resolved</button>
+        <button class="filter-chip" data-conv-filter="qr" onclick="convFilter(this,'qr')">QR Only</button>
+        <button class="filter-chip" data-conv-filter="api" onclick="convFilter(this,'api')">API Only</button>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="text-xs text-gray-500">Sort:</span>
+        <button class="sort-btn active" onclick="setSortBtn(this)">Newest</button>
+        <button class="sort-btn" onclick="setSortBtn(this)">Priority</button>
+        <button class="sort-btn" onclick="setSortBtn(this)">Unread</button>
+      </div>
+      <div class="relative">
+        <span class="material-symbols-outlined absolute left-2 top-1/2 -translate-y-1/2 text-gray-500" style="font-size:16px">search</span>
+        <input type="text" placeholder="Search…" class="input-field pl-8 text-sm py-1.5 w-44"/>
+      </div>
+    </div>
+
+    <!-- Conversation Cards Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-3" id="convo-grid">
+
+      <!-- Card 1 -->
+      <div class="hub-card" data-conv-status="open" data-conv-mode="qr" onclick="location.href='inbox.html'">
+        <div class="flex items-start gap-3 mb-3">
+          <div class="avatar bg-blue-700 text-blue-200 relative">
+            JS
+            <span class="absolute -top-0.5 -right-0.5 w-3 h-3 bg-amber-400 rounded-full border-2 border-white"></span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between gap-2">
+              <p class="text-sm font-bold text-gray-800 truncate">Jordan Smith</p>
+              <span class="text-xs text-gray-500 flex-shrink-0">2 min</span>
+            </div>
+            <div class="flex items-center gap-2 mt-0.5">
+              <span class="chip-qr">QR</span>
+              <span class="text-xs text-gray-500 truncate">+1 (555) 012-3456</span>
+            </div>
+          </div>
+        </div>
+        <p class="text-xs text-gray-600 mb-3 line-clamp-2">Hey, I'm interested in the premium plan. Could you tell me more about what's included and pricing?</p>
+        <div class="flex items-center justify-between">
+          <div class="flex gap-1.5">
+            <span class="badge badge-amber text-xs">Unread</span>
+            <span class="badge badge-green text-xs">Hot Lead</span>
+          </div>
+          <div class="flex gap-1">
+            <button class="btn-ghost py-1 px-1" onclick="event.stopPropagation();QR.showToast('Assigned to you','success')">
+              <span class="material-symbols-outlined text-sm">person_add</span>
+            </button>
+            <button class="btn-ghost py-1 px-1" onclick="event.stopPropagation();QR.showToast('Marked resolved','success')">
+              <span class="material-symbols-outlined text-sm">check_circle</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="hub-card" data-conv-status="open" data-conv-mode="api" onclick="location.href='inbox.html'">
+        <div class="flex items-start gap-3 mb-3">
+          <div class="avatar bg-purple-700 text-purple-200">ER</div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between gap-2">
+              <p class="text-sm font-bold text-gray-800 truncate">Elena Rodriguez</p>
+              <span class="text-xs text-gray-500 flex-shrink-0">15 min</span>
+            </div>
+            <div class="flex items-center gap-2 mt-0.5">
+              <span class="chip-api">API</span>
+              <span class="text-xs text-gray-500 truncate">elena@techco.com</span>
+            </div>
+          </div>
+        </div>
+        <p class="text-xs text-gray-600 mb-3 line-clamp-2">Can you send over the integration docs for the HubSpot connector? We're evaluating this week.</p>
+        <div class="flex items-center justify-between">
+          <div class="flex gap-1.5">
+            <span class="badge badge-gray text-xs">Read</span>
+            <span class="badge badge-blue text-xs">Enterprise</span>
+          </div>
+          <div class="flex gap-1">
+            <button class="btn-ghost py-1 px-1" onclick="event.stopPropagation()"><span class="material-symbols-outlined text-sm">person_add</span></button>
+            <button class="btn-ghost py-1 px-1" onclick="event.stopPropagation();QR.showToast('Marked resolved','success')"><span class="material-symbols-outlined text-sm">check_circle</span></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="hub-card" data-conv-status="pending" data-conv-mode="qr" onclick="location.href='inbox.html'">
+        <div class="flex items-start gap-3 mb-3">
+          <div class="avatar bg-amber-700 text-amber-200">TK</div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between gap-2">
+              <p class="text-sm font-bold text-gray-800 truncate">Thomas K.</p>
+              <span class="text-xs text-gray-500 flex-shrink-0">1 hr</span>
+            </div>
+            <div class="flex items-center gap-2 mt-0.5">
+              <span class="chip-qr">QR</span>
+              <span class="text-xs text-gray-500 truncate">+44 7911 123456</span>
+            </div>
+          </div>
+        </div>
+        <p class="text-xs text-gray-600 mb-3 line-clamp-2">The automation workflow isn't triggering for my contacts tagged "Lead". Can you check what's wrong?</p>
+        <div class="flex items-center justify-between">
+          <div class="flex gap-1.5">
+            <span class="badge badge-amber text-xs">Pending Reply</span>
+          </div>
+          <div class="flex gap-1">
+            <button class="btn-ghost py-1 px-1" onclick="event.stopPropagation()"><span class="material-symbols-outlined text-sm">person_add</span></button>
+            <button class="btn-ghost py-1 px-1" onclick="event.stopPropagation()"><span class="material-symbols-outlined text-sm">check_circle</span></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 4 -->
+      <div class="hub-card" data-conv-status="resolved" data-conv-mode="api" onclick="location.href='inbox.html'">
+        <div class="flex items-start gap-3 mb-3">
+          <div class="avatar bg-[#e80040] text-[#ba0031]">MR</div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between gap-2">
+              <p class="text-sm font-bold text-gray-800 truncate">Maria Rossi</p>
+              <span class="text-xs text-gray-500 flex-shrink-0">3 hr</span>
+            </div>
+            <div class="flex items-center gap-2 mt-0.5">
+              <span class="chip-api">API</span>
+              <span class="text-xs text-gray-500 truncate">maria@vendig.it</span>
+            </div>
+          </div>
+        </div>
+        <p class="text-xs text-gray-600 mb-3 line-clamp-2">Loved the demo! Let's do the follow-up call on Thursday. I'll send over our procurement form.</p>
+        <div class="flex items-center justify-between">
+          <div class="flex gap-1.5">
+            <span class="badge badge-green text-xs">Resolved</span>
+            <span class="badge badge-green text-xs">Converted</span>
+          </div>
+          <div class="flex gap-1">
+            <button class="btn-ghost py-1 px-1" onclick="event.stopPropagation();QR.showToast('Conversation reopened','info')"><span class="material-symbols-outlined text-sm">replay</span></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 5 -->
+      <div class="hub-card" data-conv-status="open" data-conv-mode="api" onclick="location.href='inbox.html'">
+        <div class="flex items-start gap-3 mb-3">
+          <div class="avatar bg-red-700 text-red-200 relative">
+            DC
+            <span class="absolute -top-0.5 -right-0.5 w-3 h-3 bg-amber-400 rounded-full border-2 border-white"></span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between gap-2">
+              <p class="text-sm font-bold text-gray-800 truncate">David Chen</p>
+              <span class="text-xs text-gray-500 flex-shrink-0">5 hr</span>
+            </div>
+            <div class="flex items-center gap-2 mt-0.5">
+              <span class="chip-api">API</span>
+              <span class="text-xs text-gray-500 truncate">d.chen@nexus.com</span>
+            </div>
+          </div>
+        </div>
+        <p class="text-xs text-gray-600 mb-3 line-clamp-2">Can we talk about enterprise pricing for 50+ seats? Our legal team needs a custom SLA.</p>
+        <div class="flex items-center justify-between">
+          <div class="flex gap-1.5">
+            <span class="badge badge-amber text-xs">Unread</span>
+            <span class="badge badge-purple text-xs">Enterprise</span>
+          </div>
+          <div class="flex gap-1">
+            <button class="btn-ghost py-1 px-1" onclick="event.stopPropagation()"><span class="material-symbols-outlined text-sm">person_add</span></button>
+            <button class="btn-ghost py-1 px-1" onclick="event.stopPropagation()"><span class="material-symbols-outlined text-sm">check_circle</span></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 6 -->
+      <div class="hub-card" data-conv-status="resolved" data-conv-mode="qr" onclick="location.href='inbox.html'">
+        <div class="flex items-start gap-3 mb-3">
+          <div class="avatar bg-violet-700 text-violet-200">SJ</div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between gap-2">
+              <p class="text-sm font-bold text-gray-800 truncate">Sarah Jenkins</p>
+              <span class="text-xs text-gray-500 flex-shrink-0">Yesterday</span>
+            </div>
+            <div class="flex items-center gap-2 mt-0.5">
+              <span class="chip-qr">QR</span>
+              <span class="text-xs text-gray-500 truncate">+1 (555) 567-8901</span>
+            </div>
+          </div>
+        </div>
+        <p class="text-xs text-gray-600 mb-3 line-clamp-2">👍 Thanks for the quick reply! I'll share this with my manager and revert by end of week.</p>
+        <div class="flex items-center justify-between">
+          <div class="flex gap-1.5">
+            <span class="badge badge-green text-xs">Resolved</span>
+          </div>
+          <div class="flex gap-1">
+            <button class="btn-ghost py-1 px-1" onclick="event.stopPropagation()"><span class="material-symbols-outlined text-sm">replay</span></button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Load More -->
+    <div class="text-center">
+      <button class="btn-secondary text-sm" onclick="QR.showToast('Loading more conversations…','info')">
+        <span class="material-symbols-outlined">expand_more</span>Load More (242 remaining)
+      </button>
+    </div>
+
+  </main>
+</div>
+
+<!-- New Conversation Modal -->
+<div id="modal-new-conversation" class="modal-backdrop hidden">
+  <div class="modal-box">
+    <h2 class="text-xl font-bold text-gray-900 mb-4">Start New Conversation</h2>
+    <div class="space-y-4">
+      <div>
+        <label class="text-xs font-bold text-gray-600 uppercase tracking-widest block mb-1.5">Recipient Phone Number</label>
+        <input type="tel" placeholder="+1 555 123 4567" class="input-field"/>
+      </div>
+      <div>
+        <label class="text-xs font-bold text-gray-600 uppercase tracking-widest block mb-1.5">Sending Account</label>
+        <select class="input-field text-sm">
+          <option>QuicReply Sales — API (+1 555 012-3456)</option>
+          <option>Support Channel — QR (+1 555 098-7654)</option>
+        </select>
+      </div>
+      <div>
+        <label class="text-xs font-bold text-gray-600 uppercase tracking-widest block mb-1.5">First Message</label>
+        <textarea class="input-field text-sm" placeholder="Type your opening message…"></textarea>
+      </div>
+      <div>
+        <label class="text-xs font-bold text-gray-600 uppercase tracking-widest block mb-1.5">Assign To</label>
+        <select class="input-field text-sm">
+          <option>Me (Alex Rivera)</option>
+          <option>Sarah Jenkins</option>
+          <option>Marcus Reed</option>
+          <option>Unassigned</option>
+        </select>
+      </div>
+    </div>
+    <div class="flex gap-3 mt-6">
+      <button class="btn-secondary flex-1 justify-center" data-modal-close="modal-new-conversation">Cancel</button>
+      <button class="btn-primary flex-1 justify-center" onclick="QR.closeModal('modal-new-conversation');QR.showToast('Conversation started!','success');location.href='inbox.html'">
+        <span class="material-symbols-outlined">send</span>Start Conversation
+      </button>
+    </div>
+  </div>
+</div>
+
+<script src="../sidebar.js"></script>
+<script src="../shell.js"></script>
+<script>
+  // Re-declare filter-chip style (conversations page has same class names)
+  const filterChipStyle = `
+    .filter-chip { padding:6px 14px; border-radius:99px; font-size:12px; font-weight:700; cursor:pointer; border:1px solid var(--border); color:var(--text-muted); transition:all 0.25s; }
+    .filter-chip.active { background:var(--bg); color:var(--brand); border-color: var(--brand-glow); box-shadow: var(--shadow-sm); }
+    .filter-chip:hover:not(.active) { background:var(--surface); color:var(--text); }
+  `;
+  const style=document.createElement('style'); style.textContent=filterChipStyle; document.head.appendChild(style);
+
+  function convFilter(btn, filter) {
+    document.querySelectorAll('[data-conv-filter]').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('#convo-grid .hub-card').forEach(card=>{
+      const status = card.getAttribute('data-conv-status');
+      const mode = card.getAttribute('data-conv-mode');
+      let show = true;
+      if(filter==='open') show = status==='open';
+      else if(filter==='pending') show = status==='pending';
+      else if(filter==='resolved') show = status==='resolved';
+      else if(filter==='qr') show = mode==='qr';
+      else if(filter==='api') show = mode==='api';
+      card.style.display = show ? '' : 'none';
+    });
+  }
+  function setSortBtn(btn) {
+    document.querySelectorAll('.sort-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+</script>
+</body>
+</html>

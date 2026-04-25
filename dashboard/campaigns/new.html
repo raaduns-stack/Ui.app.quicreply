@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Create Campaign — QuicReply Sales OS</title>
+  <meta name="description" content="Build and schedule a WhatsApp broadcast campaign."/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+  <link rel="stylesheet" href="../shell.css"/>
+  <style>
+    body { background: #f7f8fa; }
+    .input-field {
+      width: 100%;
+      padding: 10px 12px;
+      font-size: 13px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      background: #fff;
+      transition: border-color .15s, box-shadow .15s;
+      outline: none;
+      font-family: 'Inter', sans-serif;
+    }
+    .input-field:focus {
+      border-color: var(--brand);
+      box-shadow: 0 0 0 3px rgba(186, 0, 49, 0.1);
+    }
+  </style>
+</head>
+<body>
+
+  <div id="sidebar-mount"></div>
+
+  <div class="layout-with-sidebar" id="main-layout">
+    <div id="topbar-mount" data-title="Create Campaign"></div>
+
+    <main class="flex-1 p-6 lg:p-10">
+      <div class="content-container space-y-6 max-w-5xl mx-auto">
+        
+        <!-- Header -->
+        <div class="flex flex-wrap items-center justify-between gap-4 mb-2">
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <a href="index.html" class="btn-ghost py-1 px-2 text-sm">
+                <span class="material-symbols-outlined text-sm">arrow_back</span>
+              </a>
+              <h1 class="text-2xl font-extrabold text-gray-900 tracking-tight">Create Campaign</h1>
+            </div>
+            <p class="text-gray-600 text-sm pl-10 font-medium">Build and schedule a WhatsApp broadcast campaign</p>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button class="btn-secondary text-sm" onclick="QR.showToast('Campaign saved as draft','success')">
+              <span class="material-symbols-outlined" style="font-size:18px;">save</span> Save Draft
+            </button>
+            <button class="btn-secondary text-sm" onclick="QR.openModal('modal-preview')">
+              <span class="material-symbols-outlined" style="font-size:18px;">preview</span> Preview Campaign
+            </button>
+            <button class="btn-primary text-sm" onclick="handleLaunch()">
+              <span class="material-symbols-outlined" style="font-size:18px;">rocket_launch</span> Launch Campaign
+            </button>
+          </div>
+        </div>
+
+        <!-- WhatsApp Mode Warning -->
+        <div id="qr-warning" class="hidden bg-[#fffbeb] border border-[#fde68a] rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div class="flex items-start gap-3">
+            <span class="material-symbols-outlined text-[#d97706] mt-0.5">warning</span>
+            <div class="flex-1">
+              <p class="text-sm font-bold text-[#92400e]">QR Mode has limited sending. Upgrade to Official API for bulk campaigns.</p>
+            </div>
+          </div>
+          <button class="btn-primary text-xs shrink-0" style="background:#d97706;border-color:#b45309;" onclick="window.location.href='../api-setup/index.html'">Upgrade to API</button>
+        </div>
+
+        <!-- Form and Preview Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          
+          <!-- Left side (Form) -->
+          <div class="lg:col-span-2 space-y-6">
+            
+            <!-- 1. Campaign Details -->
+            <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-6">
+              <h2 class="font-bold text-gray-800 mb-5 flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-xs text-gray-600">1</span> 
+                Campaign Details
+              </h2>
+              <div class="space-y-4">
+                <div>
+                  <label class="text-xs font-bold text-gray-600 uppercase tracking-widest block mb-1.5">Campaign Name</label>
+                  <input type="text" class="input-field" placeholder="e.g., Summer Promo 2026" />
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label class="text-xs font-bold text-gray-600 uppercase tracking-widest block mb-1.5">Campaign Type</label>
+                    <select class="input-field">
+                      <option>Promotional</option>
+                      <option>Transactional</option>
+                      <option>Update</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="text-xs font-bold text-gray-600 uppercase tracking-widest block mb-1.5">Audience Selection</label>
+                    <select class="input-field">
+                      <option>All Contacts</option>
+                      <option>VIP Customers</option>
+                      <option>New Leads</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 2. Message Content -->
+            <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-6">
+              <h2 class="font-bold text-gray-800 mb-5 flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-xs text-gray-600">2</span> 
+                Message Content
+              </h2>
+              <div class="space-y-4">
+                <div>
+                  <label class="text-xs font-bold text-gray-600 uppercase tracking-widest block mb-1.5">Message</label>
+                  <textarea id="msg-input" class="input-field h-32 resize-y" oninput="updatePreview()" placeholder="Type your broadcast message..."></textarea>
+                  <div class="flex flex-wrap items-center gap-2 mt-3">
+                    <span class="text-xs text-gray-500 font-medium">Insert variables:</span>
+                    <button class="text-xs font-semibold text-gray-700 bg-gray-100 border border-gray-200 hover:bg-gray-200 px-2 py-1 rounded-md transition-colors" onclick="insertVar('{{name}}')">{{name}}</button>
+                    <button class="text-xs font-semibold text-gray-700 bg-gray-100 border border-gray-200 hover:bg-gray-200 px-2 py-1 rounded-md transition-colors" onclick="insertVar('{{business}}')">{{business}}</button>
+                    <button class="text-xs font-semibold text-gray-700 bg-gray-100 border border-gray-200 hover:bg-gray-200 px-2 py-1 rounded-md transition-colors" onclick="insertVar('{{offer}}')">{{offer}}</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 3. Delivery Settings -->
+            <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-6">
+              <h2 class="font-bold text-gray-800 mb-5 flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-xs text-gray-600">3</span> 
+                Delivery Settings
+              </h2>
+              <div class="space-y-4">
+                <div>
+                  <label class="text-xs font-bold text-gray-600 uppercase tracking-widest block mb-1.5">Send Schedule</label>
+                  <select id="schedule-type" class="input-field sm:w-1/2" onchange="toggleSchedule()">
+                    <option value="now">Send now</option>
+                    <option value="later">Schedule later</option>
+                  </select>
+                </div>
+                <div id="schedule-inputs" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label class="text-xs font-bold text-gray-600 uppercase tracking-widest block mb-1.5">Date</label>
+                    <input type="date" class="input-field" />
+                  </div>
+                  <div>
+                    <label class="text-xs font-bold text-gray-600 uppercase tracking-widest block mb-1.5">Time</label>
+                    <input type="time" class="input-field" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Right side (Preview) -->
+          <div>
+            <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-6 sticky top-24">
+              <h2 class="font-bold text-gray-800 mb-4 text-center">Message Preview</h2>
+              <div class="bg-[#e5ddd5] p-4 rounded-xl min-h-[250px] relative overflow-hidden" style="background-image: url('data:image/svg+xml,%3Csvg width=\'20\' height=\'20\' viewBox=\'0 0 20 20\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'%23059669\' fill-opacity=\'0.05\' fill-rule=\'evenodd\'%3E%3Ccircle cx=\'3\' cy=\'3\' r=\'3\'/%3E%3Ccircle cx=\'13\' cy=\'13\' r=\'3\'/%3E%3C/g%3E%3C/svg%3E');">
+                <div class="bg-[#dcf8c6] p-3 rounded-xl rounded-tr-sm shadow-sm text-[13px] text-gray-800 whitespace-pre-wrap leading-relaxed max-w-[90%] float-right relative" id="msg-preview">
+<span class="text-gray-500 italic">Type a message to see preview...</span>
+                </div>
+                <div class="clear-both"></div>
+                <div class="text-[10px] text-gray-500 text-right mt-1 font-medium pr-1 float-right flex items-center gap-1">10:42 AM <span class="material-symbols-outlined" style="font-size:12px;color:#3b82f6;">done_all</span></div>
+                <div class="clear-both"></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Preview Modal -->
+  <div id="modal-preview" class="modal-backdrop hidden">
+    <div class="modal-box w-full max-w-sm">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-bold text-gray-900">Campaign Preview</h2>
+        <button class="btn-ghost" style="padding:4px;" data-modal-close="modal-preview"><span class="material-symbols-outlined" style="font-size:20px;">close</span></button>
+      </div>
+      <div class="bg-[#e5ddd5] p-4 rounded-xl min-h-[200px] mb-6 flex flex-col justify-center relative" style="background-image: url('data:image/svg+xml,%3Csvg width=\'20\' height=\'20\' viewBox=\'0 0 20 20\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'%23059669\' fill-opacity=\'0.05\' fill-rule=\'evenodd\'%3E%3Ccircle cx=\'3\' cy=\'3\' r=\'3\'/%3E%3Ccircle cx=\'13\' cy=\'13\' r=\'3\'/%3E%3C/g%3E%3C/svg%3E');">
+        <div class="bg-[#dcf8c6] p-3 rounded-xl rounded-tr-sm shadow-sm text-[13px] text-gray-800 whitespace-pre-wrap leading-relaxed self-end max-w-[85%]" id="modal-msg-preview">
+<span class="text-gray-500 italic">Type a message to see preview...</span>
+        </div>
+      </div>
+      <div class="flex gap-3">
+        <button class="btn-primary w-full justify-center" data-modal-close="modal-preview">Close Preview</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Upgrade Modal -->
+  <div id="modal-upgrade" class="modal-backdrop hidden">
+    <div class="modal-box text-center max-w-sm">
+      <div class="w-14 h-14 rounded-2xl bg-amber-100 flex items-center justify-center mx-auto mb-4">
+        <span class="material-symbols-outlined text-amber-600" style="font-size:28px">warning</span>
+      </div>
+      <h2 class="text-xl font-bold text-gray-900 mb-2">Upgrade Required</h2>
+      <p class="text-sm text-gray-600 mb-6">Upgrade to Official API to send bulk messages.</p>
+      <div class="flex gap-3">
+        <button class="btn-secondary flex-1 justify-center" data-modal-close="modal-upgrade">Cancel</button>
+        <button class="btn-primary flex-1 justify-center" style="background:#d97706;border-color:#b45309;" onclick="window.location.href='../api-setup/index.html'">Upgrade Now</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Launch Confirm Modal -->
+  <div id="modal-launch" class="modal-backdrop hidden">
+    <div class="modal-box text-center max-w-sm">
+      <div class="w-14 h-14 rounded-2xl bg-[#e80040]/10 flex items-center justify-center mx-auto mb-4 border border-[#e80040]/20">
+        <span class="material-symbols-outlined text-[#ba0031]" style="font-size:28px">rocket_launch</span>
+      </div>
+      <h2 class="text-xl font-bold text-gray-900 mb-2">Launch Campaign?</h2>
+      <p class="text-sm text-gray-600 mb-2">You're about to launch this broadcast campaign.</p>
+      <p class="text-sm text-gray-600 mb-6">This action cannot be undone once started.</p>
+      <div class="flex gap-3">
+        <button class="btn-secondary flex-1 justify-center" data-modal-close="modal-launch">Review First</button>
+        <button class="btn-primary flex-1 justify-center" onclick="QR.closeModal('modal-launch');QR.showToast('Campaign launched! 🚀','success');setTimeout(()=>window.location.href='index.html',1500)">
+          <span class="material-symbols-outlined text-sm mr-1">rocket_launch</span> Confirm Launch
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../sidebar.js"></script>
+  <script src="../shell.js"></script>
+  <script>
+    function updatePreview() {
+      const val = document.getElementById('msg-input').value;
+      const previewEl = document.getElementById('msg-preview');
+      const modalPreviewEl = document.getElementById('modal-msg-preview');
+      
+      if (val.trim()) {
+        const formatted = val.replace(/\n/g, '<br>');
+        previewEl.innerHTML = formatted;
+        modalPreviewEl.innerHTML = formatted;
+      } else {
+        previewEl.innerHTML = '<span class="text-gray-500 italic">Type a message to see preview...</span>';
+        modalPreviewEl.innerHTML = '<span class="text-gray-500 italic">Type a message to see preview...</span>';
+      }
+    }
+
+    function insertVar(v) {
+      const el = document.getElementById('msg-input');
+      const start = el.selectionStart;
+      const end = el.selectionEnd;
+      const text = el.value;
+      el.value = text.substring(0, start) + v + text.substring(end);
+      el.focus();
+      el.selectionEnd = start + v.length;
+      updatePreview();
+    }
+
+    function toggleSchedule() {
+      const type = document.getElementById('schedule-type').value;
+      const inputs = document.getElementById('schedule-inputs');
+      if(type === 'later') {
+        inputs.classList.remove('hidden');
+      } else {
+        inputs.classList.add('hidden');
+      }
+    }
+
+    function handleLaunch() {
+      const isQR = localStorage.getItem('qr_wa_mode') === 'qr' || document.documentElement.getAttribute('data-os-whatsapp-mode') === 'qr';
+      if(isQR) {
+        QR.openModal('modal-upgrade');
+      } else {
+        QR.openModal('modal-launch');
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const isQR = localStorage.getItem('qr_wa_mode') === 'qr' || document.documentElement.getAttribute('data-os-whatsapp-mode') === 'qr';
+      if(isQR) {
+        document.getElementById('qr-warning').classList.remove('hidden');
+      }
+    });
+  </script>
+</body>
+</html>

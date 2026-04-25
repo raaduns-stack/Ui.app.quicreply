@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>WhatsApp Connection - Onboarding | QuicReply</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+    rel="stylesheet" />
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#ba0031",
+            "primary-variant": "#e80040",
+            "surface": "#f8f9fa",
+            "on-surface": "#191c1d",
+            "secondary": "#5f5e5e",
+            "outline": "#e1e3e4",
+            "wa-green": "#25D366",
+            "wa-dark": "#128C7E",
+          },
+          borderRadius: {
+            "DEFAULT": "0.5rem",
+            "lg": "1.25rem",
+            "xl": "2rem",
+            "2xl": "2.5rem",
+            "full": "9999px"
+          },
+          fontFamily: { sans: ["Inter", "sans-serif"] },
+          boxShadow: {
+            "premium": "0 20px 50px -12px rgba(0,0,0,0.08)",
+            "premium-hover": "0 30px 60px -12px rgba(186,0,49,0.12)",
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="../../shell.css" />
+  <style>
+    body {
+      min-height: 100vh;
+      padding: 0;
+      margin: 0;
+      background: radial-gradient(circle at top left, rgba(186, 0, 49, .08), transparent 30%), var(--surface);
+      overflow-x: hidden;
+    }
+
+    .main-content {
+      min-height: calc(100vh - var(--topbar-height));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 24px 80px;
+    }
+
+    .onboarding-container {
+      max-width: 1100px;
+      width: 100%;
+      animation: fadeIn .35s ease-out;
+    }
+
+    .connection-card {
+      border: 1.5px solid var(--border);
+      border-radius: 22px;
+      background: #fff;
+      padding: 20px;
+      cursor: pointer;
+      transition: .2s ease;
+      height: 100%;
+    }
+
+    .connection-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 30px rgba(186, 0, 49, .06);
+    }
+
+    .connection-card.selected {
+      border-color: var(--brand);
+      background: linear-gradient(180deg, rgba(186, 0, 49, .08), rgba(186, 0, 49, .02));
+    }
+
+    .scan-box {
+      width: 240px;
+      height: 240px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: #fff;
+      overflow: hidden;
+      position: relative;
+      margin-inline: auto;
+    }
+
+    .scan-box::before {
+      content: "";
+      position: absolute;
+      inset: 14px;
+      background: linear-gradient(135deg, #f8fafc, #fff);
+      border-radius: 14px;
+      opacity: .85;
+    }
+
+    .scan-art {
+      display: none;
+    }
+
+    .qr-image {
+      position: absolute;
+      inset: 18px;
+      width: calc(100% - 36px);
+      height: calc(100% - 36px);
+      object-fit: contain;
+      border-radius: 12px;
+      z-index: 5;
+    }
+
+    .scan-line {
+      position: absolute;
+      left: 16px;
+      right: 16px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--brand), transparent);
+      box-shadow: 0 0 18px var(--brand);
+      animation: scan 2.2s ease-in-out infinite;
+      z-index: 10;
+    }
+
+    @keyframes scan {
+
+      0%,
+      100% {
+        top: 18px;
+      }
+
+      50% {
+        top: calc(100% - 22px);
+      }
+    }
+
+    .flow-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      background: #fee2e2;
+      color: #991b1b;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="topbar-mount" data-title="Onboarding · Connect WhatsApp"></div>
+
+  <div class="main-content">
+    <div class="onboarding-container space-y-6">
+      <div class="flex justify-center mb-6">
+        <img src="../../../assets/images/logo.png" alt="QuicReply" class="h-10 w-auto" />
+      </div>
+      <div class="flex justify-center items-center px-4">
+        <div class="step-dot done"><span class="material-symbols-outlined text-sm">check</span></div>
+        <div class="step-line done"></div>
+        <div class="step-dot done"><span class="material-symbols-outlined text-sm">storefront</span></div>
+        <div class="step-line done"></div>
+        <div class="step-dot active"><span class="material-symbols-outlined text-sm">link</span></div>
+        <div class="step-line"></div>
+        <div class="step-dot"><span class="material-symbols-outlined text-sm">flag</span></div>
+      </div>
+
+      <div class="text-center space-y-3">
+        <span class="flow-pill">Broadcast Model</span>
+        <h1 class="text-3xl font-black text-gray-900">Choose connection method</h1>
+        <p class="text-gray-600 max-w-2xl mx-auto">
+          Official API is recommended for high-volume mailing, but QR gets you started in seconds for small batch
+          outreach.
+        </p>
+      </div>
+
+      <div id="choice-view" class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <label class="connection-card block" data-connection-card="qr">
+          <input type="radio" name="connection" value="qr" class="sr-only" />
+          <div class="flex items-start justify-between gap-4">
+            <div class="space-y-3">
+              <div class="flex items-center gap-2">
+                <span
+                  class="text-[11px] font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-emerald-100 text-emerald-700">Option
+                  A</span>
+              </div>
+              <div>
+                <h2 class="text-xl font-bold text-gray-900">Option A — Instant Connect</h2>
+                <p class="text-sm text-gray-600 mt-1">For businesses expecting under 100 messaging daily.</p>
+              </div>
+              <ul class="space-y-2 text-sm text-gray-600">
+                <li class="flex items-center gap-2"><span
+                    class="material-symbols-outlined text-green-500 text-sm">check_circle</span>Instant connection</li>
+                <li class="flex items-center gap-2"><span
+                    class="material-symbols-outlined text-green-500 text-sm">check_circle</span>Daily limit: ~100 msgs
+                </li>
+              </ul>
+            </div>
+            <div class="w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center flex-shrink-0"><span
+                class="material-symbols-outlined text-emerald-600">qr_code_scanner</span></div>
+          </div>
+        </label>
+
+        <label class="connection-card selected block" data-connection-card="api">
+          <input type="radio" name="connection" value="api" class="sr-only" checked />
+          <div class="flex items-start justify-between gap-4">
+            <div class="space-y-3">
+              <div class="flex items-center gap-2">
+                <span
+                  class="text-[11px] font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-red-100 text-red-700">Option
+                  B</span>
+                <span class="badge badge-red-brand">Recommended</span>
+              </div>
+              <div>
+                <h2 class="text-xl font-bold text-gray-900">Option B — Official API</h2>
+                <p class="text-sm text-gray-600 mt-1">For businesses with over 100 messaging daily. Requires Meta
+                  verification.</p>
+              </div>
+              <ul class="space-y-2 text-sm text-gray-600">
+                <li class="flex items-center gap-2"><span
+                    class="material-symbols-outlined text-primary text-sm">check_circle</span>High Volume Scale</li>
+                <li class="flex items-center gap-2"><span
+                    class="material-symbols-outlined text-primary text-sm">check_circle</span>Official Status &
+                  Verification</li>
+              </ul>
+            </div>
+            <div class="w-12 h-12 rounded-2xl bg-red-100 flex items-center justify-center flex-shrink-0"><span
+                class="material-symbols-outlined text-primary">api</span></div>
+          </div>
+        </label>
+      </div>
+
+      <div id="qr-flow" class="hidden grid grid-cols-1 lg:grid-cols-[1fr_.9fr] gap-4 items-start">
+        <div class="connection-card selected space-y-5 cursor-default">
+          <div>
+            <p class="text-xs font-bold uppercase tracking-[0.3em] text-gray-500">Scanning now</p>
+            <h2 class="text-2xl font-black text-gray-900 mt-1">Scan for Broadcast Model</h2>
+            <p class="text-sm text-gray-600 mt-1">Open WhatsApp > Linked Devices > Link a Device.</p>
+          </div>
+          <div class="scan-box">
+            <img src="../../../assets/images/whatsapp_qr.png" alt="WhatsApp QR Code" class="qr-image" />
+            <div class="scan-line"></div>
+          </div>
+        </div>
+        <div class="connection-card space-y-4 cursor-default">
+          <h3 class="text-lg font-bold text-gray-900">Fast Outreach Start</h3>
+          <p class="text-sm text-gray-600">QR allows small broadcasting batches immediately. For high-volume (>100
+            people/day), we recommend the Official API.</p>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between gap-3 pt-2">
+        <button type="button" onclick="location.href='business.html'" class="btn-ghost"><span
+            class="material-symbols-outlined text-sm">arrow_back</span> Back</button>
+        <button id="cta-btn" class="btn-primary py-3 px-6 text-base">Setup Business API <span
+            class="material-symbols-outlined text-sm">arrow_forward</span></button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../../sidebar.js"></script>
+  <script src="../../shell.js"></script>
+  <script>
+    const choiceView = document.getElementById("choice-view");
+    const qrFlow = document.getElementById("qr-flow");
+    const ctaBtn = document.getElementById("cta-btn");
+    const cards = document.querySelectorAll("[data-connection-card]");
+    const radios = document.querySelectorAll("input[name='connection']");
+
+    function syncSelection(value) {
+      cards.forEach((card) => card.classList.toggle("selected", card.getAttribute("data-connection-card") === value));
+      ctaBtn.innerHTML = value === "api" ? 'Setup Business API <span class="material-symbols-outlined text-sm">arrow_forward</span>' : 'Continue with QR <span class="material-symbols-outlined text-sm">qr_code</span>';
+    }
+    radios.forEach((r) => r.addEventListener("change", () => syncSelection(r.value)));
+    cards.forEach((c) => c.addEventListener("click", () => {
+      const val = c.getAttribute("data-connection-card");
+      const r = document.querySelector(`input[name='connection'][value='${val}']`);
+      if (r) { r.checked = true; syncSelection(val); }
+    }));
+
+    ctaBtn.addEventListener("click", () => {
+      const selected = document.querySelector("input[name='connection']:checked").value;
+      if (selected === "api") {
+        localStorage.setItem("whatsapp_mode", "api");
+        localStorage.setItem("api_status", "pending");
+        location.href = "../../api-setup.html";
+        return;
+      }
+      localStorage.setItem("whatsapp_mode", "qr");
+      localStorage.setItem("qr_connected", "true");
+      choiceView.classList.add("hidden");
+      qrFlow.classList.remove("hidden");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      addSim();
+    });
+
+    function addSim() {
+      if (document.getElementById('sim-actions')) return;
+      const div = document.createElement('div'); div.id = 'sim-actions';
+      div.className = 'flex items-center justify-center gap-3 pt-4';
+      div.innerHTML = `<button class="btn-secondary" onclick="finishScan()">Simulate scan complete</button>`;
+      qrFlow.appendChild(div);
+    }
+    window.finishScan = () => {
+      QR.showToast("QR connected successfully", "success");
+      setTimeout(() => location.href = "ai-setup.html", 1000);
+    };
+
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobile-menu');
+      const l1 = document.getElementById('hb-line-1');
+      const l2 = document.getElementById('hb-line-2');
+      const l3 = document.getElementById('hb-line-3');
+      if (!menu || !l1 || !l2 || !l3) return;
+      const isOpen = !menu.classList.contains('hidden');
+      if (isOpen) {
+        menu.classList.add('hidden');
+        l1.style.transform = ''; l2.style.opacity = '1'; l3.style.transform = '';
+      } else {
+        menu.classList.remove('hidden');
+        l1.style.transform = 'translateY(8px) rotate(45deg)';
+        l2.style.opacity = '0';
+        l3.style.transform = 'translateY(-8px) rotate(-45deg)';
+      }
+    }
+  </script>
+
+
+
+  <div id="footer-mount"></div>
+</body>
+
+</html>
